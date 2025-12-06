@@ -375,12 +375,12 @@ export default {
                     return this.members.filter(member => {
                         return member.name !== currentMember.name &&
                             member.name !== marriedMemberName &&
-                            !currentMember.siblings.includes(member.name) &&
+                            !(currentMember.siblings || []).includes(member.name) &&
                             !childrenNames.has(member.name) &&
                             !parentNames.has(member.name);
                     });
                 case 'siblings':
-                    var siblingsMemberNames = currentMember.siblings;
+                    var siblingsMemberNames = currentMember.siblings || [];
                     return this.members.filter(member => {
                         return member.name !== currentMember.name &&
                             member.name !== marriedMemberName &&
@@ -389,11 +389,11 @@ export default {
                             !siblingsMemberNames.includes(member.name);
                     });
                 case 'children':
-                    var childrenMemberNames = currentMember.children;
+                    var childrenMemberNames = currentMember.children || [];
                     return this.members.filter(member => {
                         return member.name !== currentMember.name &&
                             member.name !== marriedMemberName &&
-                            !currentMember.siblings.includes(member.name) &&
+                            !(currentMember.siblings || []).includes(member.name) &&
                             !parentNames.has(member.name) &&
                             !childrenMemberNames.includes(member.name);
                     });
