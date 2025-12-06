@@ -2,8 +2,8 @@
   <div id="app-container">
     <NavbarView />
     <div v-if="isSuperAdmin && viewingAsName" class="view-as-banner">
-      <span>You are on {{ viewingAsName }}'s account</span>
-      <button @click="leaveViewAs">Leave {{ viewingAsName }}'s account's view</button>
+      <span>On {{ viewingAsName }}'s profile</span>
+      <button @click="leaveViewAs">leave {{ viewingAsName }} profile</button>
     </div>
     <router-view id="main-content"></router-view>
     <FooterView />
@@ -24,7 +24,7 @@ export default {
   computed: {
     ...mapState(['userRole', 'viewingAsName']),
     isSuperAdmin() {
-      return this.userRole === 'superadmin';
+      return ['admin', 'superadmin'].includes(this.userRole);
     }
   },
   watch: {
@@ -127,6 +127,7 @@ body.dark {
 
 .view-as-banner {
   background-color: #f8d7da;
+  margin-top: 40px;
   color: #721c24;
   padding: 10px;
   text-align: center;

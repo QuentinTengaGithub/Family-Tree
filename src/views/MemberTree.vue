@@ -117,13 +117,13 @@
                 </div>
             </div>
         </div>
-        <div class="camera-control">
+        <div class="camera-control" v-if="members.length > 0">
             <button @click="openScreenshotOptions"><img src="../assets/camera.png"/></button>
         </div>
-        <div class="filters-control">
+        <div class="filters-control" v-if="members.length > 0">
           <button @click="toggleFiltersPanel" v-if="!isFiltersPanelVisible"><img src="../assets/filters.png"/></button>
         </div>
-        <div class="zoom-controls">
+        <div class="zoom-controls" v-if="members.length > 0">
             <button @click="zoomIn">+</button>
             <button @click="zoomOut">-</button>
         </div>
