@@ -93,7 +93,7 @@ html, body {
   border:solid 1px blue;
 }
 
-a.leave {
+.button {
   background-color: var(--blue);
   color: white;
   border: none;
@@ -101,11 +101,9 @@ a.leave {
   font-size: 15px;
   border-radius: 10px;
   cursor: pointer;
-  border:solid 1px red;
-  margin-left:10px;
 }
 
-a.leave:hover {
+.button:hover {
   background-color: var(--lightBlue);
 }
 
@@ -138,6 +136,7 @@ body.dark {
   padding: 10px;
   text-align: center;
   border-bottom: 1px solid #f5c6cb;
+  margin-top:40px;
 }
 
 .view-as-banner button {
