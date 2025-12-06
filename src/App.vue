@@ -3,7 +3,7 @@
     <NavbarView />
     <div v-if="isSuperAdmin && viewingAsName" class="view-as-banner">
       <span>On {{ viewingAsName }}'s profile</span>
-      <button @click="leaveViewAs">leave {{ viewingAsName }} profile</button>
+      <a class="leave" @click="leaveViewAs">leave {{ viewingAsName }}'s profile</a>
     </div>
     <router-view id="main-content"></router-view>
     <FooterView />
@@ -88,7 +88,12 @@ html, body {
   color: var(--blue);
 }
 
-.button {
+.leave {
+  padding: 10px 20px;
+  border:solid 1px blue;
+}
+
+a.leave {
   background-color: var(--blue);
   color: white;
   border: none;
@@ -96,9 +101,11 @@ html, body {
   font-size: 15px;
   border-radius: 10px;
   cursor: pointer;
+  border:solid 1px red;
+  margin-left:10px;
 }
 
-.button:hover {
+a.leave:hover {
   background-color: var(--lightBlue);
 }
 
@@ -127,7 +134,6 @@ body.dark {
 
 .view-as-banner {
   background-color: #f8d7da;
-  margin-top: 40px;
   color: #721c24;
   padding: 10px;
   text-align: center;

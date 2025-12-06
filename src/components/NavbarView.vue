@@ -25,13 +25,12 @@
                 </div>
                 
                 <template v-if="user">
-                    <div @click="changeTab('Profile')" class="navbar-items profile-infos">
-                        <img v-if="activeTab === 'Profile' && darkMode" src="../assets/account_fill_dark.png" />
-                        <img v-else-if="activeTab === 'Profile' && !darkMode" src="../assets/account_fill.png" />
-                        <img v-else-if="darkMode" src="../assets/account_dark.png" />
-                        <img v-else src="../assets/account.png" />
-                        <span class="logout-text" v-if="!darkMode">My infos</span>
-                        <span class="logout-text" style="color:white" v-if="darkMode">My infos</span>
+                    <div @click="changeTab('Profile')" class="profile-container">
+                        <img v-if="activeTab === 'Profile' && darkMode" src="../assets/account_fill_dark.png" class="profile-icon" />
+                        <img v-else-if="activeTab === 'Profile' && !darkMode" src="../assets/account_fill.png" class="profile-icon" />
+                        <img v-else-if="darkMode" src="../assets/account_dark.png" class="profile-icon" />
+                        <img v-else src="../assets/account.png" class="profile-icon" />
+                        <span class="profile-text">My Profile</span>
                     </div>
                     <div @click="logout" class="navbar-items logout-container">
                         <img :src="darkMode ? require('../assets/logout_dark.png') : require('../assets/logout.png')" alt="Logout Icon" class="logout-icon" />
@@ -138,15 +137,43 @@ export default {
     margin-right: 20px;
 }
 
-.navbar-items:nth-last-child(2) {
-    margin-left: auto;
-    margin-right:10px;
-}
-
 .navbar-left,
 .navbar-right {
   display: flex;
   align-items: center;
+}
+
+.profile-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 5px 15px;
+    border-radius: 10px;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.profile-container:hover {
+    background-color: var(--lightGrey);
+}
+
+.profile-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px; /* Space between icon and text */
+}
+
+.profile-text {
+    max-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    transition: max-width 0.3s ease-in-out, opacity 0.3s ease-in-out;
+    opacity: 0;
+    color: black; /* Default color */
+}
+
+.profile-container.dark .profile-text {
+    color: white;
 }
 
 .logout-container {
