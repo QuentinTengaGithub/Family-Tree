@@ -107,7 +107,7 @@ export default {
                         uid: user.uid,
                         email: user.email,
                         name: this.name,
-                        role: user.email === 'quentinritt94@gmail.com' ? 'admin' : 'user'
+                        role: user.email === 'quentinritt94@gmail.com' ? 'superadmin' : 'user'
                     });
                     this.$router.push('/sign-in');
                 })

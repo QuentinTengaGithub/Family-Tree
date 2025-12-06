@@ -39,8 +39,7 @@ export default {
     },
     selectUser(user) {
       this.selectedUser = user;
-      this.$store.dispatch('fetchMembers', user.uid);
-      this.$router.push('/members');
+      this.$router.push({ path: '/members', query: { viewAs: user.uid, viewAsName: user.name } });
     }
   }
 }

@@ -1,19 +1,58 @@
 <template>
   <div id="app-container">
     <NavbarView />
+    <div v-if="isSuperAdmin && viewingAsName" class="view-as-banner">
+      <span>You are on {{ viewingAsName }}'s account</span>
+      <button @click="leaveViewAs">Leave {{ viewingAsName }}'s account's view</button>
+    </div>
     <router-view id="main-content"></router-view>
     <FooterView />
   </div>
 </template>
 
 <script>
-import NavbarView from "./components/NavbarView.vue"
-import FooterView from "./components/FooterView.vue"
+import NavbarView from "./components/NavbarView.vue";
+import FooterView from "./components/FooterView.vue";
+import { mapState } from "vuex";
+
 export default {
   name: 'App',
   components: {
     NavbarView,
     FooterView,
+  },
+  computed: {
+    ...mapState(['userRole', 'viewingAsName']),
+    isSuperAdmin() {
+      return this.userRole === 'superadmin';
+    }
+  },
+  watch: {
+    '$route.query.viewAs': {
+      immediate: true,
+      handler(viewAs) {
+        if (viewAs && this.isSuperAdmin) {
+          const viewAsName = this.$route.query.viewAsName;
+          this.$store.commit('setViewingAs', { userId: viewAs, userName: viewAsName });
+          this.$store.dispatch('fetchMembers', viewAs);
+        }
+      }
+    }
+  },
+  methods: {
+    leaveViewAs() {
+      const ownUserId = this.$store.state.user.uid;
+      this.$store.commit('setViewingAs', { userId: null, userName: null });
+      this.$store.dispatch('fetchMembers', ownUserId);
+      this.$router.push('/profile');
+    }
+  },
+  created() {
+    const { viewAs, viewAsName } = this.$route.query;
+    if (viewAs && this.isSuperAdmin) {
+      this.$store.commit('setViewingAs', { userId: viewAs, userName: viewAsName });
+      this.$store.dispatch('fetchMembers', viewAs);
+    }
   }
 }
 </script>
@@ -84,5 +123,23 @@ body.dark {
 .content {
   margin-top: -30px !important;
   margin-left: 0 !important;
+}
+
+.view-as-banner {
+  background-color: #f8d7da;
+  color: #721c24;
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid #f5c6cb;
+}
+
+.view-as-banner button {
+  margin-left: 15px;
+  background-color: #721c24;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 </style>

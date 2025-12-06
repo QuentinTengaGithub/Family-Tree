@@ -60,16 +60,17 @@ const getCurrentUser = () => {
 };
 
 router.beforeEach(async (to, from, next) => {
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
-  const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin);
   const user = await getCurrentUser();
   store.commit('setUser', user);
 
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
+  const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin);
+
   if (requiresAuth && !user) {
     next('/sign-in');
-  } else if (requiresAdmin && (!user || user.role !== 'admin')) {
+  } else if (requiresAdmin && (!user || !['admin', 'superadmin'].includes(user.role))) {
     alert("Access Denied: You do not have administrator privileges.");
-    next(from.path || '/home'); // Redirect to previous page or home if admin access is denied
+    next(from.path || '/home');
   } else if (!requiresAuth && user) {
     next('/home');
   } else {
@@ -81,7 +82,10 @@ const store = new Vuex.Store({
   state: {
     members: [],
     darkMode: false,
-    user: null
+    user: null,
+    userRole: null,
+    viewingAs: null,
+    viewingAsName: null
   },
   mutations: {
     setMembers(state, members) {
@@ -108,11 +112,16 @@ const store = new Vuex.Store({
     },
     setUser(state, user) {
       state.user = user;
+      state.userRole = user ? user.role : null;
+    },
+    setViewingAs(state, { userId, userName }) {
+      state.viewingAs = userId;
+      state.viewingAsName = userName;
     }
   },
   actions: {
     async fetchMembers({ commit, state }, paramUserId = null) {
-      const userId = paramUserId || (state.user ? state.user.uid : null);
+      const userId = state.viewingAs || paramUserId || (state.user ? state.user.uid : null);
       if (!userId) {
         commit('setMembers', []);
         return;
@@ -151,14 +160,13 @@ const store = new Vuex.Store({
     },
     async addMember({ commit, state }, member) {
       if (!state.user) return;
-      const userId = state.user.uid;
-      const memberData = { ...member, createdBy: userId };
-      await setDoc(doc(db, "users", userId, "members", member.name), memberData);
+      const memberData = { ...member, createdBy: state.viewingAs || state.user.uid };
+      await setDoc(doc(db, "users", state.viewingAs || state.user.uid, "members", member.name), memberData);
       commit('addMember', member);
     },
     async deleteMember({ commit, state, dispatch }, memberName) {
       if (!state.user) return;
-      const userId = state.user.uid;
+      const userId = state.viewingAs || state.user.uid;
       await deleteDoc(doc(db, "users", userId, "members", memberName));
       commit('deleteMember', memberName);
 
@@ -180,7 +188,7 @@ const store = new Vuex.Store({
     },
     async updateMember({ commit, state }, member) {
       if (!state.user) return;
-      const userId = state.user.uid;
+      const userId = state.viewingAs || state.user.uid;
       const memberRef = doc(db, "users", userId, "members", member.name);
       const dataToSave = { ...member };
       delete dataToSave.toggleRelationship;
@@ -189,6 +197,7 @@ const store = new Vuex.Store({
     },
     async setSiblings({ dispatch, state }, { member, selectedMember }) {
       if (!state.user) return;
+      const userId = state.viewingAs || state.user.uid;
       const fullSiblingGroup = new Set([
         member.name,
         selectedMember.name,
@@ -201,13 +210,13 @@ const store = new Vuex.Store({
       for (const memberToUpdate of membersToUpdate) {
         const newSiblings = [...fullSiblingGroup].filter(name => name !== memberToUpdate.name);
         if (JSON.stringify(memberToUpdate.siblings) !== JSON.stringify(newSiblings)) {
-          dispatch('updateMember', { ...memberToUpdate, siblings: newSiblings });
+          dispatch('updateMember', { ...memberToUpdate, siblings: newSiblings, userId });
         }
       }
     },
     async updateMemberName({ dispatch, state }, { oldName, newName }) {
       if (!state.user) return;
-      const userId = state.user.uid;
+      const userId = state.viewingAs || state.user.uid;
       const oldMemberRef = doc(db, "users", userId, "members", oldName);
       const oldMemberSnap = await getDoc(oldMemberRef);
 
