@@ -25,13 +25,12 @@
                 </div>
                 
                 <template v-if="user">
-                    <div @click="changeTab('Profile')" class="logout-container">
+                    <div @click="changeTab('Profile')" class="profile-container">
                         <img v-if="activeTab === 'Profile' && darkMode" src="../assets/account_fill_dark.png" class="profile-icon" />
                         <img v-else-if="activeTab === 'Profile' && !darkMode" src="../assets/account_fill.png" class="profile-icon" />
                         <img v-else-if="darkMode" src="../assets/account_dark.png" class="profile-icon" />
                         <img v-else src="../assets/account.png" class="profile-icon" />
-                        <span class="logout-text" v-if="!darkMode">My Profile</span>
-                        <span class="logout-text" v-if="darkMode" style="color:white">My Profile</span>
+                        <span class="profile-text">My Profile</span>
                     </div>
                     <div @click="logout" class="navbar-items logout-container">
                         <img :src="darkMode ? require('../assets/logout_dark.png') : require('../assets/logout.png')" alt="Logout Icon" class="logout-icon" />
