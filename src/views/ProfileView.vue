@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <h1>My Profile</h1>
+    <p class="title">My Profile</p>
 
     <!-- Name Section -->
     <div class="profile-section">
