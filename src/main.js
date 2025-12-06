@@ -201,8 +201,8 @@ const store = new Vuex.Store({
       const fullSiblingGroup = new Set([
         member.name,
         selectedMember.name,
-        ...member.siblings,
-        ...selectedMember.siblings,
+        ...(member.siblings || []),
+        ...(selectedMember.siblings || []),
       ]);
 
       const membersToUpdate = state.members.filter(m => fullSiblingGroup.has(m.name));
