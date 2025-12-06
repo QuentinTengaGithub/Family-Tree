@@ -1,6 +1,5 @@
 <template>
   <div class="content">
-    <div v-if="showSuccessMessage" class="success-message">Member created</div>
     <p class="title">Add a member</p>
     <form @submit.prevent="createMember">
       <div class="form_input_container">
@@ -39,6 +38,7 @@
         <div class="form_input_container">
           <p class="form_text" :class="{ dark: darkMode }">Photo</p><div class="form_input"><input type="file" name="image" id="image" @change="handleImageUpload"></div>
         </div>
+        <div v-if="showSuccessMessage" class="success-message">Member created</div>
       <p><input class="button" type="submit" value="Create"></p>
     </form>
 
