@@ -1,5 +1,6 @@
 <template>
   <div class="content">
+    <div v-if="showSuccessMessage" class="success-message">Member created</div>
     <p class="title">Add a member</p>
     <form @submit.prevent="createMember">
       <div class="form_input_container">
@@ -53,7 +54,7 @@ export default {
       birthday: "",
       gender: "",
       image: null,
-      
+      showSuccessMessage: false,
       errors: { name: false, birthday: false, gender: false }
     };
   },
@@ -100,6 +101,11 @@ export default {
 
       const newMember = { name, age, image, gender, birthday, x: 0, y: 0 };
       this.$store.dispatch('addMember', newMember);
+      
+      this.showSuccessMessage = true;
+      setTimeout(() => {
+        this.showSuccessMessage = false;
+      }, 5000);
 
       this.name = "";
       this.birthday = "";
@@ -281,5 +287,24 @@ input.form_input.dark {
 .list-leave-to {
   opacity: 0;
   transform: translateY(30px);
+}
+
+.success-message {
+  background-color: #4CAF50;
+  color: white;
+  padding: 15px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  animation: fadein 0.5s, fadeout 0.5s 4.5s;
+}
+
+@keyframes fadein {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fadeout {
+  from { opacity: 1; }
+  to   { opacity: 0; }
 }
 </style>
