@@ -12,7 +12,7 @@ const firebaseConfig = {
   appId: process.env.VUE_FIREBASE_APP_ID,
   measurementId: process.env.VUE_MEASUREMENT_ID,
 };
-
+console.log('[DEBUG VUE_APP_FIREBASE_API_KEY]', process.env.VUE_APP_FIREBASE_API_KEY);
 console.log('[DEBUG firebaseConfig]', firebaseConfig);
 
 const app = initializeApp(firebaseConfig);
