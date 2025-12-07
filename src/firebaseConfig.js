@@ -13,6 +13,8 @@ const firebaseConfig = {
   measurementId: process.env.VUE_MEASUREMENT_ID,
 };
 
+console.log('[DEBUG firebaseConfig]', firebaseConfig);
+
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
