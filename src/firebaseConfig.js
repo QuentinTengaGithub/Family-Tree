@@ -3,13 +3,13 @@ import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAnAuky6WmJULohrGUQfisDMtNAJ4Bg1pM",
-  authDomain: "arbre-genealogique-b43f6.firebaseapp.com",
-  projectId: "arbre-genealogique-b43f6",
-  storageBucket: "arbre-genealogique-b43f6.appspot.com",
-  messagingSenderId: "1030508786015",
-  appId: "1:1030508786015:web:4ea08670188a1899f586ea",
-  measurementId: "G-TP37WLKS3R"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_MEASUREMENT_ID,
 };
 
 const app = initializeApp(firebaseConfig);
