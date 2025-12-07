@@ -12,7 +12,7 @@ const firebaseConfig = {
   measurementId: process.env.VUE_MEASUREMENT_ID,
 };
 
-console.log('[DEBUG firebaseConfig]', firebaseConfig);
+console.log('API KEY USED BY FIREBASE 👉', firebaseConfig.apiKey);
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
