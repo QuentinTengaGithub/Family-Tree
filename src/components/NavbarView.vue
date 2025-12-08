@@ -31,7 +31,7 @@
                         <img v-else-if="darkMode" src="../assets/account_dark.png" class="profile-icon" />
                         <img v-else src="../assets/account.png" class="profile-icon" />
                         <span class="logout-text" v-if="!darkMode">My Profile</span>
-                        <span class="logut-text" style="color:white" v-if="darkMode">My Profile</span>
+                        <span class="logout-text" style="color:white" v-if="darkMode">My Profile</span>
                     </div>
                     <div @click="logout" class="navbar-items logout-container">
                         <img :src="darkMode ? require('../assets/logout_dark.png') : require('../assets/logout.png')" alt="Logout Icon" class="logout-icon" />
