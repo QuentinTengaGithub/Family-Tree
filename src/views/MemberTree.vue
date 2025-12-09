@@ -102,7 +102,11 @@
             <svg class="relationship-overlay" ref="svgContainer"></svg>
             </div>
         </div>
-        <div v-else><p style="font-style: italic;">Aucun membre n'est enregistré.</p></div>
+        <div v-else>
+          <p style="font-style: italic;">No member created.</p>
+          <div class="empty-state-divider"></div>
+          <button @click="goToHome" class="button">Create a member</button>
+        </div>
         <div v-if="showScreenshotOptions" class="modal-overlay">
             <div class="modal-content">
                 <h3>Screenshot Options</h3>
@@ -153,40 +157,39 @@ export default {
       treePosition: { x: 0, y: 0 },
     };
   },
-  computed: {
-    members() {
-      return this.$store.state.members;
-    },
-    filteredMembers() {
-      if (!this.selectedGender) {
-        return this.members;
-      }
-      return this.members.filter(member => member.gender === this.selectedGender);
-    },
-    darkMode() {
-      return this.$store.state.darkMode;
-    },
-    displayGenerations() {
-      if (!this.selectedRelationship) {
-        return this.processedGenerations;
-      }
-
-      const filteredGenerations = [];
-      for (const generation of this.processedGenerations) {
-        const filteredGroups = generation.filter(group => {
-          if (this.selectedRelationship === 'married') {
-            return group.type === 'couple';
-          }
-          return true;
-        });
-        if (filteredGroups.length > 0) {
-          filteredGenerations.push(filteredGroups);
-        }
-      }
-      return filteredGenerations;
-    }
-  },
-  components: {
+          computed: {
+              members() {
+                  return this.$store.state.members;
+              },
+              filteredMembers() {
+                  if (!this.selectedGender) {
+                      return this.members;
+                  }
+                  return this.members.filter(member => member.gender === this.selectedGender);
+              },
+              darkMode() {
+                  return this.$store.state.darkMode;
+              },
+              displayGenerations() {
+                  if (!this.selectedRelationship) {
+                      return this.processedGenerations;
+                  }
+      
+                  const filteredGenerations = [];
+                  for (const generation of this.processedGenerations) {
+                      const filteredGroups = generation.filter(group => {
+                          if (this.selectedRelationship === 'married') {
+                              return group.type === 'couple';
+                          }
+                          return true;
+                      });
+                      if (filteredGroups.length > 0) {
+                          filteredGenerations.push(filteredGroups);
+                      }
+                  }
+                  return filteredGenerations;
+              }
+          },  components: {
     FiltersSidePanel,
   },
   watch: {
@@ -210,6 +213,9 @@ export default {
     window.removeEventListener('resize', this.renderTree);
   },
   methods: {
+    goToHome() {
+      this.$router.push('/');
+    },
     startPan(event) {
       if (event.target.closest('.draggable-group')) {
         return;
@@ -649,7 +655,8 @@ export default {
 }
 </script>
 
-<style>
+<style> 
+
 .tree-wrapper {
     position: relative;
     width: 100%;
@@ -894,6 +901,14 @@ span.birthday {
   border: 1px solid #ccc;
   border-radius: 4px;
   margin-right: 10px;
+}
+
+.empty-state-divider {
+  width: 100%;
+  max-width: 300px;
+  height: 1px;
+  background-color: var(--divider-color);
+  margin: 20px auto;
 }
 
 </style>

@@ -231,7 +231,11 @@
                 </tr>
             </transition-group>
         </table>
-        <p v-else style="font-style: italic;">Aucun membre n'est enregistré.</p>
+        <div v-else>
+          <p style="font-style: italic;">No member created.</p>
+          <div class="empty-state-divider"></div>
+          <button @click="goToHome" class="button">Create a member</button>
+        </div>
         <div>
     
 
@@ -304,6 +308,9 @@ export default {
         }
     },
     methods: {
+        goToHome() {
+            this.$router.push({ path: '/' });
+        },
         formatBirthday(dateString) {
           if (!dateString) return '';
           const date = new Date(dateString);
@@ -757,5 +764,13 @@ td.column_relationship {
   margin-top: 10px;
   display: flex;
   gap: 10px;
+}
+
+.empty-state-divider {
+  width: 100%;
+  max-width: 300px;
+  height: 1px;
+  background-color: var(--divider-color);
+  margin: 20px auto;
 }
 </style>

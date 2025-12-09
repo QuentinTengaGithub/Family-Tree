@@ -1,11 +1,13 @@
 <template>
-  <div id="app-container">
+  <div id="app-container" :style="containerBackgroundStyle">
     <NavbarView />
     <div v-if="isSuperAdmin && viewingAsName" class="view-as-banner">
       <span>On {{ viewingAsName }}'s profile</span>
       <a class="leave" @click="leaveViewAs">leave {{ viewingAsName }}'s profile</a>
     </div>
-    <router-view id="main-content"></router-view>
+    <div :style="contentContainerStyle">
+      <router-view id="main-content"></router-view>
+    </div>
     <FooterView />
   </div>
 </template>
@@ -21,10 +23,31 @@ export default {
     NavbarView,
     FooterView,
   },
-  computed: {
-    ...mapState(['userRole', 'viewingAsName']),
-    isSuperAdmin() {
-      return ['admin', 'superadmin'].includes(this.userRole);
+      computed: {
+          ...mapState(['userRole', 'viewingAsName', 'darkMode']),
+          isSuperAdmin() {
+              return ['admin', 'superadmin'].includes(this.userRole);
+          },
+          containerBackgroundStyle() {
+              const imageUrl = this.darkMode
+                  ? require('@/assets/wallpaper_night.jpg')
+                  : require('@/assets/wallpaper_day.jpg');
+              return {
+                  backgroundImage: `url(${imageUrl})`,
+                  backgroundSize: 'cover', // Or 'contain' if the user prefers the whole image visible
+                  backgroundPosition: 'center',
+                  backgroundAttachment: 'fixed',
+                  backgroundRepeat: 'no-repeat',
+              };
+          },
+          contentContainerStyle() {
+      return {
+        margin: '0 20px', // 20px margin left and right
+        width: 'calc(100% - 40px)', // 100% width minus 2*20px margin
+        flex: 1, // Let it grow to fill available space
+        boxSizing: 'border-box', // Ensure padding and border are included in the width
+        padding: '40px 20px', // Apply padding inside the box
+      };
     }
   },
   watch: {
@@ -76,13 +99,9 @@ html, body {
   min-height: 100vh;
 }
 
-#main-content {
-  flex: 1;
-  padding-top: 40px; /* Add some space below the navbar */
-}
 
 .title {
-  margin-top:40px;
+  margin-top:20px;
   font-size: 30px;
   font-weight: bold;
   color: var(--blue);
@@ -113,6 +132,9 @@ html, body {
   --pink: #fb6b90;
   --title: #6A6A6A;
   --lightGrey: #f1f1f1;
+  --content-bg: rgba(255, 255, 255, 0.5);
+  --divider-color: black;
+  --input-border-color: black;
 }
 
 body.dark {
@@ -121,13 +143,18 @@ body.dark {
   --pink: #c95673;
   --title: #a9a9a9;
   --lightGrey: #2a2a2a;
-  background-color: #1a1a1a;
+  background-color: #1a1a1a; /* Old background */
   color: #fff;
+  --divider-color: white;
+  --input-border-color: white;
+  --content-bg: rgba(0, 0, 0, 0.5);
 }
 
 .content {
-  margin-top: -30px !important;
-  margin-left: 0 !important;
+  background-color: var(--content-bg);
+  padding: 20px 0;
+  border-radius: 12px;
+  margin: 60px 50px 0; /* 60px top, 50px sides, 0 bottom */
 }
 
 .view-as-banner {

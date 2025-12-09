@@ -1,9 +1,9 @@
 <template>
-  <div class="content">
+  <div class="content" :style="contentBackgroundStyle">
     <p class="title">My Profile</p>
 
     <!-- Name Section -->
-    <div class="profile-section">
+    <div class="profile-section" :style="sectionBackgroundStyle">
       <h2>Name</h2>
       <div v-if="!editMode.name">
         <p>{{ name }}</p>
@@ -19,7 +19,7 @@
     </div>
 
     <!-- Email Section -->
-    <div class="profile-section">
+    <div class="profile-section" :style="sectionBackgroundStyle">
       <h2>Email</h2>
       <div v-if="!editMode.email">
         <p>{{ email }}</p>
@@ -35,7 +35,7 @@
     </div>
 
     <!-- Password Section -->
-    <div class="profile-section">
+    <div class="profile-section" :style="sectionBackgroundStyle">
       <h2>Password</h2>
       <div v-if="!editMode.password">
         <p>********</p>
@@ -82,12 +82,33 @@ export default {
       }
     };
   },
-  computed: {
-    user() {
-      return this.$store.state.user;
-    }
-  },
-  methods: {
+      computed: {
+        user() {
+            return this.$store.state.user;
+        },
+        darkMode() {
+            return this.$store.state.darkMode;
+        },
+        contentBackgroundStyle() {
+            const imageUrl = this.darkMode
+                ? require('@/assets/wallpaper_night.jpg')
+                : require('@/assets/wallpaper_day.jpg');
+            return {
+                backgroundImage: `url(${imageUrl})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                padding: '40px',
+                borderRadius: '12px',
+            };
+        },
+        sectionBackgroundStyle() {
+            return {
+                backgroundColor: this.darkMode ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)',
+                padding: '20px',
+                borderRadius: '8px',
+            };
+        }
+    },  methods: {
     fetchUserData() {
       if (this.user) {
         this.name = this.user.name;
@@ -207,10 +228,6 @@ export default {
 </script>
 
 <style scoped>
-.profile-section {
-  border-bottom: 1px solid #ccc;
-  padding: 20px 0;
-}
 .profile-section h2 {
   margin-top: 0;
 }

@@ -36,8 +36,13 @@
           <label><input type="radio" name="gender" value="female" v-model="gender"> Female</label></div>
         </div>
         <div class="form_input_container">
-          <p class="form_text" :class="{ dark: darkMode }">Photo</p><div class="form_input"><input type="file" name="image" id="image" @change="handleImageUpload"></div>
+          <p class="form_text" :class="{ dark: darkMode }">Photo</p>
+          <div class="form_input">
+            <label for="image" class="button">Choose a file</label>
+            <input type="file" name="image" id="image" @change="handleImageUpload" style="display: none;">
+          </div>
         </div>
+        <div class="form-divider"></div>
         <div v-if="showSuccessMessage" class="success-message">Member created</div>
       <p><input class="button" type="submit" value="Create"></p>
     </form>
@@ -58,15 +63,14 @@ export default {
       errors: { name: false, birthday: false, gender: false }
     };
   },
-  computed: {
-    isFormValid() {
-      return this.name && this.age && this.gender && this.image;
-    },
-    darkMode() {
-      return this.$store.state.darkMode;
-    }
-  },
-  methods: {
+          computed: {
+              isFormValid() {
+                  return this.name && this.age && this.gender && this.image;
+              },
+              darkMode() {
+                  return this.$store.state.darkMode;
+              }
+          },  methods: {
 
     createMember() {
       this.errors = { name: false, birthday: false, gender: false };
@@ -206,12 +210,21 @@ export default {
 
 input.form_input {
   width: 150px;
+  border: 1px solid var(--input-border-color);
+  border-radius: 5px;
 }
 
 input.form_input.dark {
   background-color:black !important;
   color:white;
-  border:none;
+}
+
+.form-divider {
+  width: 100%;
+  max-width: 300px;
+  height: 1px;
+  background-color: var(--divider-color);
+  margin: 20px 0;
 }
 
 .form_input_container {
@@ -219,6 +232,7 @@ input.form_input.dark {
   flex-direction: row;
   align-items: center;
   margin-bottom: 10px;
+  height:fit-content;
 }
 
 .gender {

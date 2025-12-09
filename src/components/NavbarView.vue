@@ -87,8 +87,8 @@ export default {
 
 <style>
 .navbar {
-    background-color: #fff; 
-    display: flex; 
+    background-color: rgba(255, 255, 255, 0.3);
+    display: flex;
     flex-direction: horizontal;
     border-bottom:solid 1px var(--lightGrey);
     width: 100vw;
@@ -100,9 +100,8 @@ export default {
     padding: 4px;
     justify-content: space-between;
 }
-
 .navbar.dark {
-    background-color:black;
+    background-color:rgba(0, 0, 0, 0.3);
 }
 
 .navbar-items {
