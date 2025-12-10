@@ -3,7 +3,7 @@
     <p class="title">My Profile</p>
 
     <!-- Name Section -->
-    <div :style="sectionBackgroundStyle">
+    <div class="profile-section">
       <h2>Name</h2>
       <div v-if="!editMode.name">
         <p>{{ name }}</p>
@@ -19,7 +19,7 @@
     </div>
 
     <!-- Email Section -->
-    <div class="profile-section" :style="sectionBackgroundStyle">
+    <div class="profile-section">
       <h2>Email</h2>
       <div v-if="!editMode.email">
         <p>{{ email }}</p>
@@ -35,7 +35,7 @@
     </div>
 
     <!-- Password Section -->
-    <div class="profile-section" :style="sectionBackgroundStyle">
+    <div class="profile-section">
       <h2>Password</h2>
       <div v-if="!editMode.password">
         <p>********</p>
