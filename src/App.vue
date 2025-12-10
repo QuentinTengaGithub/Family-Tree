@@ -142,7 +142,7 @@ body.dark {
   background-color: var(--content-bg);
   padding: 20px 0;
   border-radius: 12px;
-  margin: 60px 50px 0; /* 60px top, 50px sides, 0 bottom */
+  margin: 30px 50px 0; /* 60px top, 50px sides, 0 bottom */
 }
 
 .view-as-banner {

@@ -214,7 +214,7 @@ export default {
   },
   methods: {
     goToHome() {
-      this.$router.push('/');
+      this.$router.push('/add-member');
     },
     startPan(event) {
       if (event.target.closest('.draggable-group')) {

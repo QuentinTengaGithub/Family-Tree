@@ -309,7 +309,7 @@ export default {
     },
     methods: {
         goToHome() {
-            this.$router.push({ path: '/' });
+            this.$router.push({ path: '/add-member' });
         },
         formatBirthday(dateString) {
           if (!dateString) return '';
