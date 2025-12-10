@@ -120,7 +120,7 @@ html, body {
   --pink: #fb6b90;
   --title: #6A6A6A;
   --lightGrey: #f1f1f1;
-  --content-bg: rgba(255, 255, 255, 0.5);
+  --content-bg: rgba(255, 255, 255, 0.7);
   --divider-color: black;
   --input-border-color: black;
 }
@@ -135,7 +135,7 @@ body.dark {
   color: #fff;
   --divider-color: white;
   --input-border-color: white;
-  --content-bg: rgba(0, 0, 0, 0.5);
+  --content-bg: rgba(0, 0, 0, 0.7);
 }
 
 .content {
