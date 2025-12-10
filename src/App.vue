@@ -1,5 +1,5 @@
 <template>
-  <div id="app-container" :style="containerBackgroundStyle">
+  <div id="app-container" :class="{'dark-mode-bg': darkMode, 'light-mode-bg': !darkMode}">
     <NavbarView />
     <div v-if="isSuperAdmin && viewingAsName" class="view-as-banner">
       <span>On {{ viewingAsName }}'s profile</span>
@@ -27,18 +27,6 @@ export default {
           ...mapState(['userRole', 'viewingAsName', 'darkMode']),
           isSuperAdmin() {
               return ['admin', 'superadmin'].includes(this.userRole);
-          },
-          containerBackgroundStyle() {
-              const imageUrl = this.darkMode
-                  ? require('@/assets/wallpaper_night.jpg')
-                  : require('@/assets/wallpaper_day.jpg');
-              return {
-                  backgroundImage: `url(${imageUrl})`,
-                  backgroundSize: 'cover', // Or 'contain' if the user prefers the whole image visible
-                  backgroundPosition: 'center',
-                  backgroundAttachment: 'fixed',
-                  backgroundRepeat: 'no-repeat',
-              };
           },
           contentContainerStyle() {
       return {
@@ -174,5 +162,28 @@ body.dark {
   padding: 5px 10px;
   border-radius: 5px;
   cursor: pointer;
+}
+
+#app-container::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('~@/assets/wallpaper_night.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  z-index: -1; /* Ensure it stays behind content */
+}
+
+.light-mode-bg::before {
+  filter: invert(100%);
+}
+
+.dark-mode-bg::before {
+  filter: none;
 }
 </style>

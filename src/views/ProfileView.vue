@@ -1,9 +1,9 @@
 <template>
-  <div class="content" :style="contentBackgroundStyle">
+  <div class="content" :class="{'dark-mode-bg': darkMode, 'light-mode-bg': !darkMode}">
     <p class="title">My Profile</p>
 
     <!-- Name Section -->
-    <div class="profile-section" :style="sectionBackgroundStyle">
+    <div :style="sectionBackgroundStyle">
       <h2>Name</h2>
       <div v-if="!editMode.name">
         <p>{{ name }}</p>
@@ -88,18 +88,6 @@ export default {
         },
         darkMode() {
             return this.$store.state.darkMode;
-        },
-        contentBackgroundStyle() {
-            const imageUrl = this.darkMode
-                ? require('@/assets/wallpaper_night.jpg')
-                : require('@/assets/wallpaper_day.jpg');
-            return {
-                backgroundImage: `url(${imageUrl})`,
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                padding: '40px',
-                borderRadius: '12px',
-            };
         },
         sectionBackgroundStyle() {
             return {
@@ -245,5 +233,32 @@ export default {
 }
 .button-secondary:hover {
     background-color: #5a6268;
+}
+
+.content {
+  position: relative; /* Ensure pseudo-element is positioned correctly */
+}
+
+.content::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('~@/assets/wallpaper_night.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  z-index: -1; /* Ensure it stays behind content */
+  border-radius: inherit; /* Inherit border-radius from parent .content */
+}
+
+.light-mode-bg .content::before {
+  filter: invert(100%);
+}
+
+.dark-mode-bg .content::before {
+  filter: none;
 }
 </style>
