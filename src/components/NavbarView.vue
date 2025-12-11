@@ -87,7 +87,7 @@ export default {
 
 <style>
 .navbar {
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(255, 255, 255, 0.7);
     display: flex;
     flex-direction: horizontal;
     border-bottom:solid 1px var(--lightGrey);
@@ -101,7 +101,7 @@ export default {
     justify-content: space-between;
 }
 .navbar.dark {
-    background-color:rgba(0, 0, 0, 0.3);
+    background-color:rgba(0, 0, 0, 0.7);
 }
 
 .navbar-items {

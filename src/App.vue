@@ -72,6 +72,7 @@ export default {
 html, body {
   margin: 0;
   padding: 0;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
 }
 
 #app {
@@ -86,7 +87,6 @@ html, body {
   flex-direction: column;
   min-height: 100vh;
 }
-
 
 .title {
   margin-top:20px;

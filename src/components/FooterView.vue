@@ -19,10 +19,10 @@ export default {
   text-align: center;
   padding:10px;
   margin:0;
-  background-color:rgba(255, 255, 255, 0.3);
+  background-color:rgba(255, 255, 255, 0.7);
 }
 
 .footer.dark {
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.7);
 }
 </style>

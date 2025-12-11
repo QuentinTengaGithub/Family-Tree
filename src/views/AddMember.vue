@@ -44,7 +44,7 @@
         </div>
         <div class="form-divider"></div>
         <div v-if="showSuccessMessage" class="success-message">Member created</div>
-      <p><input class="button" type="submit" value="Create"></p>
+      <p class="button-container"><input class="button" type="submit" value="Create"></p>
     </form>
 
 
@@ -310,6 +310,10 @@ input.form_input.dark {
   border-radius: 5px;
   margin-bottom: 15px;
   animation: fadein 0.5s, fadeout 0.5s 4.5s;
+}
+
+.button-container {
+  text-align: center;
 }
 
 @keyframes fadein {
