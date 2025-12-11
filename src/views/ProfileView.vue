@@ -270,11 +270,6 @@ export default {
   filter: none;
 }
 
-/* New styles for inline profile sections */
-.profile-section {
-  /* No specific styles here, acts as a container for rows */
-}
-
 .profile-item-row {
   display: flex; /* Revert to flexbox */
   align-items: center; /* Vertically center items */
