@@ -4,54 +4,60 @@
 
     <!-- Name Section -->
     <div class="profile-section">
-      <h2>Name</h2>
-      <div v-if="!editMode.name">
-        <p>{{ name }}</p>
-        <button class="button" @click="startEdit('name')">Edit Name</button>
-      </div>
-      <div v-else>
-        <div class="form_input_container">
-          <input type="text" v-model="form.name" class="form_input" />
+      <div class="profile-item-row">
+        <h2 class="profile-label">Name</h2>
+        <div v-if="!editMode.name" class="profile-value-display">
+          <p>{{ name }}</p>
+          <button class="button" @click="startEdit('name')">Edit Name</button>
         </div>
-        <button class="button" @click="updateName">Save</button>
-        <button class="button-secondary" @click="cancelEdit('name')">Cancel</button>
+        <div v-else class="profile-value-edit">
+          <div class="form_input_container">
+            <input type="text" v-model="form.name" class="form_input" />
+          </div>
+          <button class="button" @click="updateName">Save</button>
+          <button class="button-secondary" @click="cancelEdit('name')">Cancel</button>
+        </div>
       </div>
     </div>
 
     <!-- Email Section -->
     <div class="profile-section">
-      <h2>Email</h2>
-      <div v-if="!editMode.email">
-        <p>{{ email }}</p>
-        <button class="button" @click="startEdit('email')">Edit Email</button>
-      </div>
-      <div v-else>
-        <div class="form_input_container">
-          <input type="email" v-model="form.email" class="form_input" />
+      <div class="profile-item-row">
+        <h2 class="profile-label">Email</h2>
+        <div v-if="!editMode.email" class="profile-value-display">
+          <p>{{ email }}</p>
+          <button class="button" @click="startEdit('email')">Edit Email</button>
         </div>
-        <button class="button" @click="updateUserEmail">Save</button>
-        <button class="button-secondary" @click="cancelEdit('email')">Cancel</button>
+        <div v-else class="profile-value-edit">
+          <div class="form_input_container">
+            <input type="email" v-model="form.email" class="form_input" />
+          </div>
+          <button class="button" @click="updateUserEmail">Save</button>
+          <button class="button-secondary" @click="cancelEdit('email')">Cancel</button>
+        </div>
       </div>
     </div>
 
     <!-- Password Section -->
     <div class="profile-section">
-      <h2>Password</h2>
-      <div v-if="!editMode.password">
-        <p>********</p>
-        <button class="button" @click="startEdit('password')">Change Password</button>
-      </div>
-      <div v-else>
-        <div class="form_input_container">
-          <p class="form_text">New Password</p>
-          <input type="password" v-model="form.password" class="form_input" />
+      <div class="profile-item-row">
+        <h2 class="profile-label">Password</h2>
+        <div v-if="!editMode.password" class="profile-value-display">
+          <p>********</p>
+          <button class="button" @click="startEdit('password')">Change Password</button>
         </div>
-        <div class="form_input_container">
-          <p class="form_text">Confirm New Password</p>
-          <input type="password" v-model="form.confirmPassword" class="form_input" />
+        <div v-else class="profile-value-edit password-edit-mode">
+          <div class="form_input_container">
+            <p class="form_text">New Password</p>
+            <input type="password" v-model="form.password" class="form_input" />
+          </div>
+          <div class="form_input_container">
+            <p class="form_text">Confirm New Password</p>
+            <input type="password" v-model="form.confirmPassword" class="form_input" />
+          </div>
+          <button class="button" @click="updateUserPassword">Save New Password</button>
+          <button class="button-secondary" @click="cancelEdit('password')">Cancel</button>
         </div>
-        <button class="button" @click="updateUserPassword">Save New Password</button>
-        <button class="button-secondary" @click="cancelEdit('password')">Cancel</button>
       </div>
     </div>
 
@@ -237,6 +243,8 @@ export default {
 
 .content {
   position: relative; /* Ensure pseudo-element is positioned correctly */
+  padding: 40px; /* Add padding to content div */
+  border-radius: 12px; /* Add border-radius to content div */
 }
 
 .content::before {
@@ -260,5 +268,89 @@ export default {
 
 .dark-mode-bg .content::before {
   filter: none;
+}
+
+/* New styles for inline profile sections */
+.profile-section {
+  /* No specific styles here, acts as a container for rows */
+}
+
+.profile-item-row {
+  display: flex; /* Revert to flexbox */
+  align-items: center; /* Vertically center items */
+  justify-content: space-between; /* Push content to the right */
+  flex-wrap: wrap; /* Allow items to wrap on smaller screens */
+  margin-bottom: 15px; /* Space between different profile items */
+  border: none; /* Remove debugging border */
+}
+
+.profile-label {
+  margin: 0; /* Remove default h2 margin */
+  width: 120px; /* Fixed width for labels, like in AddMember.vue */
+  text-align: right; /* Align text to the right before the divider */
+  padding-right: 15px; /* Space between text and divider */
+  border-right: 1px solid var(--divider-color); /* The actual divider */
+  background-color: transparent; /* Remove debugging background */
+  flex-shrink: 0; /* Prevent label from shrinking */
+  height: 100%; /* Ensure it fills parent's height */
+  display: flex; /* Make it a flex container */
+  justify-content: flex-end; /* Align text to the right within its width */
+  align-items: center; /* Vertically center the text */
+}
+
+.profile-value-display,
+.profile-value-edit {
+  display: flex;
+  align-items: center;
+  /* flex-grow: 1; Removed as it's within a 1fr grid column */
+  justify-content: flex-end; /* Push content/buttons to the right */
+  gap: 10px; /* Space between value/input and buttons */
+  /* flex-wrap: wrap; Removed to prevent unexpected wrapping within grid cell */
+  background-color: transparent; /* Remove debugging background */
+  overflow: visible; /* Revert overflow */
+}
+
+.profile-value-display p {
+  margin: 0; /* Remove default paragraph margin */
+  /* margin-right removed, gap handles spacing */
+}
+
+.profile-value-edit .form_input_container {
+  margin-bottom: 0; /* Remove vertical margin */
+  flex-grow: 0; /* Don't let input container grow excessively */
+  max-width: 200px; /* Limit input width for consistency */
+  /* margin-right removed, gap handles spacing */
+}
+
+.profile-value-edit .form_input {
+  width: 100%; /* Ensure input fills its container */
+}
+
+/* Specific adjustments for password edit mode to handle two inputs */
+.password-edit-mode {
+  flex-direction: column; /* Stack password inputs vertically */
+  align-items: flex-end; /* Align inputs to the right */
+  flex-grow: 1; /* Allow to take available space */
+}
+
+.password-edit-mode .form_input_container {
+  margin-bottom: 10px; /* Space between password input fields */
+  width: auto; /* Allow input container to size naturally */
+  max-width: 200px; /* Consistent input width */
+  margin-right: 0; /* No external margin */
+}
+
+.password-edit-mode .form_input_container:last-of-type {
+  margin-bottom: 15px; /* Adjust margin for last input before buttons */
+}
+
+.password-edit-mode button {
+  margin-left: 0; /* Gap handles spacing, reset margin-left */
+}
+
+.form_input_container p.form_text {
+  margin: 0 0 5px 0; /* Adjust margin for labels above inputs */
+  width: 100%;
+  text-align: left;
 }
 </style>
