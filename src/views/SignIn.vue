@@ -32,7 +32,7 @@
                     >
                 </div>
             </div>
-            <p><input class="button" type="submit" value="Log In"></p>
+            <p class="button-container"><input class="button" type="submit" value="Log In"></p>
             <p class="redirect-text" @click="changeTab('Sign-Up')">Don't have an account ?</p>
             <div class="error-container">
                 <p :class="['error-message', { 'visible': errorMessage }]" v-if="errorMessage">{{ errorMessage }}</p>
@@ -104,6 +104,7 @@ export default {
 .redirect-text {
     font-weight:bold;
     cursor:pointer;
+    text-align:center;
 }
 
 .redirect-text:hover {
@@ -130,5 +131,35 @@ export default {
     opacity: 1;
     visibility: visible;
     transition: opacity 0.5s ease;
+}
+
+.button-container {
+  text-align: center;
+}
+
+.form_input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: black;
+  opacity: 1; /* Firefox */
+}
+
+.form_input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: black;
+}
+
+.form_input::-ms-input-placeholder { /* Microsoft Edge */
+  color: black;
+}
+
+.form_input.dark::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: white;
+  opacity: 1; /* Firefox */
+}
+
+.form_input.dark:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: white;
+}
+
+.form_input.dark::-ms-input-placeholder { /* Microsoft Edge */
+  color: white;
 }
 </style>

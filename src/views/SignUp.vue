@@ -62,7 +62,7 @@
                     >
                 </div>
             </div>
-            <p><input class="button" type="submit" value="Create Account"></p>
+            <p class="button-container"><input class="button" type="submit" value="Create Account"></p>
             <p class="redirect-text" @click="changeTab('Sign-In')">Already have an account ?</p>
         </form>
     </div>
@@ -128,4 +128,33 @@ export default {
 </script>
 
 <style>
+.button-container {
+  text-align: center;
+}
+
+.form_input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: black;
+  opacity: 1; /* Firefox */
+}
+
+.form_input:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: black;
+}
+
+.form_input::-ms-input-placeholder { /* Microsoft Edge */
+  color: black;
+}
+
+.form_input.dark::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: white;
+  opacity: 1; /* Firefox */
+}
+
+.form_input.dark:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: white;
+}
+
+.form_input.dark::-ms-input-placeholder { /* Microsoft Edge */
+  color: white;
+}
 </style>
