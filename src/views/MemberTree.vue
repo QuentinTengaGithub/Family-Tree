@@ -39,8 +39,8 @@
                               <span style="font-weight: bold">{{ group.members[0].name }}</span><br>
                               <span v-if="group.members[0].birthday !== ''">{{ group.members[0].age }} ans</span><br>
                               <span class="birthday" v-if="group.members[0].birthday !== ''">
-                                <img src="../assets/cake_dark.png" v-if="this.darkMode === true" style="width:14px"/> 
-                                <img src="../assets/cake.png" v-if="this.darkMode === false" style="width:14px"/>
+                                <img src="../assets/cake_dark.png" v-if="darkMode === true" style="width:14px"/> 
+                                <img src="../assets/cake.png" v-if="darkMode === false" style="width:14px"/>
                                 ({{ formatBirthday(group.members[0].birthday) }})
                               </span>
                           </div>
@@ -53,8 +53,8 @@
                               <span style="font-weight: bold">{{ group.members[1].name }}</span><br>
                               <span v-if="group.members[1].birthday !== ''">{{ group.members[1].age }} ans</span><br>
                               <span class="birthday" v-if="group.members[1].birthday !== ''">
-                                <img src="../assets/cake_dark.png" v-if="this.darkMode === true" style="width:14px"/> 
-                                <img src="../assets/cake.png" v-if="this.darkMode === false" style="width:14px"/>
+                                <img src="../assets/cake_dark.png" v-if="darkMode === true" style="width:14px"/> 
+                                <img src="../assets/cake.png" v-if="darkMode === false" style="width:14px"/>
                                 ({{ formatBirthday(group.members[1].birthday) }})
                               </span>
                           </div>
@@ -71,8 +71,8 @@
                               <span style="font-weight: bold">{{ member.name }}</span><br>
                               <span v-if="member.birthday !== ''">{{ member.age }} ans</span><br>
                               <span class="birthday" v-if="member.birthday !== ''">
-                                <img src="../assets/cake_dark.png" v-if="this.darkMode === true" style="width:14px"/> 
-                                <img src="../assets/cake.png" v-if="this.darkMode === false" style="width:14px"/>
+                                <img src="../assets/cake_dark.png" v-if="darkMode === true" style="width:14px"/> 
+                                <img src="../assets/cake.png" v-if="darkMode === false" style="width:14px"/>
                                 ({{ formatBirthday(member.birthday) }})
                               </span>
                           </div>
@@ -89,8 +89,8 @@
                               <span style="font-weight: bold">{{ group.members[0].name }}</span><br>
                               <span v-if="group.members[0].birthday !== ''">{{ group.members[0].age }} ans</span><br>
                               <span class="birthday" v-if="group.members[0].birthday !== ''">
-                                <img src="../assets/cake_dark.png" v-if="this.darkMode === true" style="width:14px"/> 
-                                <img src="../assets/cake.png" v-if="this.darkMode === false" style="width:14px"/>
+                                <img src="../assets/cake_dark.png" v-if="darkMode === true" style="width:14px"/> 
+                                <img src="../assets/cake.png" v-if="darkMode === false" style="width:14px"/>
                                 ({{ formatBirthday(group.members[0].birthday) }})
                               </span>
                           </div>
@@ -205,6 +205,7 @@ export default {
     }
   },
   mounted() {
+    this.$store.dispatch('fetchMembers');
     window.addEventListener('resize', this.renderTree);
     this.renderTree();
     this.initInteract();
@@ -316,8 +317,10 @@ export default {
     },
 
     renderTree() {
+        console.log('Rendering tree. Members from store:', this.members);
         this.allMemberBoxes = {};
         this.processMembers();
+        console.log('Processed Generations:', this.processedGenerations);
         this.optimizeCoupleOrder();
         this.$nextTick(() => {
             this.drawRelationships();

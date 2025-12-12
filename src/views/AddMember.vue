@@ -72,7 +72,7 @@ export default {
               }
           },  methods: {
 
-    createMember() {
+    async createMember() {
       this.errors = { name: false, birthday: false, gender: false };
 
       if (!this.name) this.errors.name = true;
@@ -104,7 +104,8 @@ export default {
       }
 
       const newMember = { name, age, image, gender, birthday, x: 0, y: 0 };
-      this.$store.dispatch('addMember', newMember);
+      await this.$store.dispatch('addMember', newMember);
+      await this.$store.dispatch('fetchMembers'); // Refetch members
       
       this.showSuccessMessage = true;
       setTimeout(() => {

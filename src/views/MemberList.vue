@@ -11,19 +11,19 @@
                         <button style="background-color: transparent; border:none; cursor: pointer"
                             @click="sortMembersByName">
                             <img 
-                                v-if="this.nameSortOrder === 'asc' && this.darkMode === false"
+                                v-if="this.nameSortOrder === 'asc' && darkMode === false"
                                 style="width:15px; margin-left: -5px"
                                 src="@/assets/arrow-up.png" />
                             <img 
-                                v-if="this.nameSortOrder === 'desc' && this.darkMode === false" 
+                                v-if="this.nameSortOrder === 'desc' && darkMode === false" 
                                 style="width:15px; margin-left: -5px" 
                                 src="@/assets/arrow-down.png" />
                             <img 
-                                v-if="this.nameSortOrder === 'asc' && this.darkMode === true"
+                                v-if="this.nameSortOrder === 'asc' && darkMode === true"
                                 style="width:15px; margin-left: -5px"
                                 src="@/assets/arrow-up-dark.png" />
                             <img 
-                                v-if="this.nameSortOrder === 'desc' && this.darkMode === true" 
+                                v-if="this.nameSortOrder === 'desc' && darkMode === true" 
                                 style="width:15px; margin-left: -5px" 
                                 src="@/assets/arrow-down-dark.png" />
                         </button>
@@ -32,19 +32,19 @@
                         <button style="background-color: transparent; border:none; cursor: pointer"
                             @click="sortMembersByAge">
                             <img 
-                                v-if="this.ageSortOrder === 'asc' && this.darkMode === false" 
+                                v-if="this.ageSortOrder === 'asc' && darkMode === false" 
                                 style="width:15px; margin-left: -5px"
                                 src="../assets/arrow-up.png" />
                             <img 
-                                v-if="this.ageSortOrder === 'desc' && this.darkMode === false" 
+                                v-if="this.ageSortOrder === 'desc' && darkMode === false" 
                                 style="width:15px; margin-left: -5px" 
                                 src="../assets/arrow-down.png" />
                             <img 
-                                v-if="this.ageSortOrder === 'asc' && this.darkMode === true" 
+                                v-if="this.ageSortOrder === 'asc' && darkMode === true" 
                                 style="width:15px; margin-left: -5px"
                                 src="../assets/arrow-up-dark.png" />
                             <img 
-                                v-if="this.ageSortOrder === 'desc' && this.darkMode === true" 
+                                v-if="this.ageSortOrder === 'desc' && darkMode === true" 
                                 style="width:15px; margin-left: -5px" 
                                 src="../assets/arrow-down-dark.png" />
                         </button>
@@ -69,7 +69,7 @@
                         <img style="width:100px" v-else-if="member.gender === 'male'" src="@/assets/avatar_male.png">
                         <img style="width:100px" v-else src="@/assets/avatar_female.png">
                         <img
-                            v-if="this.darkMode === false && (editingMember !== member.name || editingField !== 'image')" 
+                            v-if="darkMode === false && (editingMember !== member.name || editingField !== 'image')" 
                             :src="hoveredIcon === member.name + '-image' ? 
                             require('@/assets/edit_red.png') : require('@/assets/edit.png')"
                             style="width: 15px; margin-left:5px" 
@@ -78,7 +78,7 @@
                             @mouseenter="hoveredIcon = member.name + '-image'"
                             @mouseleave="hoveredIcon = ''" />
                         <img
-                            v-else-if="this.darkMode === true && (editingMember !== member.name || editingField !== 'image')" 
+                            v-else-if="darkMode === true && (editingMember !== member.name || editingField !== 'image')" 
                             :src="hoveredIcon === member.name + '-image' ? 
                             require('@/assets/edit_red.png') : require('@/assets/edit_dark.png')"
                             style="width: 15px; margin-left:5px" 
@@ -219,11 +219,11 @@
                                 style="background-color:transparent; border: none; margin: auto 0"
                                 @click="confirmDeleteMember(member)" class="button">
                                 <img 
-                                    v-if="this.darkMode === false"
+                                    v-if="darkMode === false"
                                     src="../assets/bin.png" 
                                     class="shake_bin" />
                                 <img 
-                                    v-if="this.darkMode === true"
+                                    v-if="darkMode === true"
                                     src="../assets/bin_dark.png" 
                                     class="shake_bin" />
                             </button></div>
@@ -296,6 +296,9 @@ export default {
         darkMode() {
             return this.$store.state.darkMode;
         }
+    },
+    mounted() {
+        this.$store.dispatch('fetchMembers');
     },
     watch: {
         members: {

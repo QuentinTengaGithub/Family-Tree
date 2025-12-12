@@ -29,12 +29,20 @@ export default {
               return ['admin', 'superadmin'].includes(this.userRole);
           },
           contentContainerStyle() {
+      if (this.$route.path === '/home') {
+        return {
+          width: '100%',
+          height: '100%',
+          padding: '0',
+          margin: '0',
+        };
+      }
       return {
-        margin: '0 20px', // 20px margin left and right
-        width: 'calc(100% - 40px)', // 100% width minus 2*20px margin
+        margin: '0', // Remove margin
+        width: '100%', // Take full width
         flex: 1, // Let it grow to fill available space
         boxSizing: 'border-box', // Ensure padding and border are included in the width
-        padding: '40px 20px', // Apply padding inside the box
+        padding: '40px 0', // Remove horizontal padding
       };
     }
   },
@@ -73,6 +81,8 @@ html, body {
   margin: 0;
   padding: 0;
   font-family: Avenir, Helvetica, Arial, sans-serif;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 #app {
