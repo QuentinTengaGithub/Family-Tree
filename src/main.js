@@ -56,12 +56,22 @@ const store = new Vuex.Store({
     updateMember(state, updatedMember) {
       const index = state.members.findIndex(m => m.name === updatedMember.name)
       if (index !== -1) {
-        state.members[index] = { ...state.members[index], ...updatedMember }
+        const merged = { ...state.members[index], ...updatedMember }
+        Vue.set(state.members, index, merged)
       }
     },
     toggleDarkMode(state) {
       state.darkMode = !state.darkMode
       localStorage.setItem('darkMode', state.darkMode)
+    },
+    resetToggleRelationship(state, memberName) {
+      const index = state.members.findIndex(m => m.name === memberName)
+      if (index !== -1) {
+        Vue.set(state.members, index, {
+          ...state.members[index],
+          toggleRelationship: null,
+        })
+      }
     },
     setDarkMode(state, darkMode) {
       state.darkMode = darkMode
@@ -103,7 +113,13 @@ const store = new Vuex.Store({
       }
 
       members = members.map(member => {
-        const newMember = { ...member }
+        const newMember = {
+          ...member,
+          toggleRelationship: null,
+          siblings: member.siblings || [],
+          children: member.children || [],
+          married: member.married || '' 
+        }
         if (member.married) {
           newMember.married = getMemberName(member.married)
         }
@@ -472,27 +488,36 @@ const getCurrentUser = () => {
   })
 }
 
+const ADMIN_EMAIL = 'quentinritt94@gmail.com'
+
 router.beforeEach(async (to, from, next) => {
   const user = await getCurrentUser()
+  console.log('AUTH USER:', user?.email, 'ROLE:', user?.role)
+
   store.commit('setUser', user)
 
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin)
 
   if (requiresAuth && !user) {
-    next('/sign-in')
-  } else if (
-    requiresAdmin &&
-    (!user || !['admin', 'superadmin'].includes(user.role))
-  ) {
-    alert('Access Denied: You do not have administrator privileges.')
-    next(from.path || '/home')
-  } else if (!requiresAuth && user) {
-    next('/home')
-  } else {
-    next()
+    return next('/sign-in')
   }
+
+  if (requiresAdmin) {
+    const isAdminEmail = user && user.email === ADMIN_EMAIL
+    if (!isAdminEmail) {
+      alert('Access Denied: You do not have administrator privileges.')
+      return next(from.path || '/home')
+    }
+  }
+
+  if (!requiresAuth && user) {
+    return next('/home')
+  }
+
+  next()
 })
+
 
 /* -------------------- DARK MODE WATCHER -------------------- */
 

@@ -8,7 +8,7 @@
       <ul>
         <li v-for="user in users" :key="user.uid">
           {{ user.name }} ({{ user.email }}) - Role: {{ user.role }}
-          <button @click="selectUser(user)">View Tree</button>
+          <button class="button" @click="selectUser(user)">View Tree</button>
         </li>
       </ul>
     </div>

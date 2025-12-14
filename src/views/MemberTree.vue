@@ -111,9 +111,9 @@
             <div class="modal-content">
                 <h3>Screenshot Options</h3>
                 <p>What would you like to do with the screenshot?</p>
-                <button @click="downloadScreenshot">Download</button>
-                <button @click="showEmailInput = true">Send by Email</button>
-                <button @click="showScreenshotOptions = false">Cancel</button>
+                <button @click="downloadScreenshot" class="button">Download</button>
+                <button @click="showEmailInput = true" class="button">Send by Email</button>
+                <button @click="showScreenshotOptions = false" class="button">Cancel</button>
 
                 <div v-if="showEmailInput" class="email-input-container">
                     <input type="email" v-model="email" placeholder="Enter your email">
@@ -547,7 +547,7 @@ export default {
                             const childBox = this.allMemberBoxes[childName];
                             if (childBox) {
                                 const heartMidpoint = this.getHeartMidpoint(wrapperRect, memberBox, partnerBox);
-                                this.drawPathFromPoint(svg, wrapperRect, heartMidpoint, childBox, 'blue');
+                                this.drawPathFromPoint(svg, wrapperRect, heartMidpoint, childBox, 'green');
                                 drawnChildren.add(childName);
                             }
                         });
@@ -562,7 +562,7 @@ export default {
                     member.siblings.forEach(siblingName => {
                         if (member.name < siblingName) {
                             const siblingBox = this.allMemberBoxes[siblingName];
-                            if (siblingBox) this.drawPath(svg, wrapperRect, this.allMemberBoxes[member.name], siblingBox, 'green');
+                            if (siblingBox) this.drawPath(svg, wrapperRect, this.allMemberBoxes[member.name], siblingBox, 'var(--orange)');
                         }
                     });
                 }
@@ -575,7 +575,7 @@ export default {
                     member.children.forEach(childName => {
                         if (!drawnChildren.has(childName)) {
                             const childBox = this.allMemberBoxes[childName];
-                            if (childBox) this.drawPath(svg, wrapperRect, this.allMemberBoxes[member.name], childBox, 'blue');
+                            if (childBox) this.drawPath(svg, wrapperRect, this.allMemberBoxes[member.name], childBox, 'green');
                         }
                     });
                 }

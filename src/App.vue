@@ -120,6 +120,16 @@ html, body {
   cursor: pointer;
 }
 
+.edit_photo_button {
+  background-color: var(--blue);
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  font-size: 15px;
+  cursor: pointer;
+  margin-bottom:1px;
+}
+
 .button:hover {
   background-color: var(--lightBlue);
 }
@@ -127,6 +137,7 @@ html, body {
 :root {
   --blue: #12B4FF;
   --lightBlue: #7CD5FF;
+  --orange: #c28a08;
   --pink: #fb6b90;
   --title: #6A6A6A;
   --lightGrey: #f1f1f1;

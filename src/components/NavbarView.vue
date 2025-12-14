@@ -13,7 +13,7 @@
                     <div @click="changeTab('Add-Member')" :class="{ active: activeTab === 'Accueil', dark: darkMode }" class="navbar-items">Add a member</div>
                     <div @click="changeTab('Tree')" :class="{ active: activeTab === 'Tree', dark: darkMode }" class="navbar-items">Tree</div>
                     <div @click="changeTab('Members')" :class="{ active: activeTab === 'Members', dark: darkMode }" class="navbar-items">Members</div>
-                    <div v-if="user && user.role === 'admin'" @click="changeTab('Admin')" :class="{ active: activeTab === 'Admin', dark: darkMode }" class="navbar-items">Admin</div>
+                    <div v-if="user && user.role === 'admin' || user.role === 'superadmin'" @click="changeTab('Admin')" :class="{ active: activeTab === 'Admin', dark: darkMode }" class="navbar-items">Admin</div>
                 </template>
             </div>
 
