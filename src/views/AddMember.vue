@@ -439,8 +439,9 @@ input.form_input.dark {
 }
 
 .gender-box {
-  padding: 2px 10px;
+  padding: 2px 0px;
   border-radius: 10px;
+  margin-left:-10px;
 }
 .invalidBox {
   outline: 2px solid red;

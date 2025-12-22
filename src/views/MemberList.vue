@@ -2,15 +2,15 @@
   <div class="content members-page">
     <AddMember v-if="showAddMember" @member-created="handleMemberCreated" />
 
-    <p class="title" style="text-align:center; padding-top:30px">The members</p>
-
+    <p class="title" style="text-align:center">
+  The members
+</p>
     <table class="custom-table" v-if="members.length > 0">
       <thead>
         <tr>
-          <td class="column_gender table_header" :class="{ dark: darkMode }" style="width:20px"></td>
-          <td class="column_photo table_header" :class="{ dark: darkMode }">Photo</td>
+          <td class="column_photo table_header hover-to-edit" :class="{ dark: darkMode }">Photo</td>
 
-          <td class="column_name table_header" :class="{ dark: darkMode }">
+          <td class="column_name table_header hover-to-edit" :class="{ dark: darkMode }">
             Name
             <button style="background-color: transparent; border:none; cursor: pointer" @click="sortMembersByName">
               <img
@@ -62,7 +62,7 @@
             </button>
           </td>
 
-          <td class="column_birthday table_header" :class="{ dark: darkMode }">Birth Date</td>
+          <td class="column_birthday table_header hover-to-edit" :class="{ dark: darkMode }">Birth Date</td>
           <td class="column_relationship table_header" :class="{ dark: darkMode }">Relationship</td>
           <td class="table_header" :class="{ dark: darkMode }"></td>
         </tr>
@@ -75,40 +75,28 @@
           class="list-item"
           :ref="el => { if (el) rowRefs[member.name] = el }"
         >
-          <!-- GENDER -->
-          <td>
-            <div v-if="member.gender === 'male'" class="member_gender" style="background-color: var(--blue)"></div>
-            <div v-else class="member_gender" style="background-color: var(--pink)"></div>
-          </td>
 
           <!-- PHOTO -->
-          <td>
-            <img style="width:100px" v-if="member.image" :src="member.image" />
-            <img style="width:100px" v-else-if="member.gender === 'male'" src="@/assets/avatar_male.png" />
-            <img style="width:100px" v-else src="@/assets/avatar_female.png" />
+          <td class="column_photo editable-cell"
+            :class="{ 'editable-cell--hover': hoveredCell === member.name + '-image' }"
+            @mouseenter="hoveredCell = member.name + '-image'"
+            @mouseleave="hoveredCell = ''"
+          >
+            <div class="photo-cell" :class="member.gender === 'male' ? 'photo-cell--male' : 'photo-cell--female'">
+              <img style="width:100px" v-if="member.image" :src="member.image" />
+              <img style="width:100px" v-else-if="member.gender === 'male'" src="@/assets/avatar_male.png" />
+              <img style="width:100px" v-else src="@/assets/avatar_female.png" />
+            </div>
+            <button
+              v-if="hoveredCell === member.name + '-image' && (editingMember !== member.name || editingField !== 'image')"
+              class="edit-overlay-btn"
+              type="button"
+              @click.stop="editMemberPhoto(member)"
+              aria-label="Edit photo"
+            >
+              <img :src="darkMode ? require('@/assets/edit_dark.png') : require('@/assets/edit.png')" />
+            </button>
 
-            <img
-              v-if="darkMode === false && (editingMember !== member.name || editingField !== 'image')"
-              :src="hoveredIcon === member.name + '-image'
-                ? require('@/assets/edit_red.png')
-                : require('@/assets/edit.png')"
-              style="width: 15px; margin-left:5px"
-              class="edit_member_box"
-              @click="editMemberPhoto(member)"
-              @mouseenter="hoveredIcon = member.name + '-image'"
-              @mouseleave="hoveredIcon = ''"
-            />
-            <img
-              v-else-if="darkMode === true && (editingMember !== member.name || editingField !== 'image')"
-              :src="hoveredIcon === member.name + '-image'
-                ? require('@/assets/edit_red.png')
-                : require('@/assets/edit_dark.png')"
-              style="width: 15px; margin-left:5px"
-              class="edit_member_box"
-              @click="editMemberPhoto(member)"
-              @mouseenter="hoveredIcon = member.name + '-image'"
-              @mouseleave="hoveredIcon = ''"
-            />
 
             <div v-if="editingMember === member.name && editingField === 'image'">
               <button
@@ -148,36 +136,29 @@
           </td>
 
           <!-- NAME -->
-          <td>
+          <td
+            class="editable-cell"
+            :class="{ 'editable-cell--hover': hoveredCell === member.name + '-name' }"
+            @mouseenter="hoveredCell = member.name + '-name'"
+            @mouseleave="hoveredCell = ''"
+          >
             <span v-if="editingMember !== member.name || editingField !== 'name'">{{ member.name }}</span>
-
-            <img
-              v-if="!darkMode && (editingMember !== member.name || editingField !== 'name')"
-              :src="hoveredIcon === member.name + '-name'
-                ? require('@/assets/edit_red.png')
-                : require('@/assets/edit.png')"
-              style="width: 15px; margin-left:5px"
-              class="edit_member_box"
-              @click="editMemberName(member)"
-              @mouseenter="hoveredIcon = member.name + '-name'"
-              @mouseleave="hoveredIcon = ''"
-            />
-            <img
-              v-else-if="darkMode && (editingMember !== member.name || editingField !== 'name')"
-              :src="hoveredIcon === member.name + '-name'
-                ? require('@/assets/edit_red.png')
-                : require('@/assets/edit_dark.png')"
-              style="width: 15px; margin-left:5px"
-              class="edit_member_box"
-              @click="editMemberName(member)"
-              @mouseenter="hoveredIcon = member.name + '-name'"
-              @mouseleave="hoveredIcon = ''"
-            />
 
             <div v-if="editingMember === member.name && editingField === 'name'">
               <input type="text" v-model="editingName" @keyup.enter="saveMemberName()" />
-              <button class="btn_edit" @click="saveMemberName()">SAVE</button>
-              <button class="btn_edit" @click="cancelEdit()">CANCEL</button>
+              <button class="btn_edit" @click="saveMemberName()">Save</button>
+              <button class="btn_edit" @click="cancelEdit()">Cancel</button>
+            </div>
+            <div v-else>
+              <button
+                v-if="hoveredCell === member.name + '-name' && (editingMember !== member.name || editingField !== 'name')"
+                class="edit-overlay-btn"
+                type="button"
+                @click.stop="editMemberName(member)"
+                aria-label="Edit name"
+              >
+                <img :src="darkMode ? require('@/assets/edit_dark.png') : require('@/assets/edit.png')" />
+              </button>
             </div>
           </td>
 
@@ -188,40 +169,32 @@
           </td>
 
           <!-- BIRTHDAY -->
-          <td>
+          <td
+            class="editable-cell"
+            :class="{ 'editable-cell--hover': hoveredCell === member.name + '-birthday' }"
+            @mouseenter="hoveredCell = member.name + '-birthday'"
+            @mouseleave="hoveredCell = ''"
+          >
             <div v-if="editingMember === member.name && editingField === 'birthday'">
-              <input type="date" v-model="member.birthday" />
-              <button class="btn_edit" @click="updateMemberBirthday(member)">SAVE</button>
-              <button class="btn_edit" @click="deleteMemberBirthday(member)">DELETE</button>
-              <button class="btn_edit" @click="cancelEdit()">CANCEL</button>
+              <input type="date" v-model="member.birthday" /><br><br>
+              <button class="btn_edit button" @click="updateMemberBirthday(member)">Save</button><br>
+              <button class="btn_edit button" @click="deleteMemberBirthday(member)">Delete</button><br>
+              <button class="btn_edit button" @click="cancelEdit()">Cancel</button>
             </div>
 
             <div v-else>
               {{ formatBirthday(member.birthday) }}
-
-              <img
-                v-if="!darkMode"
-                :src="hoveredIcon === member.name + '-birthday'
-                  ? require('@/assets/edit_red.png')
-                  : require('@/assets/edit.png')"
-                style="width: 15px; margin-left:5px"
-                class="edit_member_box"
-                @click="editMemberBirthday(member)"
-                @mouseenter="hoveredIcon = member.name + '-birthday'"
-                @mouseleave="hoveredIcon = ''"
-              />
-              <img
-                v-else
-                :src="hoveredIcon === member.name + '-birthday'
-                  ? require('@/assets/edit_red.png')
-                  : require('@/assets/edit_dark.png')"
-                style="width: 15px; margin-left:5px"
-                class="edit_member_box"
-                @click="editMemberBirthday(member)"
-                @mouseenter="hoveredIcon = member.name + '-birthday'"
-                @mouseleave="hoveredIcon = ''"
-              />
             </div>
+
+            <button
+              v-if="hoveredCell === member.name + '-birthday' && (editingMember !== member.name || editingField !== 'birthday')"
+              class="edit-overlay-btn"
+              type="button"
+              @click.stop="editMemberBirthday(member)"
+              aria-label="Edit birth date"
+            >
+              <img :src="darkMode ? require('@/assets/edit_dark.png') : require('@/assets/edit.png')" />
+            </button>
           </td>
 
           <!-- RELATIONSHIPS -->
@@ -232,7 +205,7 @@
                   src="../assets/relationship_married.png"
                   class="rel-icon"
                   :class="getRelIconClass(member.name, 'married', !!member.married)"
-                  style="width: 15px"
+                  style="width: 15px; margin-right:8px"
                 />
                 <input v-if="member.married" type="checkbox" :checked="true" @change="unsetMarried(member)" />
                 <span class="rel-text">{{ member.married }}</span>
@@ -275,21 +248,26 @@
               </div>
 
               <div v-else style="margin-top: 10px">
+                <hr/>
+                <p class="rel-choose-title" :class="'rel-choose-title--' + getRelationshipMode(member.name)">
+                  {{ relationshipChoiceLabel(getRelationshipMode(member.name)) }}
+                </p>
                 <button
                   v-for="m in candidatesFor(member)"
                   :key="m.name"
                   class="btn_edit link-btn"
+                  :class="{ dark: darkMode }"
                   style="display:block; width: 100%; text-align:left; margin: 6px 0;"
                   @click="setRelation(member, m)"
                 >
-                  Link to {{ m.name }}
+                  {{ m.name }}
                 </button>
 
                 <p v-if="candidatesFor(member).length === 0" style="font-style: italic; margin-top: 10px;">
                   No member for this relationship
                 </p>
 
-                <button class="cancel_relationship button" @click="cancelRelationshipChoice(member)">ANNULER</button>
+                <button class="cancel_relationship button" @click="cancelRelationshipChoice(member)">Cancel</button>
               </div>
             </div>
 
@@ -315,12 +293,13 @@
         </tr>
       </transition-group>
     </table>
-
     <div v-else>
-      <p style="font-style: italic;">No member created.</p>
-      <div class="empty-state-divider"></div>
-      <button @click="goToHome" class="button">Create a member</button>
-    </div>
+          <p style="font-style: italic;">No member created.</p>
+          <div class="empty-state-divider"></div>
+          <button @click="goToHome" class="button">Create a member</button>
+        </div>
+
+    
 
     <!-- ✅ CONFIRM DELETE MODAL -->
     <div v-if="deleteModalVisible" class="confirm-backdrop" @click.self="closeDeleteModal">
@@ -374,7 +353,7 @@ export default {
       ageSortOrder: 'asc',
       nameSortOrder: 'asc',
 
-      hoveredIcon: '',
+      hoveredCell: '',
       editingMember: '',
       editingField: '',
       originalName: '',
@@ -392,14 +371,10 @@ export default {
       relIconAnimByName: {},
       prevRelStateByName: {},
 
-      // delete modal
       deleteModalVisible: false,
       memberToDelete: null,
 
-      // refs lignes
       rowRefs: {},
-
-      // 🔥 hauteur navbar (adapte si besoin)
       navbarHeight: 60,
     }
   },
@@ -436,7 +411,12 @@ export default {
     },
   },
   methods: {
-    /* ------------------ ✅ Ghost placeholder delete ------------------ */
+    relationshipChoiceLabel(type) {
+      if (type === 'married') return 'Married to :'
+      if (type === 'siblings') return 'Siblings with :'
+      if (type === 'children') return 'Children of :'
+      return ''
+    },
     openDeleteModal(member) {
       this.memberToDelete = member
       this.deleteModalVisible = true
@@ -462,21 +442,16 @@ export default {
       ghost.style.width = rect.width + 'px'
       ghost.style.height = rect.height + 'px'
 
-      // clone visuel (simple & efficace)
       const table = document.createElement('table')
       table.style.width = '100%'
       table.style.borderCollapse = 'collapse'
       table.innerHTML = `<tbody>${rowEl.outerHTML}</tbody>`
 
-      // nettoyer le bouton delete pour le ghost (optionnel)
       ghost.appendChild(table)
 
       document.body.appendChild(ghost)
-
-      // lance animation (dans le prochain frame)
       requestAnimationFrame(() => ghost.classList.add('delete-ghost--anim'))
 
-      // cleanup
       setTimeout(() => {
         if (ghost && ghost.parentNode) ghost.parentNode.removeChild(ghost)
       }, 650)
@@ -488,19 +463,14 @@ export default {
       if (!this.memberToDelete) return
       const name = this.memberToDelete.name
 
-      // 1) fermer modal
       this.closeDeleteModal()
-
-      // 2) ghost premium
       this.spawnDeleteGhost(name)
 
-      // 3) petite latence pour laisser le ghost "prendre la place" visuellement
       setTimeout(() => {
         this.$store.dispatch('deleteMember', name)
       }, 120)
     },
 
-    /* ------------------ règles relationnelles ------------------ */
     areSiblings(a, b) {
       const aS = a?.siblings || []
       const bS = b?.siblings || []
@@ -653,7 +623,6 @@ export default {
     unsetSibling(member, siblingName) { this.$store.dispatch('unsetSibling', { member, siblingName }) },
     unsetChildren(member, childName) { this.$store.dispatch('unsetChildren', { member, childName }) },
 
-    /* ---------- anim icônes relations ---------- */
     getRelFlags(member) {
       return {
         married: !!member.married,
@@ -678,7 +647,6 @@ export default {
       }
     },
 
-    /* ---------- navigation ---------- */
     handleMemberCreated() {
       this.showAddMember = false
       this.$store.dispatch('fetchMembers')
@@ -687,7 +655,6 @@ export default {
       this.$router.push({ path: '/add-member' })
     },
 
-    /* ---------- helpers display ---------- */
     formatBirthday(dateString) {
       if (!dateString) return ''
       const date = new Date(dateString)
@@ -698,7 +665,6 @@ export default {
       return `${day} ${month} ${year}`
     },
 
-    /* ---------- sorting ---------- */
     sortMembersByName() {
       if (this.nameSortOrder === 'asc') {
         this.members.sort((a, b) => a.name.localeCompare(b.name))
@@ -718,7 +684,6 @@ export default {
       }
     },
 
-    /* ---------- photo/cropper ---------- */
     editMemberPhoto(member) { this.editingMember = member.name; this.editingField = 'image' },
     triggerFileInput(member) { const input = this.fileInputs[member.name]; if (input) input.click() },
     openCropper(member) { this.currentMember = member; this.currentImage = member.image; this.cropperVisible = true },
@@ -781,32 +746,63 @@ export default {
 </script>
 
 <style>
-/* ✅ 1) FULL WIDTH LEFT (on neutralise l’align center de .content ici) */
-.members-page.content {
+.members-page{
   width: 100vw;
-  max-width: 100vw;
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-
-  /* override du layout global */
-  display: block !important;
-  align-items: unset !important;
+  margin-left: calc(50% - 50vw);
 }
 
-/* tableau full width */
-.custom-table {
+.rel-choose-title{
+  font-weight: 900;
+  margin: 6px 0 10px;
+  text-align: left;
+}
+
+.rel-choose-title--married{ color: red; }
+.rel-choose-title--siblings{ color: var(--orange); }
+.rel-choose-title--children{ color: green; }
+
+/* ===== MARRIED ===== */
+.rel-choose-title--married + button.link-btn:hover,
+.rel-choose-title--married ~ button.link-btn:hover {
+  background-color: rgba(255, 0, 0, 0.08);
+  border-color: red;
+  color: red;
+}
+
+/* ===== SIBLINGS ===== */
+.rel-choose-title--siblings + button.link-btn:hover,
+.rel-choose-title--siblings ~ button.link-btn:hover {
+  background-color: rgba(255, 165, 0, 0.12);
+  border-color: var(--orange);
+  color: var(--orange);
+}
+
+/* ===== CHILDREN ===== */
+.rel-choose-title--children + button.link-btn:hover,
+.rel-choose-title--children ~ button.link-btn:hover {
+  background-color: rgba(0, 128, 0, 0.12);
+  border-color: green;
+  color: green;
+}
+
+
+.custom-table{
+  width: 100%;
   border-collapse: collapse;
-  width: 100vw;           /* prend toute la fenêtre */
   table-layout: auto;
   background-color: var(--lightGrey);
 }
 
-/* ✅ 2) header normal sous "The members" au chargement,
-   puis sticky sous navbar quand on scroll la page */
+.custom-table {
+  border-collapse: collapse;
+  width: 100vw;
+  table-layout: auto;
+  background-color: var(--lightGrey);
+}
+
 .custom-table thead td {
   position: sticky;
-  top: 60px;              /* hauteur navbar (ajuste si besoin) */
+  top: 60px;
   z-index: 50;
   background-color: var(--lightGrey);
   box-shadow: 0 2px 0 rgba(0,0,0,0.06);
@@ -814,27 +810,30 @@ export default {
 
 .custom-table thead td { top: 60px; }
 
-
-/* header style */
 .table_header {
   color: black;
   font-weight: bold;
   text-transform: uppercase;
   box-shadow: inset 0 -1px 0 0 white;
+  text-align:center;
 }
 .table_header.dark { color: white; }
 
 td {
   border: 2px solid white;
   padding: 8px;
-  vertical-align: top;
 }
 
 td.column_photo { width: 10%; }
 td.column_name { width: 10%; }
 td.column_age { width: 10%; }
-td.column_gender { width: 10%; }
 td.column_relationship { width: 50%; }
+
+td.column_photo,
+td.column_name,
+td.column_age {
+  vertical-align: middle;
+}
 
 .edit_member_box { cursor: pointer; }
 
@@ -860,7 +859,6 @@ td.column_relationship { width: 50%; }
   100% { transform: rotate(0deg); }
 }
 
-/* Transition normale sur la vraie ligne (discrète) */
 .row-leave-active {
   transition: opacity 220ms ease, transform 220ms ease, filter 220ms ease;
 }
@@ -873,7 +871,72 @@ td.column_relationship { width: 50%; }
   transition: transform 320ms cubic-bezier(.2,.9,.2,1);
 }
 
-/* Relationship styles */
+.photo-cell{
+  position: relative;
+  display: inline-block;
+}
+
+/* Triangle en haut à gauche */
+.photo-cell::before{
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-top: 18px solid transparent; /* valeur par défaut écrasée dessous */
+  border-right: 18px solid transparent;
+}
+
+/* Homme = bleu */
+.photo-cell--male::before{
+  border-top: 18px solid var(--blue);
+  border-right: 18px solid transparent;
+}
+
+/* Femme = rose */
+.photo-cell--female::before{
+  border-top: 18px solid var(--pink);
+  border-right: 18px solid transparent;
+}
+
+
+.link-btn {
+  background-color: white;
+  border:none;
+  padding: 5px 10px;
+  border-radius:5px;
+  cursor:pointer;
+  transition: 
+    background-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.link-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+  animation: softPulse 0.4s ease;
+}
+
+@keyframes softPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+.link-btn:hover::before {
+  content: "➜ ";
+  font-weight: bold;
+}
+
+.link-btn.dark {
+  background-color: #0f0f12;
+  color: white;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
 .children-checkbox { text-align: left; color: green; font-weight: bold; }
 .children-checkbox input[type="checkbox"] { accent-color: green; }
 
@@ -916,7 +979,6 @@ td.column_relationship { width: 50%; }
   color: #555;
 }
 
-/* icônes */
 .rel-icon {
   display: inline-block;
   transition: filter 280ms ease, transform 280ms ease, opacity 280ms ease;
@@ -938,7 +1000,6 @@ td.column_relationship { width: 50%; }
   100% { transform: scale(1.0);  filter: grayscale(1); opacity: 0.45; }
 }
 
-/* Modal cropper */
 .modal-backdrop {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
@@ -952,7 +1013,6 @@ td.column_relationship { width: 50%; }
 .cropper { width: 300px; height: 300px; }
 .modal-actions { margin-top: 10px; display: flex; gap: 10px; }
 
-/* Confirm modal */
 .confirm-backdrop {
   position: fixed;
   inset: 0;
@@ -1000,7 +1060,6 @@ td.column_relationship { width: 50%; }
 
 .no-scroll { overflow: hidden; }
 
-/* ✅ 3) GHOST PLACEHOLDER premium (carte flottante) */
 .delete-ghost {
   position: fixed;
   z-index: 5000;
@@ -1038,4 +1097,75 @@ td.column_relationship { width: 50%; }
   35%  { transform: translateY(6px) scale(0.995); opacity: 1; }
   100% { transform: translateY(18px) scale(0.96); opacity: 0; filter: blur(3px); height: 0px; }
 }
+
+.empty-subtitle{
+  margin-top: 16px;
+  font-style: italic;
+}
+
+/* Cellules éditables : base */
+.editable-cell{
+  position: relative;
+  transition: background-color 140ms ease, box-shadow 140ms ease;
+}
+
+/* Effet “cliquable” au survol */
+.editable-cell--hover{
+  background: rgba(0, 170, 255, 0.08);
+  box-shadow: inset 0 0 0 2px rgba(0, 170, 255, 0.35);
+}
+
+/* Dark mode : un peu plus lumineux */
+.table_header.dark ~ tbody .editable-cell--hover,
+.dark .editable-cell--hover{
+  background: rgba(0, 170, 255, 0.12);
+  box-shadow: inset 0 0 0 2px rgba(0, 170, 255, 0.45);
+}
+
+/* Bouton overlay (coin haut-droite) */
+.edit-overlay-btn{
+  position: absolute;
+  top: 8px;
+  right: 8px;
+
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid rgba(0,0,0,0.12);
+  background: rgba(255,255,255,0.9);
+  box-shadow: 0 8px 18px rgba(0,0,0,0.15);
+
+  cursor: pointer;
+  padding: 0;
+
+  animation: editPopIn 120ms ease;
+}
+
+.edit-overlay-btn img{
+  width: 18px; /* ✅ icône plus grande */
+  height: 18px;
+}
+
+.edit-overlay-btn:hover{
+  transform: translateY(-1px) scale(1.03);
+}
+
+@keyframes editPopIn{
+  from { opacity: 0; transform: translateY(-2px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Dark mode overlay */
+.dark .edit-overlay-btn,
+.edit-overlay-btn.dark{
+  background: rgba(20,20,24,0.92);
+  border: 1px solid rgba(255,255,255,0.16);
+  box-shadow: 0 10px 22px rgba(0,0,0,0.55);
+}
+
+
 </style>

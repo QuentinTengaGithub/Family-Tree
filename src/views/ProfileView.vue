@@ -6,6 +6,7 @@
     <div class="profile-section">
       <div class="profile-item-row">
         <h2 class="profile-label">Name</h2>
+        <p v-if="errors.name" class="form-error">{{ errors.name }}</p>
         <div v-if="!editMode.name" class="profile-value-display">
           <p>{{ name }}</p>
           <button class="button" @click="startEdit('name')">Edit Name</button>
@@ -24,6 +25,7 @@
     <div class="profile-section">
       <div class="profile-item-row">
         <h2 class="profile-label">Email</h2>
+        <p v-if="errors.email" class="form-error">{{ errors.email }}</p>
         <div v-if="!editMode.email" class="profile-value-display">
           <p>{{ email }}</p>
           <button class="button" @click="startEdit('email')">Edit Email</button>
@@ -42,22 +44,49 @@
     <div class="profile-section">
       <div class="profile-item-row">
         <h2 class="profile-label">Password</h2>
+        <div class="profile-value-wrapper">
         <div v-if="!editMode.password" class="profile-value-display">
           <p>********</p>
-          <button class="button" @click="startEdit('password')">Change Password</button>
+          <button class="button" @click="startEdit('password')">
+            Change Password
+          </button>
         </div>
+        
         <div v-else class="profile-value-edit password-edit-mode">
+          <div class="form_input_container">
+            <p class="form_text">Current Password</p>
+            <input type="password" v-model="form.currentPassword" class="form_input" />
+          </div>
+
           <div class="form_input_container">
             <p class="form_text">New Password</p>
             <input type="password" v-model="form.password" class="form_input" />
           </div>
+
           <div class="form_input_container">
             <p class="form_text">Confirm New Password</p>
             <input type="password" v-model="form.confirmPassword" class="form_input" />
           </div>
-          <button class="button" @click="updateUserPassword">Save New Password</button>
-          <button class="button-secondary" @click="cancelEdit('password')">Cancel</button>
-        </div>
+
+          <transition name="msg-fade">
+            <p v-if="errors.password" class="form-error">
+              {{ errors.password }}
+            </p>
+          </transition>
+
+          <transition name="msg-pop">
+            <p v-if="success.password" class="form-success">
+              {{ success.password }}
+            </p>
+          </transition>
+
+          <button class="button" @click="updateUserPassword">
+            Save New Password
+          </button>
+          <button class="button-secondary" @click="cancelEdit('password')">
+            Cancel
+          </button>
+        </div></div>
       </div>
     </div>
 
@@ -83,9 +112,21 @@ export default {
       form: {
         name: '',
         email: '',
+        currentPassword: '',
         password: '',
         confirmPassword: '',
-      }
+      },
+      errors: {
+        password: '',
+        email: '',
+        name: '',
+        auth: ''
+      },
+      success: {
+        password: ''
+      },
+      successTimeout: null,
+      closePasswordTimeout: null,
     };
   },
       computed: {
@@ -111,33 +152,46 @@ export default {
     },
     startEdit(field) {
       this.editMode[field] = true;
-      // Pre-fill form with current data
       this.form.name = this.name;
       this.form.email = this.email;
       this.form.password = '';
       this.form.confirmPassword = '';
+      this.form.currentPassword = '';
+      this.errors.password = '';
+      this.success.password = '';
+      if (this.successTimeout) clearTimeout(this.successTimeout);
+      if (this.closePasswordTimeout) clearTimeout(this.closePasswordTimeout);
     },
     cancelEdit(field) {
       this.editMode[field] = false;
+      this.errors.password = '';
+      this.success.password = '';
+      if (this.successTimeout) clearTimeout(this.successTimeout);
+      if (this.closePasswordTimeout) clearTimeout(this.closePasswordTimeout);
     },
     async reauthenticate() {
-      const currentPassword = prompt("To save changes, please enter your current password:");
-      if (!currentPassword) {
+      const auth = getAuth();
+
+      if (!this.form.currentPassword) {
+        this.errors.password = "Please enter your current password.";
         return false;
       }
-      const auth = getAuth();
-      const credential = EmailAuthProvider.credential(this.user.email, currentPassword);
+
       try {
+        const credential = EmailAuthProvider.credential(
+          auth.currentUser.email,
+          this.form.currentPassword
+        );
         await reauthenticateWithCredential(auth.currentUser, credential);
         return true;
       } catch (error) {
-        alert(`Authentication failed. Please check your password. Error: ${error.message}`);
+        this.errors.password = "Current password is incorrect.";
         return false;
       }
     },
+
     async updateName() {
       if (!this.form.name || this.form.name === this.name) {
-        alert("No new name entered.");
         this.editMode.name = false;
         return;
       }
@@ -147,59 +201,91 @@ export default {
         await updateDoc(userDocRef, { name: this.form.name });
         this.name = this.form.name;
         this.$store.commit('setUser', { ...this.user, name: this.form.name });
-        alert("Name updated successfully!");
         this.editMode.name = false;
       } catch (error) {
-        alert(`Failed to update name. Error: ${error.message}`);
+        this.errors.email = error.message;
       }
     },
     async updateUserEmail() {
        if (!this.form.email || this.form.email === this.email) {
-        alert("No new email entered.");
         this.editMode.email = false;
         return;
       }
-      
-      const isAuthenticated = await this.reauthenticate();
-      if (!isAuthenticated) return;
 
       const auth = getAuth();
       try {
-        // Update auth first
         await updateEmail(auth.currentUser, this.form.email);
-        
-        // Then update Firestore
         const userDocRef = doc(db, "users", this.user.uid);
         await updateDoc(userDocRef, { email: this.form.email });
 
         this.email = this.form.email;
         this.$store.commit('setUser', { ...this.user, email: this.form.email });
-        alert("Email updated successfully!");
         this.editMode.email = false;
       } catch (error) {
-        alert(`Failed to update email. Error: ${error.message}`);
+        this.errors.name = error.message;
       }
     },
     async updateUserPassword() {
+      this.success.password = '';
+      if (this.successTimeout) clearTimeout(this.successTimeout);
+      this.errors.password = '';
+
       if (!this.form.password || !this.form.confirmPassword) {
-        alert("Please fill in both password fields.");
-        return;
-      }
-      if (this.form.password !== this.form.confirmPassword) {
-        alert("New passwords do not match.");
+        this.errors.password = "Please fill in both password fields.";
         return;
       }
 
-      const isAuthenticated = await this.reauthenticate();
-      if (!isAuthenticated) return;
+      if (this.form.password !== this.form.confirmPassword) {
+        this.errors.password = "New passwords do not match.";
+        return;
+      }
+
+      if (this.form.password === this.form.currentPassword) {
+        this.errors.password = "New password must be different from current password.";
+        return;
+      }
+
+      const ok = await this.reauthenticate();
+      if (!ok) return;
 
       const auth = getAuth();
+
       try {
         await updatePassword(auth.currentUser, this.form.password);
-        alert("Password updated successfully!");
-        this.editMode.password = false;
+
+        this.success.password = "Password successfully created !";
+        this.successTimeout = setTimeout(() => {
+          this.success.password = '';
+        }, 5000);
+
+        this.form.currentPassword = '';
+        this.form.password = '';
+        this.form.confirmPassword = '';
+
+        this.success.password = "Password successfully created !";
+
+        this.successTimeout = setTimeout(() => {
+          this.success.password = '';
+
+          this.closePasswordTimeout = setTimeout(() => {
+            this.editMode.password = false;
+          }, 400);
+        }, 5000);
       } catch (error) {
-        alert(`Failed to update password. Error: ${error.message}`);
+        this.success.password = '';
+        switch (error.code) {
+          case "auth/weak-password":
+            this.errors.password = "Password must be at least 6 characters.";
+            break;
+          case "auth/requires-recent-login":
+            this.errors.password = "Please re-enter your current password.";
+            break;
+          case "auth/wrong-password":
+            this.errors.password = "Current password is incorrect.";
+            break;
+          default:
+            this.errors.password = "An error occurred. Please try again.";
+        }
       }
     }
   },
@@ -212,7 +298,6 @@ export default {
         this.name = newUser.name;
         this.email = newUser.email;
       } else {
-        // Handle logout: clear fields or redirect
         this.name = '';
         this.email = '';
       }
@@ -225,26 +310,34 @@ export default {
 .profile-section h2 {
   margin-top: 0;
 }
+
+.profile-value-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
 .form_input_container {
   margin-bottom: 15px;
 }
 .button-secondary {
-    background-color: #6c757d;
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-left: 10px;
+  background-color: #6c757d;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-left: 10px;
 }
 .button-secondary:hover {
-    background-color: #5a6268;
+  background-color: #5a6268;
 }
 
 .content {
-  position: relative; /* Ensure pseudo-element is positioned correctly */
-  padding: 40px; /* Add padding to content div */
-  border-radius: 12px; /* Add border-radius to content div */
+  position: relative;
+  padding: 40px;
+  border-radius: 12px;
 }
 
 .content::before {
@@ -258,8 +351,16 @@ export default {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  z-index: -1; /* Ensure it stays behind content */
-  border-radius: inherit; /* Inherit border-radius from parent .content */
+  z-index: -1;
+  border-radius: inherit;
+}
+
+.form-error{
+  color: #ff4d4f;
+  font-size: 14px;
+  margin-top: 6px;
+  text-align: right;
+  font-weight: bold;
 }
 
 .light-mode-bg .content::before {
@@ -271,81 +372,110 @@ export default {
 }
 
 .profile-item-row {
-  display: flex; /* Revert to flexbox */
-  align-items: center; /* Vertically center items */
-  justify-content: space-between; /* Push content to the right */
-  flex-wrap: wrap; /* Allow items to wrap on smaller screens */
-  margin-bottom: 15px; /* Space between different profile items */
-  border: none; /* Remove debugging border */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+  border: none;
 }
 
 .profile-label {
-  margin: 0; /* Remove default h2 margin */
-  width: 120px; /* Fixed width for labels, like in AddMember.vue */
-  text-align: right; /* Align text to the right before the divider */
-  padding-right: 15px; /* Space between text and divider */
-  border-right: 1px solid var(--divider-color); /* The actual divider */
-  background-color: transparent; /* Remove debugging background */
-  flex-shrink: 0; /* Prevent label from shrinking */
-  height: 100%; /* Ensure it fills parent's height */
-  display: flex; /* Make it a flex container */
-  justify-content: flex-end; /* Align text to the right within its width */
-  align-items: center; /* Vertically center the text */
+  margin: 0;
+  width: 120px;
+  text-align: right;
+  padding-right: 15px;
+  border-right: 1px solid var(--divider-color);
+  background-color: transparent;
+  flex-shrink: 0;
+  height: 100%;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
 
 .profile-value-display,
 .profile-value-edit {
   display: flex;
   align-items: center;
-  /* flex-grow: 1; Removed as it's within a 1fr grid column */
-  justify-content: flex-end; /* Push content/buttons to the right */
-  gap: 10px; /* Space between value/input and buttons */
-  /* flex-wrap: wrap; Removed to prevent unexpected wrapping within grid cell */
-  background-color: transparent; /* Remove debugging background */
-  overflow: visible; /* Revert overflow */
+  justify-content: flex-end;
+  gap: 10px;
+  background-color: transparent;
+  margin-left:12px;
 }
 
 .profile-value-display p {
-  margin: 0; /* Remove default paragraph margin */
-  /* margin-right removed, gap handles spacing */
+  margin: 0;
 }
 
 .profile-value-edit .form_input_container {
-  margin-bottom: 0; /* Remove vertical margin */
-  flex-grow: 0; /* Don't let input container grow excessively */
-  max-width: 200px; /* Limit input width for consistency */
-  /* margin-right removed, gap handles spacing */
+  margin-bottom: 0;
+  flex-grow: 0;
+  max-width: 200px;
 }
 
 .profile-value-edit .form_input {
-  width: 100%; /* Ensure input fills its container */
+  width: 100%;
 }
 
-/* Specific adjustments for password edit mode to handle two inputs */
 .password-edit-mode {
-  flex-direction: column; /* Stack password inputs vertically */
-  align-items: flex-end; /* Align inputs to the right */
-  flex-grow: 1; /* Allow to take available space */
+  flex-direction: column;
+  align-items: flex-end;
+  flex-grow: 1;
 }
 
 .password-edit-mode .form_input_container {
-  margin-bottom: 10px; /* Space between password input fields */
-  width: auto; /* Allow input container to size naturally */
-  max-width: 200px; /* Consistent input width */
-  margin-right: 0; /* No external margin */
+  margin-bottom: 10px;
+  width: auto;
+  max-width: 200px;
+  margin-right: 0;
 }
 
 .password-edit-mode .form_input_container:last-of-type {
-  margin-bottom: 15px; /* Adjust margin for last input before buttons */
+  margin-bottom: 15px;
 }
 
 .password-edit-mode button {
-  margin-left: 0; /* Gap handles spacing, reset margin-left */
+  margin-left: 0;
 }
 
 .form_input_container p.form_text {
-  margin: 0 0 5px 0; /* Adjust margin for labels above inputs */
+  margin: 0 0 5px 0;
   width: 100%;
   text-align: left;
 }
+
+.form-success{
+  color: #2ecc71;
+  font-size: 14px;
+  margin-top: 6px;
+  text-align: right;
+  font-weight: 600;
+}
+
+.msg-fade-enter-active,
+.msg-fade-leave-active{
+  transition: opacity .25s ease, transform .25s ease;
+}
+.msg-fade-enter,
+.msg-fade-leave-to{
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+.msg-pop-enter-active{
+  transition: opacity .25s ease, transform .25s ease;
+}
+.msg-pop-leave-active{
+  transition: opacity .35s ease, transform .35s ease;
+}
+.msg-pop-enter{
+  opacity: 0;
+  transform: scale(.96) translateY(-3px);
+}
+.msg-pop-leave-to{
+  opacity: 0;
+  transform: scale(.98) translateY(2px);
+}
+
 </style>

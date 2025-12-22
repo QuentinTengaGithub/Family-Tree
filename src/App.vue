@@ -118,6 +118,7 @@ html, body {
   font-size: 15px;
   border-radius: 10px;
   cursor: pointer;
+  margin-bottom: 5px;
 }
 
 .edit_photo_button {

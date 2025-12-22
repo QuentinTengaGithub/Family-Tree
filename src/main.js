@@ -500,7 +500,7 @@ router.beforeEach(async (to, from, next) => {
   const requiresAdmin = to.matched.some(record => record.meta.requiresAdmin)
 
   if (requiresAuth && !user) {
-    return next('/sign-in')
+    return next('/sign-up')
   }
 
   if (requiresAdmin) {

@@ -1,44 +1,46 @@
 <template>
     <div class="content">
-        <p class="title">Sign In</p>
-        <form @submit.prevent="login">
-            <div class="form_input_container">
-                <p class="form_text" :class="{ dark: darkMode }">Email</p>
-                <div class="form_input">
-                    <input 
-                        style="padding-left:10px" 
-                        type="email" 
-                        name="email" 
-                        id="email" 
-                        v-model="email" 
-                        class="form_input"
-                        placeholder="Enter email adress"
-                        :class="{ dark: darkMode }"
-                    >
+        <div class="form-card" :class="{ dark: darkMode }">
+            <p class="title">Sign In</p>
+            <form @submit.prevent="login">
+                <div class="form_input_container">
+                    <p class="form_text" :class="{ dark: darkMode }">Email</p>
+                    <div class="form_input">
+                        <input 
+                            style="padding-left:10px" 
+                            type="email" 
+                            name="email" 
+                            id="email" 
+                            v-model="email" 
+                            class="form_input"
+                            placeholder="Enter email adress"
+                            :class="{ dark: darkMode }"
+                        >
+                    </div>
                 </div>
-            </div>
-            <div class="form_input_container">
-                <p class="form_text" :class="{ dark: darkMode }">Password</p>
-                <div class="form_input">
-                    <input 
-                        style="padding-left:10px" 
-                        type="password" 
-                        name="password" 
-                        id="password" 
-                        v-model="password" 
-                        class="form_input"
-                        placeholder="Enter password"
-                        :class="{ dark: darkMode }"
-                    >
+                <div class="form_input_container">
+                    <p class="form_text" :class="{ dark: darkMode }">Password</p>
+                    <div class="form_input">
+                        <input 
+                            style="padding-left:10px" 
+                            type="password" 
+                            name="password" 
+                            id="password" 
+                            v-model="password" 
+                            class="form_input"
+                            placeholder="Enter password"
+                            :class="{ dark: darkMode }"
+                        >
+                    </div>
                 </div>
-            </div>
-            <p class="button-container"><input class="button" type="submit" value="Log In"></p>
-            <p class="redirect-text" @click="changeTab('Sign-Up')">Don't have an account ?</p>
-            <div class="error-container">
-                <p :class="['error-message', { 'visible': errorMessage }]" v-if="errorMessage">{{ errorMessage }}</p>
-            </div>
-        </form>
-    </div>
+                <p class="button-container"><input class="button" type="submit" value="Log In"></p>
+                <p class="redirect-text" @click="changeTab('Sign-Up')">Don't have an account ?</p>
+                <div class="error-container">
+                    <p :class="['error-message', { 'visible': errorMessage }]" v-if="errorMessage">{{ errorMessage }}</p>
+                </div>
+            </form>
+        </div>
+        </div>
 </template>
 
 <script>
@@ -100,7 +102,15 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
+.content{
+  display: grid;
+  grid-template-columns: minmax(360px, 1.2fr) minmax(380px, 460px) minmax(360px, 1.2fr);
+  align-items: center;
+  gap: 36px;
+  position: relative;
+  background: transparent;
+}
 .redirect-text {
     font-weight:bold;
     cursor:pointer;
@@ -137,29 +147,55 @@ export default {
   text-align: center;
 }
 
-.form_input::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+.form_input::placeholder {
   color: black;
-  opacity: 1; /* Firefox */
+  opacity: 1;
 }
 
-.form_input:-ms-input-placeholder { /* Internet Explorer 10-11 */
-  color: black;
-}
-
-.form_input::-ms-input-placeholder { /* Microsoft Edge */
+.form_input:-ms-input-placeholder {
   color: black;
 }
 
-.form_input.dark::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
-  color: white;
-  opacity: 1; /* Firefox */
+.form_input::-ms-input-placeholder {
+  color: black;
 }
 
-.form_input.dark:-ms-input-placeholder { /* Internet Explorer 10-11 */
+.form_input.dark::placeholder {
+  color: white;
+  opacity: 1;
+}
+
+.form_input.dark:-ms-input-placeholder {
   color: white;
 }
 
-.form_input.dark::-ms-input-placeholder { /* Microsoft Edge */
+.form_input.dark::-ms-input-placeholder {
   color: white;
 }
+
+.form-card{
+  position: relative;
+  z-index: 2;
+  padding: 26px 28px;
+  border-radius: 18px;
+  background: rgba(255,255,255,.7);
+  box-shadow: 0 30px 120px rgba(0,0,0,.8);
+  animation: formIn .7s ease both;
+  grid-column: 2;
+}
+
+.form-card.dark{
+  background-color: black;
+  box-shadow: 0 30px 120px rgba(0,0,0,10);
+}
+
+.title{
+  font-size: 38px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  margin-bottom: 18px;
+  color: var(--blue);
+  text-align:center;
+}
+
 </style>

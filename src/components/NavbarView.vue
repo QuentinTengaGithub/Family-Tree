@@ -1,6 +1,14 @@
 <template>
     <div>
         <div class="navbar" :class="{ dark: darkMode }">
+            <!-- overlay animation -->
+            <div
+                class="lightswitch-overlay"
+                :class="{
+                on: isThemeAnimating && !darkMode,
+                off: isThemeAnimating && darkMode
+                }"
+            ></div>
             <div class="navbar-left">
                 <!-- NAVBAR / LEFT ITEMS -->
                 <template v-if="user">
@@ -48,6 +56,12 @@
 import { getAuth, signOut } from "firebase/auth";
 
 export default {
+    data() {
+        return {
+            isThemeAnimating: false,
+            themeAnimTimer: null
+        };
+    },
     computed: {
         darkMode() {
             return this.$store.state.darkMode;
@@ -73,8 +87,21 @@ export default {
             this.$router.push('/' + tab.toLowerCase());
         },
         toggleDarkMode() {
-            this.$store.commit('toggleDarkMode');
-        },
+      // relance propre si on spam click
+      this.isThemeAnimating = false;
+      clearTimeout(this.themeAnimTimer);
+
+      // 1) on toggle d'abord le thème
+      this.$store.commit('toggleDarkMode');
+
+      // 2) on déclenche l'overlay
+      this.isThemeAnimating = true;
+
+      // 3) on stoppe l'anim après la durée CSS
+      this.themeAnimTimer = setTimeout(() => {
+        this.isThemeAnimating = false;
+      }, 520);
+    },
         logout() {
             const auth = getAuth();
             signOut(auth).then(() => {
@@ -86,6 +113,41 @@ export default {
 </script>
 
 <style>
+.lightswitch-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2000;
+  pointer-events: none;
+  transform: translateX(-110%);
+  opacity: 0;
+}
+
+/* "OFF" -> tu passes en dark: un voile sombre traverse */
+.lightswitch-overlay.off {
+  background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.12), rgba(0,0,0,0.85) 70%);
+  animation: lightsOff 520ms ease-in-out forwards;
+}
+
+/* "ON" -> tu passes en light: un voile clair traverse */
+.lightswitch-overlay.on {
+  background: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.95), rgba(255,255,255,0.35) 70%);
+  animation: lightsOn 520ms ease-in-out forwards;
+}
+
+@keyframes lightsOff {
+  0%   { transform: translateX(-110%); opacity: 0; filter: blur(0px); }
+  20%  { opacity: 1; }
+  60%  { transform: translateX(0%); opacity: 1; filter: blur(0.5px); }
+  100% { transform: translateX(110%); opacity: 0; filter: blur(0px); }
+}
+
+@keyframes lightsOn {
+  0%   { transform: translateX(110%); opacity: 0; filter: blur(0px); }
+  20%  { opacity: 1; }
+  60%  { transform: translateX(0%); opacity: 1; filter: blur(0.5px); }
+  100% { transform: translateX(-110%); opacity: 0; filter: blur(0px); }
+}
+
 .navbar {
     background-color: rgba(255, 255, 255, 0.7);
     display: flex;
@@ -99,6 +161,7 @@ export default {
     margin: 0 !important;
     padding: 4px;
     justify-content: space-between;
+    overflow: hidden;
 }
 .navbar.dark {
     background-color:rgba(0, 0, 0, 0.7);
