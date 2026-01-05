@@ -37,10 +37,8 @@
                               <img style="width:70px" v-if="group.members[0].gender === 'female' && group.members[0].image === null" src="../assets/avatar_female.png">
                               <img style="width:70px" v-if="group.members[0].image !== null" :src="group.members[0].image"><br>
                               <span style="font-weight: bold">{{ group.members[0].name }}</span><br>
-                              <span v-if="group.members[0].birthday !== ''">{{ group.members[0].age }} ans</span><br>
+                              <span v-if="group.members[0].birthday !== ''">{{ memberAge(group.members[0]) }} ans</span><br>
                               <span class="birthday" v-if="group.members[0].birthday !== ''">
-                                <img src="../assets/cake_dark.png" v-if="darkMode === true" style="width:14px"/> 
-                                <img src="../assets/cake.png" v-if="darkMode === false" style="width:14px"/>
                                 ({{ formatBirthday(group.members[0].birthday) }})
                               </span>
                           </div>
@@ -51,10 +49,8 @@
                               <img style="width:70px" v-if="group.members[1].gender === 'female' && group.members[1].image === null" src="../assets/avatar_female.png">
                               <img style="width:70px" v-if="group.members[1].image !== null" :src="group.members[1].image"><br>
                               <span style="font-weight: bold">{{ group.members[1].name }}</span><br>
-                              <span v-if="group.members[1].birthday !== ''">{{ group.members[1].age }} ans</span><br>
+                              <span v-if="group.members[0].birthday !== ''">{{ memberAge(group.members[1]) }} ans</span><br>
                               <span class="birthday" v-if="group.members[1].birthday !== ''">
-                                <img src="../assets/cake_dark.png" v-if="darkMode === true" style="width:14px"/> 
-                                <img src="../assets/cake.png" v-if="darkMode === false" style="width:14px"/>
                                 ({{ formatBirthday(group.members[1].birthday) }})
                               </span>
                           </div>
@@ -69,10 +65,9 @@
                               <img style="width:70px" v-if="member.gender === 'female' && member.image === null" src="../assets/avatar_female.png">
                               <img style="width:70px" v-if="member.image !== null" :src="member.image"><br>
                               <span style="font-weight: bold">{{ member.name }}</span><br>
-                              <span v-if="member.birthday !== ''">{{ member.age }} ans</span><br>
+                              <span v-if="member.birthday !== ''">{{ memberAge(member) }} ans</span><br>
+
                               <span class="birthday" v-if="member.birthday !== ''">
-                                <img src="../assets/cake_dark.png" v-if="darkMode === true" style="width:14px"/> 
-                                <img src="../assets/cake.png" v-if="darkMode === false" style="width:14px"/>
                                 ({{ formatBirthday(member.birthday) }})
                               </span>
                           </div>
@@ -87,10 +82,8 @@
                               <img style="width:70px" v-if="group.members[0].gender === 'female' && group.members[0].image === null" src="../assets/avatar_female.png">
                               <img style="width:70px" v-if="group.members[0].image !== null" :src="group.members[0].image"><br>
                               <span style="font-weight: bold">{{ group.members[0].name }}</span><br>
-                              <span v-if="group.members[0].birthday !== ''">{{ group.members[0].age }} ans</span><br>
+                              <span v-if="group.members[0].birthday !== ''">{{ memberAge(group.members[0]) }} ans</span><br>
                               <span class="birthday" v-if="group.members[0].birthday !== ''">
-                                <img src="../assets/cake_dark.png" v-if="darkMode === true" style="width:14px"/> 
-                                <img src="../assets/cake.png" v-if="darkMode === false" style="width:14px"/>
                                 ({{ formatBirthday(group.members[0].birthday) }})
                               </span>
                           </div>
@@ -132,6 +125,14 @@
             <button @click="zoomOut">-</button>
         </div>
         <FiltersSidePanel :isFiltersPanelVisible="isFiltersPanelVisible" @close-panel="closeFiltersPanel" @gender-filter-changed="applyGenderFilter" @relationship-filter-changed="applyRelationshipFilter" />
+        <TutorialHints
+          pageKey="tree"
+          :hints="[
+            { id: 'filters', title: 'Filter your tree', text: 'Use the filters on the top right corner.' },
+            { id: 'zooms', title: 'Zoom in/out', text: 'You can zoom on the tree with the 2 buttons on the bottom-left corner' },
+            { id: 'download', title: 'Share your tree', text: 'You can click on the “photo“ icon to share your tree with others' },
+          ]"
+        />
     </div>
 </template>
 
@@ -139,6 +140,7 @@
 import interact from 'interactjs';
 import html2canvas from 'html2canvas';
 import FiltersSidePanel from '../components/FiltersSidePanel.vue';
+import TutorialHints from "@/components/TutorialHints.vue"
 
 export default {
   data() {
@@ -190,7 +192,7 @@ export default {
                   return filteredGenerations;
               }
           },  components: {
-    FiltersSidePanel,
+    FiltersSidePanel, TutorialHints,
   },
   watch: {
     members: {
@@ -210,10 +212,23 @@ export default {
     this.renderTree();
     this.initInteract();
   },
-    beforeUnmount() {
+  beforeDestroy() {
     window.removeEventListener('resize', this.renderTree);
   },
   methods: {
+    memberAge(m) {
+    if (m && m.birthday) {
+      const birth = new Date(m.birthday)
+      if (isNaN(birth.getTime())) return null
+      const today = new Date()
+      let age = today.getFullYear() - birth.getFullYear()
+      const monthDiff = today.getMonth() - birth.getMonth()
+      const dayDiff = today.getDate() - birth.getDate()
+      if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) age--
+      return age
+    }
+    return typeof m.age === 'number' ? m.age : null
+  },
     goToHome() {
       this.$router.push('/add-member');
     },
@@ -483,7 +498,9 @@ export default {
                     if (member.married) {
                         const partner = generationMembers.find(m => m.name === member.married);
                         if (partner && !processedNames.has(partner.name)) {
-                            const coupleMembers = [member, partner].sort((a, b) => b.age - a.age);
+                          const coupleMembers = [member, partner].sort(
+                            (a, b) => (this.memberAge(b) ?? 0) - (this.memberAge(a) ?? 0)
+                          )
                             processGroup(`${member.name}-${partner.name}`, 'couple', coupleMembers);
                         }
                     }
@@ -628,12 +645,26 @@ export default {
 
     drawHeart(container, wrapperRect, box1, box2) {
         const midPoint = this.getHeartMidpoint(wrapperRect, box1, box2);
+
         const heart = document.createElement('img');
         heart.src = require('../assets/red_heart.png');
         heart.className = 'heart-icon html-heart';
         heart.style.position = 'absolute';
-        heart.style.left = `${midPoint.x - 12.5}px`;
-        heart.style.top = `${midPoint.y - 12.5}px`;
+
+        // On mobile, show the heart above the couple box (lines are behind)
+        const isMobile = window.matchMedia && window.matchMedia('(max-width: 780px)').matches;
+        if (isMobile && box1 && box2) {
+          const r1 = box1.getBoundingClientRect();
+          const r2 = box2.getBoundingClientRect();
+          const topPx = (Math.min(r1.top, r2.top) - wrapperRect.top) / this.zoomLevel;
+
+          heart.style.left = `${midPoint.x - 12.5}px`;
+          heart.style.top = `${topPx - 22}px`; // slightly above the boxes
+        } else {
+          heart.style.left = `${midPoint.x - 12.5}px`;
+          heart.style.top = `${midPoint.y - 12.5}px`;
+        }
+
         container.appendChild(heart);
     },
 
@@ -759,8 +790,14 @@ export default {
 .html-heart {
     width: 25px;
     height: 25px;
-    z-index: 0; /* Keep it behind member boxes */
+    z-index: 0; /* desktop: behind member boxes */
     pointer-events: none; /* Make it non-interactive */
+}
+
+@media (max-width: 780px) {
+  .html-heart {
+    z-index: 5; /* mobile: above boxes */
+  }
 }
 
 .member_box {
@@ -912,6 +949,27 @@ span.birthday {
   height: 1px;
   background-color: var(--divider-color);
   margin: 20px auto;
+}
+
+/* ===== Mobile responsive adjustments ===== */
+@media (max-width: 480px){
+  .member_box{
+    width: 82px;
+    padding: 4px;
+    font-size: 12px;
+  }
+
+  .member_box img{
+    width: 52px !important;
+  }
+
+  span.birthday{ font-size: 11px; }
+
+  /* Couples must stay on one line */
+  .couple-box{
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
 }
 
 </style>

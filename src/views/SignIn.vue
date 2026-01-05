@@ -104,12 +104,13 @@ export default {
 
 <style scoped>
 .content{
-  display: grid;
+display: grid;
   grid-template-columns: minmax(360px, 1.2fr) minmax(380px, 460px) minmax(360px, 1.2fr);
   align-items: center;
   gap: 36px;
-  position: relative;
+position: relative;
   background: transparent;
+  overflow: visible;
 }
 .redirect-text {
     font-weight:bold;
@@ -196,6 +197,56 @@ export default {
   margin-bottom: 18px;
   color: var(--blue);
   text-align:center;
+}
+
+@media (max-width: 980px){
+  /* Mobile: make the form immediately usable and full width */
+  .content{
+grid-template-columns: 1fr;
+    padding: 18px 12px 24px;
+    /* Center horizontally only (do not vertically center) */
+    align-content: start;
+    justify-items: center;
+  }
+
+  .form-card{
+    grid-column: 1;
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+    animation: none;
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 20px 18px;
+  }
+
+  .title{ font-size: 32px; margin-bottom: 14px; }
+
+  .form_text{ font-size: 13px; }
+
+  input.form_input{
+    font-size: 13px;
+    padding: 8px 10px !important;
+    height: 36px;
+    box-sizing: border-box;
+  }
+
+  .button{ font-size: 14px; padding: 10px 18px; }
+}
+
+
+/* Mobile SignIn: prevent horizontal cut */
+@media (max-width: 480px){
+  .form-card{
+    box-sizing: border-box;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .form-card input{
+    max-width: 100%;
+    box-sizing: border-box;
+  }
 }
 
 </style>

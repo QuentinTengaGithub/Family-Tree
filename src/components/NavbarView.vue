@@ -25,6 +25,21 @@
                 </template>
             </div>
 
+            <!-- MOBILE HAMBURGER (only visible on small screens) -->
+            <button
+                v-if="user"
+                class="hamburger"
+                :class="{ dark: darkMode }"
+                @click="toggleMobileMenu"
+                aria-label="Open menu"
+                :aria-expanded="mobileMenuOpen ? 'true' : 'false'"
+            >
+                <!-- 3 horizontal lines icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" :fill="darkMode ? '#fff' : '#000'">
+                    <path d="M120-680v-80h720v80H120Zm0 480v-80h720v80H120Zm0-240v-80h720v80H120Z"/>
+                </svg>
+            </button>
+
             <!-- NAVBAR / RIGHT ITEMS -->
             <div class="navbar-right">
                 <div @click="toggleDarkMode" class="navbar-items sun">
@@ -49,6 +64,30 @@
                 </template>
             </div>
         </div>
+
+        <!-- MOBILE MENU DROPDOWN -->
+        <div
+            v-if="user && mobileMenuOpen"
+            class="mobile-menu"
+            :class="{ dark: darkMode }"
+        >
+            <div class="mobile-menu-inner">
+                <div @click="mobileNav('Home')" class="mobile-item">Home</div>
+                <div @click="mobileNav('Add-Member')" class="mobile-item">Add a member</div>
+                <div @click="mobileNav('Tree')" class="mobile-item">Tree</div>
+                <div @click="mobileNav('Members')" class="mobile-item">Members</div>
+                <div
+                    v-if="user && (user.role === 'admin' || user.role === 'superadmin')"
+                    @click="mobileNav('Admin')"
+                    class="mobile-item"
+                >
+                    Admin
+                </div>
+                <div class="mobile-sep" />
+                <div @click="mobileNav('Profile')" class="mobile-item">My Profile</div>
+                <div @click="mobileLogout" class="mobile-item">Logout</div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -59,7 +98,8 @@ export default {
     data() {
         return {
             isThemeAnimating: false,
-            themeAnimTimer: null
+            themeAnimTimer: null,
+            mobileMenuOpen: false
         };
     },
     computed: {
@@ -83,6 +123,17 @@ export default {
         }
     },
     methods: {
+        toggleMobileMenu() {
+            this.mobileMenuOpen = !this.mobileMenuOpen;
+        },
+        mobileNav(tab) {
+            this.mobileMenuOpen = false;
+            this.changeTab(tab);
+        },
+        mobileLogout() {
+            this.mobileMenuOpen = false;
+            this.logout();
+        },
         changeTab(tab) {
             this.$router.push('/' + tab.toLowerCase());
         },
@@ -107,6 +158,12 @@ export default {
             signOut(auth).then(() => {
                 this.$router.push('/sign-in');
             });
+        }
+    },
+    watch: {
+        // close menu on navigation
+        '$route.path'() {
+            this.mobileMenuOpen = false;
         }
     }
 }
@@ -204,6 +261,103 @@ export default {
 .navbar-right {
   display: flex;
   align-items: center;
+}
+
+/* Hamburger hidden on desktop */
+.hamburger {
+  display: none;
+  border: none;
+  background: transparent;
+  padding: 8px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.hamburger:hover {
+  background-color: var(--lightGrey);
+}
+
+.mobile-menu {
+  display: none;
+}
+
+@media (max-width: 780px) {
+  /* reduce navbar content for mobile */
+  .navbar-left {
+    display: none;
+  }
+
+  .navbar-right .logout-container,
+  .navbar-right .sun {
+    display: none;
+  }
+
+  /* Keep theme switch visible on mobile */
+  .navbar-right .sun{
+    display: inline-flex;
+  }
+
+  /* But still hide profile/logout icons on the right */
+  .navbar-right .logout-container{
+    display: none;
+  }
+
+  .hamburger {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .mobile-menu {
+    display: block;
+    position: fixed;
+    top: 48px; /* below navbar */
+    left: 0;
+    width: 100vw;
+    z-index: 1001;
+    background: rgba(255, 255, 255, 0.95);
+    border-bottom: solid 1px var(--lightGrey);
+    box-shadow: 0 14px 40px rgba(0,0,0,.25);
+  }
+
+  .mobile-menu.dark {
+    background: rgba(0, 0, 0, 0.95);
+  }
+
+  .mobile-menu-inner {
+    padding: 10px 12px;
+    display: grid;
+    gap: 8px;
+  }
+
+  .mobile-item {
+    padding: 12px 14px;
+    border-radius: 12px;
+    cursor: pointer;
+    color: black;
+    background: rgba(255,255,255,.6);
+    text-align: left;
+    font-weight: 600;
+  }
+
+  .mobile-menu.dark .mobile-item {
+    color: white;
+    background: rgba(255,255,255,.08);
+  }
+
+  .mobile-item:active {
+    transform: scale(0.99);
+  }
+
+  .mobile-sep {
+    height: 1px;
+    background: rgba(0,0,0,.15);
+    margin: 6px 0;
+  }
+
+  .mobile-menu.dark .mobile-sep {
+    background: rgba(255,255,255,.15);
+  }
 }
 
 .profile-container {

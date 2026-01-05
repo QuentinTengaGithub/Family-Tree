@@ -121,16 +121,6 @@ html, body {
   margin-bottom: 5px;
 }
 
-.edit_photo_button {
-  background-color: var(--blue);
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  font-size: 15px;
-  cursor: pointer;
-  margin-bottom:1px;
-}
-
 .button:hover {
   background-color: var(--lightBlue);
 }
@@ -165,6 +155,14 @@ body.dark {
   padding: 20px 0;
   border-radius: 12px;
   margin: 30px 50px 0; /* 60px top, 50px sides, 0 bottom */
+}
+
+/* ===== Mobile responsive ===== */
+@media (max-width: 780px) {
+  .content {
+    margin: 0;          /* full width */
+    border-radius: 0;  /* avoids side gaps */
+  }
 }
 
 .view-as-banner {

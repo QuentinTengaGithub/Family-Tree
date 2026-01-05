@@ -83,7 +83,6 @@
 
       <div class="form-divider"></div>
 
-      <!-- small toast -->
       <transition name="toast">
         <div v-if="showSuccessMessage" class="success-message">
           Member created ✨
@@ -103,16 +102,13 @@
       </p>
     </form>
 
-    <!-- 🎉 Premium celebration overlay -->
     <transition name="celebrate">
       <div v-if="showCelebrate" class="celebrate-overlay" @click="closeCelebrate">
         <div class="celebrate-card" @click.stop>
-          <!-- subtle sparkles (premium) -->
           <div class="sparkles" aria-hidden="true">
             <span v-for="n in 10" :key="n" class="spark"></span>
           </div>
 
-          <!-- confettis (subtle, premium) -->
           <div class="confetti confetti--soft" aria-hidden="true">
             <span v-for="n in 18" :key="n" class="confetti-piece"></span>
           </div>
@@ -141,11 +137,21 @@
         </div>
       </div>
     </transition>
+    <TutorialHints
+      pageKey="list"
+      :hints="[
+        { id: 'view', title: 'View your tree', text: 'You can see your tree on the section ”Tree”' },
+        { id: 'edit', title: 'Edit your members', text: 'You can change your members`s informations on the section ”Members”' },
+      ]"
+    />
   </div>
 </template>
 
 <script>
+import TutorialHints from "@/components/TutorialHints.vue"
+
 export default {
+  components: { TutorialHints },
   data() {
     return {
       name: "",
@@ -164,7 +170,6 @@ export default {
       shakeInvalid: false,
       errors: { name: false, birthday: false, gender: false },
 
-      // prevent double animations
       isFlying: false,
     };
   },
@@ -201,7 +206,6 @@ export default {
       if (input) input.value = "";
     },
 
-    // ⭐ 핵: avatar flies from button to overlay avatar
     async flyAvatarToCard(imageSrc) {
       if (this.isFlying) return;
       this.isFlying = true;
@@ -212,7 +216,6 @@ export default {
 
         const btnRect = btn.getBoundingClientRect();
 
-        // create flying element
         const fly = document.createElement("img");
         fly.src = imageSrc;
         fly.alt = "flying-avatar";
@@ -234,7 +237,6 @@ export default {
 
         document.body.appendChild(fly);
 
-        // wait overlay render so we can measure target
         await this.$nextTick();
         await new Promise(r => setTimeout(r, 40));
 
@@ -245,10 +247,9 @@ export default {
         }
 
         const tRect = target.getBoundingClientRect();
-        const targetX = tRect.left + 16; // align inside avatar box
+        const targetX = tRect.left + 16;
         const targetY = tRect.top + 16;
 
-        // launch
         requestAnimationFrame(() => {
           fly.style.left = `${targetX}px`;
           fly.style.top = `${targetY}px`;
@@ -257,7 +258,6 @@ export default {
           fly.style.opacity = "1";
         });
 
-        // finish: fade + shrink into place, then remove
         await new Promise(r => setTimeout(r, 640));
         fly.style.transform = "translateZ(0) scale(0.95)";
         fly.style.opacity = "0";
@@ -308,18 +308,14 @@ export default {
         await this.$store.dispatch("addMember", newMember);
         await this.$store.dispatch("fetchMembers");
 
-        // toast
         this.showSuccessMessage = true;
         setTimeout(() => (this.showSuccessMessage = false), 1700);
 
-        // show overlay first, then fly
         this.createdMember = newMember;
         this.showCelebrate = true;
 
-        // fly animation
         this.flyAvatarToCard(newMember.image);
 
-        // reset form
         this.name = "";
         this.birthday = "";
         this.gender = "";
@@ -385,7 +381,6 @@ export default {
 </script>
 
 <style>
-/* -------- base -------- */
 .content {
   display: flex;
   flex-direction: column;
@@ -405,7 +400,7 @@ export default {
   filter: blur(6px);
   opacity: 0.18;
   transform: scale(0.99);
-  pointer-events: none; /* empêche clics derrière */
+  pointer-events: none;
   user-select: none;
 }
 
@@ -447,7 +442,6 @@ input.form_input.dark {
   outline: 2px solid red;
 }
 
-/* shake invalid */
 .shake { animation: shake 420ms ease; }
 @keyframes shake {
   0% { transform: translateX(0); }
@@ -468,7 +462,6 @@ input.form_input.dark {
 
 .button-container { text-align: center; }
 
-/* loading dots */
 .loading .dots span {
   display: inline-block;
   animation: dot 900ms infinite;
@@ -486,7 +479,6 @@ input.form_input.dark {
   cursor: not-allowed;
 }
 
-/* -------- preview photo -------- */
 .photo-line { gap: 12px; }
 .preview-wrap {
   position: relative;
@@ -518,7 +510,6 @@ input.form_input.dark {
   padding: 0;
 }
 
-/* -------- toast success -------- */
 .success-message {
   background: rgba(18, 18, 18, 0.92);
   color: white;
@@ -534,7 +525,6 @@ input.form_input.dark {
 .toast-leave-active { transition: all .22s ease; }
 .toast-enter, .toast-leave-to { opacity: 0; transform: translateY(10px); }
 
-/* -------- premium celebration overlay -------- */
 .celebrate-overlay {
   position: fixed;
   inset: 0;
@@ -549,7 +539,7 @@ input.form_input.dark {
 
 .celebrate-card {
   width: min(560px, 95vw);
-  background: #ffffff; /* opaque */
+  background: #ffffff;
   border-radius: 22px;
   padding: 18px 18px 16px 18px;
   position: relative;
@@ -625,7 +615,6 @@ input.form_input.dark {
   justify-content: center;
 }
 
-/* sparkles */
 .sparkles { position:absolute; inset:0; pointer-events:none; }
 .spark {
   position:absolute;
@@ -654,7 +643,6 @@ input.form_input.dark {
   60% { transform: scale(.9); opacity: .35; }
 }
 
-/* subtle confetti */
 .confetti { position:absolute; inset:0; pointer-events:none; }
 .confetti-piece {
   position:absolute;
@@ -692,7 +680,6 @@ input.form_input.dark {
   100% { top: 115%; opacity: 0; transform: translateY(0) rotate(220deg); }
 }
 
-/* transition overlay */
 .celebrate-enter-active { transition: opacity .18s ease; }
 .celebrate-leave-active { transition: opacity .18s ease; }
 .celebrate-enter, .celebrate-leave-to { opacity: 0; }

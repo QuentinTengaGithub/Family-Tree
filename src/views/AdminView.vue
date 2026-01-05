@@ -7,8 +7,8 @@
     <div v-if="users.length">
       <ul>
         <li v-for="user in users" :key="user.uid">
-          {{ user.name }} ({{ user.email }}) - Role: {{ user.role }}
           <button class="button" @click="selectUser(user)">View Tree</button>
+          {{ user.name }} ({{ user.email }}) - Role: {{ user.role }}
         </li>
       </ul>
     </div>

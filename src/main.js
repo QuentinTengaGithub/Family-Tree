@@ -42,6 +42,8 @@ const store = new Vuex.Store({
     userRole: null,
     viewingAs: null,
     viewingAsName: null,
+    tutorialEnabled: JSON.parse(localStorage.getItem('tutorialEnabled') ?? 'true'),
+    dismissedTutorialHints: JSON.parse(localStorage.getItem('dismissedTutorialHints') ?? '{}'),
   },
   mutations: {
     setMembers(state, members) {
@@ -83,6 +85,31 @@ const store = new Vuex.Store({
     setViewingAs(state, { userId, userName }) {
       state.viewingAs = userId
       state.viewingAsName = userName
+    },
+    setTutorialEnabled(state, enabled) {
+      state.tutorialEnabled = enabled
+      localStorage.setItem("tutorialEnabled", JSON.stringify(enabled))
+  
+      if (enabled) {
+        // reset -> tout ré-afficher
+        Vue.set(state, "dismissedTutorialHints", {})
+        localStorage.setItem("dismissedTutorialHints", JSON.stringify({}))
+      }
+    },
+  
+    dismissTutorialHint(state, { pageKey, hintId }) {
+      if (!state.dismissedTutorialHints[pageKey]) {
+        Vue.set(state.dismissedTutorialHints, pageKey, [])
+      }
+      const arr = state.dismissedTutorialHints[pageKey]
+      if (!arr.includes(hintId)) arr.push(hintId)
+  
+      localStorage.setItem("dismissedTutorialHints", JSON.stringify(state.dismissedTutorialHints))
+    },
+  },
+  getters: {
+    isHintDismissed: (state) => (pageKey, hintId) => {
+      return (state.dismissedTutorialHints?.[pageKey] || []).includes(hintId)
     },
   },
   actions: {

@@ -42,9 +42,11 @@
           @mouseenter="setHovering(true)"
           @mouseleave="setHovering(false)"
         >
-          <img :src="arrowRightImage" alt="Arrow Right" class="click-indicator" />
-          <div>
-            <h2>Create your own family tree</h2>
+          <div class="home-section-content">
+            <div class="home-section-title-row">
+              <img :src="arrowRightImage" alt="Arrow Right" class="click-indicator" />
+              <h2>Create your own family tree</h2>
+            </div>
             <p>Add new members and grow your family.</p>
           </div>
         </section>
@@ -56,9 +58,11 @@
           @mouseenter="setHovering(true)"
           @mouseleave="setHovering(false)"
         >
-          <img :src="arrowRightImage" alt="Arrow Right" class="click-indicator" />
-          <div>
-            <h2>View your family tree</h2>
+          <div class="home-section-content">
+            <div class="home-section-title-row">
+              <img :src="arrowRightImage" alt="Arrow Right" class="click-indicator" />
+              <h2>View your family tree</h2>
+            </div>
             <p>Explore your family's history in an interactive tree.</p>
           </div>
         </section>
@@ -70,9 +74,11 @@
           @mouseenter="setHovering(true)"
           @mouseleave="setHovering(false)"
         >
-          <img :src="arrowRightImage" alt="Arrow Right" class="click-indicator" />
-          <div>
-            <h2>Consult the member list</h2>
+          <div class="home-section-content">
+            <div class="home-section-title-row">
+              <img :src="arrowRightImage" alt="Arrow Right" class="click-indicator" />
+              <h2>Consult the member list</h2>
+            </div>
             <p>See all the members of your family.</p>
           </div>
         </section>
@@ -286,12 +292,21 @@
     position: relative;
   }
   
-  .home-section > div {
+  .home-section-content{
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     flex-grow: 1;
+    width: 100%;
+  }
+
+  .home-section-title-row{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    width: 100%;
   }
   
   .click-indicator {
@@ -302,14 +317,16 @@
     opacity: 0.7;
     position: absolute;
     left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
     animation: pulse 1.2s infinite; /* un peu + rapide */
     filter: invert(100%);
   }
   
   @keyframes pulse {
-    0% { transform: scale(0.9); opacity: 0.7; }
-    50% { transform: scale(1.12); opacity: 1; }
-    100% { transform: scale(0.9); opacity: 0.7; }
+    0% { transform: translateY(-50%) scale(0.9); opacity: 0.7; }
+    50% { transform: translateY(-50%) scale(1.12); opacity: 1; }
+    100% { transform: translateY(-50%) scale(0.9); opacity: 0.7; }
   }
   
   .home-section:hover .click-indicator {
@@ -400,5 +417,61 @@
     from, to { border-color: transparent }
     50% { border-color: currentcolor; }
   }
+
+/* ===== Mobile responsive ===== */
+@media (max-width: 780px){
+  .home-content{
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+  }
+
+  .left-panel{
+    order: 1;
+    width: 100%;
+    height: 35vh;
+    border-right: none !important;
+  }
+
+  /* Divider between welcome and first block */
+  .left-panel.light-mode-border-right{ border-bottom: 2px solid black; }
+  .left-panel.dark-mode-border-right{ border-bottom: 2px solid white; }
+
+  .right-panel{
+    order: 2;
+    width: 100%;
+    height: 65vh;
+  }
+
+  .home-section{
+    width: 100%;
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .home-section-content{ align-items: flex-start; }
+  .home-section-title-row{ justify-content: flex-start; }
+
+  /* Arrow aligned with the bold title on mobile */
+  .click-indicator{
+    position: static;
+    top: auto;
+    left: auto;
+    transform: none;
+    animation: none;
+    width: 26px;
+    height: 26px;
+    opacity: 0.85;
+  }
+
+  /* Make the 3 blocks easier to read on mobile */
+  .home-section h2{
+    font-size: 20px;
+  }
+
+  .home-section p{
+    font-size: 15px;
+  }
+}
   </style>
   

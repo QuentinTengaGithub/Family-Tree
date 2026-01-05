@@ -3,90 +3,94 @@
     <AddMember v-if="showAddMember" @member-created="handleMemberCreated" />
 
     <p class="title" style="text-align:center">
-  The members
-</p>
-    <table class="custom-table" v-if="members.length > 0">
+      The members
+    </p>
+    <!-- Desktop table -->
+    <table class="custom-table desktop-table" v-if="members.length > 0">
       <thead>
         <tr>
-          <td class="column_photo table_header hover-to-edit" :class="{ dark: darkMode }">Photo</td>
+          <th class="column_photo table_header hover-to-edit" :class="{ dark: darkMode }">
+            Photo
+          </th>
 
-          <td class="column_name table_header hover-to-edit" :class="{ dark: darkMode }">
+          <th class="column_name table_header hover-to-edit" :class="{ dark: darkMode }">
             Name
-            <button style="background-color: transparent; border:none; cursor: pointer" @click="sortMembersByName">
-              <img
-                v-if="nameSortOrder === 'asc' && darkMode === false"
-                style="width:15px; margin-left: -5px"
-                src="@/assets/arrow-up.png"
-              />
-              <img
-                v-if="nameSortOrder === 'desc' && darkMode === false"
-                style="width:15px; margin-left: -5px"
-                src="@/assets/arrow-down.png"
-              />
-              <img
-                v-if="nameSortOrder === 'asc' && darkMode === true"
-                style="width:15px; margin-left: -5px"
-                src="@/assets/arrow-up-dark.png"
-              />
-              <img
-                v-if="nameSortOrder === 'desc' && darkMode === true"
-                style="width:15px; margin-left: -5px"
-                src="@/assets/arrow-down-dark.png"
-              />
+            <button
+              class="sort-toggle"
+              :class="[
+                darkMode ? 'sort-toggle--dark' : 'sort-toggle--light',
+                nameSortOrder === 'asc' ? 'sort-toggle--asc' : 'sort-toggle--desc'
+              ]"
+              type="button"
+              aria-label="Sort by name"
+              @click="sortMembersByName"
+            >
+              <span class="sort-toggle__icon"></span>
             </button>
-          </td>
+          </th>
 
-          <td class="column_age table_header" :class="{ dark: darkMode }">
+          <th class="column_age table_header" :class="{ dark: darkMode }">
             Age
-            <button style="background-color: transparent; border:none; cursor: pointer" @click="sortMembersByAge">
-              <img
-                v-if="ageSortOrder === 'asc' && darkMode === false"
-                style="width:15px; margin-left: -5px"
-                src="../assets/arrow-up.png"
-              />
-              <img
-                v-if="ageSortOrder === 'desc' && darkMode === false"
-                style="width:15px; margin-left: -5px"
-                src="../assets/arrow-down.png"
-              />
-              <img
-                v-if="ageSortOrder === 'asc' && darkMode === true"
-                style="width:15px; margin-left: -5px"
-                src="../assets/arrow-up-dark.png"
-              />
-              <img
-                v-if="ageSortOrder === 'desc' && darkMode === true"
-                style="width:15px; margin-left: -5px"
-                src="../assets/arrow-down-dark.png"
-              />
+            <button
+              class="sort-toggle"
+              :class="[
+                darkMode ? 'sort-toggle--dark' : 'sort-toggle--light',
+                ageSortOrder === 'asc' ? 'sort-toggle--asc' : 'sort-toggle--desc'
+              ]"
+              type="button"
+              aria-label="Sort by age"
+              @click="sortMembersByAge"
+            >
+              <span class="sort-toggle__icon"></span>
             </button>
-          </td>
+          </th>
 
-          <td class="column_birthday table_header hover-to-edit" :class="{ dark: darkMode }">Birth Date</td>
-          <td class="column_relationship table_header" :class="{ dark: darkMode }">Relationship</td>
-          <td class="table_header" :class="{ dark: darkMode }"></td>
+          <th class="column_birthday table_header hover-to-edit" :class="{ dark: darkMode }">
+            Birth Date
+          </th>
+          <th class="column_relationship table_header" :class="{ dark: darkMode }">
+            Relationship
+          </th>
+          <th class="table_header" :class="{ dark: darkMode }"></th>
         </tr>
       </thead>
+
+
 
       <transition-group name="row" tag="tbody">
         <tr
           v-for="member in members"
           :key="member.name"
           class="list-item"
+          :class="rowDeleteClass(member)"
           :ref="el => { if (el) rowRefs[member.name] = el }"
         >
 
           <!-- PHOTO -->
-          <td class="column_photo editable-cell"
-            :class="{ 'editable-cell--hover': hoveredCell === member.name + '-image' }"
+          <td
+            class="column_photo editable-cell"
+            :class="[
+              { 'editable-cell--hover': hoveredCell === member.name + '-image' },
+              member.gender === 'female' ? 'editable-cell--female' : 'editable-cell--male'
+            ]"
             @mouseenter="hoveredCell = member.name + '-image'"
             @mouseleave="hoveredCell = ''"
           >
             <div class="photo-cell" :class="member.gender === 'male' ? 'photo-cell--male' : 'photo-cell--female'">
-              <img style="width:100px" v-if="member.image" :src="member.image" />
-              <img style="width:100px" v-else-if="member.gender === 'male'" src="@/assets/avatar_male.png" />
-              <img style="width:100px" v-else src="@/assets/avatar_female.png" />
+              <img class="member-photo" v-if="member.image" :src="member.image" />
+              <img class="member-photo" v-else-if="member.gender === 'male'" src="@/assets/avatar_male.png" @click.stop="editMemberPhoto(member)" />
+              <img class="member-photo" v-else src="@/assets/avatar_female.png" />
             </div>
+
+            <!-- Mobile delete (keeps confirmation modal) -->
+            <button
+              class="row-delete-x"
+              type="button"
+              @click.stop="openDeleteModal(member)"
+              aria-label="Delete member"
+            >
+              ×
+            </button>
             <button
               v-if="hoveredCell === member.name + '-image' && (editingMember !== member.name || editingField !== 'image')"
               class="edit-overlay-btn"
@@ -104,16 +108,16 @@
                 v-if="member.image && !member.image.includes('avatar_male') && !member.image.includes('avatar_female')"
                 @click="triggerFileInput(member)"
               >
-                CHANGE
+                Change
               </button>
-              <button class="edit_photo_button" v-else @click="triggerFileInput(member)">UPLOAD</button>
+              <button class="edit_photo_button" v-else @click="triggerFileInput(member)">Upload</button>
 
               <button
                 class="edit_photo_button"
                 v-if="member.image && !member.image.includes('avatar_male') && !member.image.includes('avatar_female')"
                 @click="openCropper(member)"
               >
-                CROP
+                Crop
               </button>
 
               <button
@@ -121,10 +125,10 @@
                 v-if="member.image && !member.image.includes('avatar_male') && !member.image.includes('avatar_female')"
                 @click="deleteMemberImage(member)"
               >
-                DELETE
+                Delete
               </button>
 
-              <button class="edit_photo_button" @click="cancelEdit()">CANCEL</button>
+              <button class="edit_photo_button" @click="cancelEdit()">Cancel</button>
             </div>
 
             <input
@@ -138,16 +142,19 @@
           <!-- NAME -->
           <td
             class="editable-cell"
-            :class="{ 'editable-cell--hover': hoveredCell === member.name + '-name' }"
+            :class="[
+              { 'editable-cell--hover': hoveredCell === member.name + '-name' },
+              member.gender === 'female' ? 'editable-cell--female' : 'editable-cell--male'
+            ]"
             @mouseenter="hoveredCell = member.name + '-name'"
             @mouseleave="hoveredCell = ''"
           >
             <span v-if="editingMember !== member.name || editingField !== 'name'">{{ member.name }}</span>
 
             <div v-if="editingMember === member.name && editingField === 'name'">
-              <input type="text" v-model="editingName" @keyup.enter="saveMemberName()" />
-              <button class="btn_edit" @click="saveMemberName()">Save</button>
-              <button class="btn_edit" @click="cancelEdit()">Cancel</button>
+              <input type="text" style="padding: 8px 5px" v-model="editingName" @keyup.enter="saveMemberName()" />
+              <button class="edit_photo_button" @click="saveMemberName()">Save</button>
+              <button class="edit_photo_button" @click="cancelEdit()">Cancel</button>
             </div>
             <div v-else>
               <button
@@ -164,26 +171,36 @@
 
           <!-- AGE -->
           <td>
-            <span v-if="member.age">{{ member.age }} years old</span>
+            <span v-if="getAge(member) !== null">
+              {{ getAge(member) }} <span class="age-suffix">years old</span>
+            </span>
             <span v-else>??</span>
           </td>
 
           <!-- BIRTHDAY -->
           <td
             class="editable-cell"
-            :class="{ 'editable-cell--hover': hoveredCell === member.name + '-birthday' }"
+            :class="[
+              { 'editable-cell--hover': hoveredCell === member.name + '-birthday' },
+              member.gender === 'female' ? 'editable-cell--female' : 'editable-cell--male'
+            ]"
             @mouseenter="hoveredCell = member.name + '-birthday'"
             @mouseleave="hoveredCell = ''"
           >
             <div v-if="editingMember === member.name && editingField === 'birthday'">
-              <input type="date" v-model="member.birthday" /><br><br>
-              <button class="btn_edit button" @click="updateMemberBirthday(member)">Save</button><br>
-              <button class="btn_edit button" @click="deleteMemberBirthday(member)">Delete</button><br>
-              <button class="btn_edit button" @click="cancelEdit()">Cancel</button>
+              <input type="date" style="padding: 8px 5px;" v-model="member.birthday" /><br><br>
+              <button class="edit_photo_button" @click="updateMemberBirthday(member)">Save</button><br>
+              <button class="edit_photo_button" @click="clearBirthday(member)">Clear</button><br>
+              <button class="edit_photo_button" @click="cancelEdit()">Cancel</button>
+
+              <p v-if="birthdayError" class="birthday-error">
+                {{ birthdayError }}
+              </p>
             </div>
 
             <div v-else>
-              {{ formatBirthday(member.birthday) }}
+              <span class="birth-long">{{ formatBirthday(member.birthday) }}</span>
+              <span class="birth-short">{{ formatBirthdayShort(member.birthday) }}</span>
             </div>
 
             <button
@@ -205,13 +222,12 @@
                   src="../assets/relationship_married.png"
                   class="rel-icon"
                   :class="getRelIconClass(member.name, 'married', !!member.married)"
-                  style="width: 15px; margin-right:8px"
+                  style="width: 15px"
                 />
-                <input v-if="member.married" type="checkbox" :checked="true" @change="unsetMarried(member)" />
-                <span class="rel-text">{{ member.married }}</span>
+                <span class="rel-item" v-if="member.married"><input type="checkbox" :checked="true" @change="unsetMarried(member)" />{{ member.married }}</span>
               </div>
 
-              <div class="siblings_checkbox">
+              <div class="siblings-checkbox">
                 <img
                   src="../assets/relationship_siblings.png"
                   class="rel-icon"
@@ -278,11 +294,13 @@
           </td>
 
           <!-- DELETE -->
-          <td style="border: solid 2px white">
+          <td style="border: solid 2px white; text-align:center">
             <div class="delete_member">
               <button
                 style="background-color:transparent; border: none; margin: auto 0"
                 @click="openDeleteModal(member)"
+                @mouseenter="onDeleteHover(member)"
+                @mouseleave="onDeleteHover(null)"
                 class="button"
               >
                 <img v-if="darkMode === false" src="../assets/bin.png" class="shake_bin" />
@@ -293,11 +311,167 @@
         </tr>
       </transition-group>
     </table>
+
+    <!-- Mobile table (2 columns: WHO / RELATIONSHIP) -->
+    <table class="custom-table mobile-table" v-if="members.length > 0">
+      <thead>
+        <tr>
+          <th class="who-col table_header" :class="{ dark: darkMode }">WHO</th>
+          <th class="rel-col table_header" :class="{ dark: darkMode }">RELATIONSHIP</th>
+        </tr>
+      </thead>
+
+      <transition-group name="row" tag="tbody">
+        <tr
+          v-for="member in members"
+          :key="member.name + '-mobile'"
+          class="list-item"
+          :class="rowDeleteClass(member)"
+        >
+          <!-- WHO (30%) -->
+          <td class="who-col">
+            <div class="who-cell">
+              <div class="who-photo-wrap" :class="member.gender === 'male' ? 'photo-cell--male' : 'photo-cell--female'">
+                <img class="member-photo" v-if="member.image" :src="member.image" @click.stop="editMemberPhoto(member)" />
+                <img class="member-photo" v-else-if="member.gender === 'male'" src="@/assets/avatar_male.png" @click.stop="editMemberPhoto(member)" />
+                <img class="member-photo" v-else src="@/assets/avatar_female.png" @click.stop="editMemberPhoto(member)" />
+</div>
+
+              <div class="mobile-photo-edit" v-if="editingMember === member.name && editingField === 'image'">
+                <button
+                  class="edit_photo_button"
+                  v-if="member.image && !member.image.includes('avatar_male') && !member.image.includes('avatar_female')"
+                  @click="triggerFileInput(member)"
+                >
+                  Change
+                </button>
+                <button class="edit_photo_button" v-else @click="triggerFileInput(member)">Upload</button>
+
+                <button
+                  class="edit_photo_button"
+                  v-if="member.image && !member.image.includes('avatar_male') && !member.image.includes('avatar_female')"
+                  @click="openCropper(member)"
+                >
+                  Crop
+                </button>
+
+                <button
+                  class="edit_photo_button"
+                  v-if="member.image && !member.image.includes('avatar_male') && !member.image.includes('avatar_female')"
+                  @click="deleteMemberImage(member)"
+                >
+                  Delete
+                </button>
+
+                <button class="edit_photo_button" @click="cancelEdit()">Cancel</button>
+              </div>
+
+              <div class="who-meta">
+                <div class="who-name">{{ member.name }}</div>
+                <div class="who-age" v-if="getAge(member) !== null">{{ getAge(member) }} years</div>
+                <div class="who-age" v-else>??</div>
+                <div class="who-bday" v-if="formatBirthdayShort(member.birthday)">({{ formatBirthdayShort(member.birthday) }})</div>
+                <div class="who-bday" v-else>(--/--/----)</div>
+              </div>
+            </div>
+          </td>
+
+          <!-- RELATIONSHIP (70%) -->
+          <td class="rel-col">
+            <button
+              class="row-delete-x row-delete-x--mobile-rel"
+              type="button"
+              @click.stop="openDeleteModal(member)"
+              aria-label="Delete member"
+            >
+              ×
+            </button>
+
+            <div v-if="members.length > 1">
+              <div class="married-checkbox">
+                <img
+                  src="../assets/relationship_married.png"
+                  class="rel-icon"
+                  :class="getRelIconClass(member.name, 'married', !!member.married)"
+                  style="width: 15px"
+                />
+                <span class="rel-item" v-if="member.married"><input type="checkbox" :checked="true" @change="unsetMarried(member)" />{{ member.married }}</span>
+              </div>
+
+              <div class="siblings-checkbox">
+                <img
+                  src="../assets/relationship_siblings.png"
+                  class="rel-icon"
+                  :class="getRelIconClass(member.name, 'siblings', (member.siblings && member.siblings.length > 0))"
+                  style="width: 15px"
+                />
+                <span v-for="(siblingName, sIndex) in (member.siblings || [])" :key="siblingName" class="rel-item">
+                  <input type="checkbox" :checked="true" @change="unsetSibling(member, siblingName)" />
+                  {{ siblingName }}<span v-if="member.siblings && sIndex < member.siblings.length - 1">, </span>
+                </span>
+              </div>
+
+              <div class="children-checkbox">
+                <img
+                  src="../assets/relationship_children.png"
+                  class="rel-icon"
+                  :class="getRelIconClass(member.name, 'children', (member.children && member.children.length > 0))"
+                  style="width: 15px"
+                />
+                <span v-for="(childName, cIndex) in (member.children || [])" :key="childName" class="rel-item">
+                  <input type="checkbox" :checked="true" @change="unsetChildren(member, childName)" />
+                  {{ childName }}<span v-if="member.children && cIndex < member.children.length - 1">, </span>
+                </span>
+              </div>
+
+              <div v-if="relationshipMessageByName[member.name]" class="relationship-message">
+                {{ relationshipMessageByName[member.name] }}
+              </div>
+
+              <div v-if="!getRelationshipMode(member.name)" class="relationship-actions">
+                <button class="rel-btn rel-btn--married" :class="{ 'rel-btn--disabled': isDisabled(member, 'married') }" @click="startRelationship(member, 'married')">Married</button>
+                <button class="rel-btn rel-btn--siblings" :class="{ 'rel-btn--disabled': isDisabled(member, 'siblings') }" @click="startRelationship(member, 'siblings')">Siblings</button>
+                <button class="rel-btn rel-btn--children" :class="{ 'rel-btn--disabled': isDisabled(member, 'children') }" @click="startRelationship(member, 'children')">Children</button>
+              </div>
+
+              <div v-else style="margin-top: 10px">
+                <hr/>
+                <p class="rel-choose-title" :class="'rel-choose-title--' + getRelationshipMode(member.name)">
+                  {{ relationshipChoiceLabel(getRelationshipMode(member.name)) }}
+                </p>
+                <button
+                  v-for="m in candidatesFor(member)"
+                  :key="m.name + '-mobile'"
+                  class="btn_edit link-btn"
+                  :class="{ dark: darkMode }"
+                  style="display:block; width: 100%; text-align:left; margin: 6px 0;"
+                  @click="setRelation(member, m)"
+                >
+                  {{ m.name }}
+                </button>
+
+                <p v-if="candidatesFor(member).length === 0" style="font-style: italic; margin-top: 10px;">
+                  No member for this relationship
+                </p>
+
+                <button class="cancel_relationship button" @click="cancelRelationshipChoice(member)">Cancel</button>
+              </div>
+            </div>
+
+            <div v-else>
+              <p style="font-style: italic;">1 member created. No relationship possible.</p>
+              <button @click="goToHome" class="button">Create member</button>
+            </div>
+          </td>
+        </tr>
+      </transition-group>
+    </table>
+
     <div v-else>
-          <p style="font-style: italic;">No member created.</p>
-          <div class="empty-state-divider"></div>
-          <button @click="goToHome" class="button">Create a member</button>
-        </div>
+      <p style="font-style: italic;">No member created.</p>
+      <div class="empty-state-divider"></div>
+      <button @click="goToHome" class="button">Create a member</button>
+    </div>
 
     
 
@@ -331,11 +505,19 @@
           class="cropper"
         />
         <div class="modal-actions">
-          <button class="button" @click="applyCrop">Save</button>
-          <button class="button" @click="cancelCrop">Cancel</button>
+          <button class="edit_photo_button" @click="applyCrop">Save</button>
+          <button class="edit_photo_button" @click="cancelCrop">Cancel</button>
         </div>
       </div>
     </div>
+    <TutorialHints
+      pageKey="list"
+      :hints="[
+        { id: 'add', title: 'Add a member', text: 'Use “Add member” to create a new person.' },
+        { id: 'edit', title: 'Edit', text: 'Hover a cell to edit name/photo/birth date.' },
+        { id: 'rels', title: 'Relationships', text: 'Use Married / Siblings / Children to link members.' },
+      ]"
+    />
   </div>
 </template>
 
@@ -343,9 +525,10 @@
 import AddMember from './AddMember.vue'
 import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
+import TutorialHints from "@/components/TutorialHints.vue"
 
 export default {
-  components: { AddMember, VueCropper: Cropper },
+  components: { AddMember, VueCropper: Cropper, TutorialHints },
   data() {
     return {
       showAddMember: false,
@@ -376,6 +559,9 @@ export default {
 
       rowRefs: {},
       navbarHeight: 60,
+      birthdayError: '',
+      originalBirthday: '',
+      deleteHoverName: '',
     }
   },
   computed: {
@@ -665,6 +851,17 @@ export default {
       return `${day} ${month} ${year}`
     },
 
+    formatBirthdayShort(dateString) {
+      if (!dateString) return ''
+      const d = new Date(dateString)
+      if (Number.isNaN(d.getTime())) return ''
+
+      const dd = String(d.getDate()).padStart(2, '0')
+      const mm = String(d.getMonth() + 1).padStart(2, '0')
+      const yyyy = d.getFullYear()
+      return `${dd}.${mm}.${yyyy}`
+    },
+
     sortMembersByName() {
       if (this.nameSortOrder === 'asc') {
         this.members.sort((a, b) => a.name.localeCompare(b.name))
@@ -674,15 +871,41 @@ export default {
         this.nameSortOrder = 'asc'
       }
     },
-    sortMembersByAge() {
-      if (this.ageSortOrder === 'asc') {
-        this.members.sort((a, b) => (a.age || 0) - (b.age || 0))
-        this.ageSortOrder = 'desc'
-      } else {
-        this.members.sort((a, b) => (b.age || 0) - (a.age || 0))
-        this.ageSortOrder = 'asc'
-      }
-    },
+    calculateAgeFromBirthday(birthday) {
+    if (!birthday) return null
+    const birth = new Date(birthday)
+    if (isNaN(birth.getTime())) return null
+
+    const today = new Date()
+    let age = today.getFullYear() - birth.getFullYear()
+    const monthDiff = today.getMonth() - birth.getMonth()
+    const dayDiff = today.getDate() - birth.getDate()
+
+    if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      age--
+    }
+    return age
+  },
+
+  getAge(member) {
+    if (member.birthday) {
+      return this.calculateAgeFromBirthday(member.birthday)
+    }
+    // fallback si pas de birthday en base
+    return typeof member.age === 'number' ? member.age : null
+  },
+
+  sortMembersByAge() {
+    const dir = this.ageSortOrder === 'asc' ? 1 : -1
+
+    this.members.sort((a, b) => {
+      const ageA = this.getAge(a) ?? 0
+      const ageB = this.getAge(b) ?? 0
+      return (ageA - ageB) * dir
+    })
+
+    this.ageSortOrder = this.ageSortOrder === 'asc' ? 'desc' : 'asc'
+  },
 
     editMemberPhoto(member) { this.editingMember = member.name; this.editingField = 'image' },
     triggerFileInput(member) { const input = this.fileInputs[member.name]; if (input) input.click() },
@@ -729,9 +952,35 @@ export default {
     },
 
     /* ---------- birthday ---------- */
-    editMemberBirthday(member) { this.editingMember = member.name; this.editingField = 'birthday' },
-    deleteMemberBirthday(member) { this.$store.dispatch('updateMember', { name: member.name, birthday: '' }); this.editingMember=''; this.editingField='' },
-    updateMemberBirthday(member) { this.$store.dispatch('updateMember', { name: member.name, birthday: member.birthday }); this.editingMember=''; this.editingField='' },
+    editMemberBirthday(member) {
+      this.birthdayError = ''
+      this.originalBirthday = member.birthday || ''   // on garde la valeur d’origine
+      this.editingMember = member.name
+      this.editingField = 'birthday'
+    },
+
+    // ne touche pas à la base : nettoie juste le champ en cours d’édition
+    clearBirthday(member) {
+      this.birthdayError = ''
+      member.birthday = ''
+    },
+
+    updateMemberBirthday(member) {
+      // impossible de sauvegarder une date vide
+      if (!member.birthday) {
+        this.birthdayError = 'Please select a birth date before saving.'
+        return
+      }
+
+      this.$store.dispatch('updateMember', {
+        name: member.name,
+        birthday: member.birthday,
+      })
+
+      this.birthdayError = ''
+      this.editingMember = ''
+      this.editingField = ''
+    },
 
     /* ---------- name ---------- */
     editMemberName(member) { this.originalName = member.name; this.editingName = member.name; this.editingMember = member.name; this.editingField = 'name' },
@@ -740,17 +989,76 @@ export default {
       this.$store.dispatch('updateMemberName', { oldName: this.originalName, newName: this.editingName })
       this.cancelEdit()
     },
-    cancelEdit() { this.editingMember = ''; this.editingField = ''; this.originalName = ''; this.editingName = '' },
+    cancelEdit() {
+      if (this.editingField === 'birthday' && this.editingMember) {
+        const m = this.members.find(m => m.name === this.editingMember)
+        if (m) m.birthday = this.originalBirthday
+        this.birthdayError = ''
+      }
+
+      this.editingMember = ''
+      this.editingField = ''
+      this.originalName = ''
+      this.editingName = ''
+    },
+    onDeleteHover(member) {
+    this.deleteHoverName = member ? member.name : ''
+    },
+
+    rowDeleteClass(member) {
+      if (this.deleteHoverName !== member.name) return ''
+      return member.gender === 'female'
+        ? 'row-delete-female'
+        : 'row-delete-male'
+    },
   },
 }
 </script>
 
 <style>
-.members-page{
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
+.members-page {
+  padding: 0 20px;
 }
 
+/* table variants */
+.mobile-table{ display: none; }
+
+.who-col{ width: 30%; }
+.rel-col{ width: 70%; }
+
+.who-cell{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.who-photo-wrap{
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.who-meta{
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.who-name{
+  font-weight: 800;
+  line-height: 1.1;
+  overflow-wrap: anywhere;
+}
+
+.who-age,
+.who-bday{
+  font-size: 12px;
+  line-height: 1.1;
+}
 .rel-choose-title{
   font-weight: 900;
   margin: 6px 0 10px;
@@ -785,39 +1093,176 @@ export default {
   color: green;
 }
 
+/* ===== SORT TOGGLE (header) ===== */
+.sort-toggle{
+  position: relative;
+  margin-left: 4px;
+  padding: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  outline: none;
 
-.custom-table{
-  width: 100%;
-  border-collapse: collapse;
-  table-layout: auto;
-  background-color: var(--lightGrey);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent;
+  transition:
+    background-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 120ms ease;
+}
+
+/* light / dark base */
+.sort-toggle--light{
+  background: rgba(0,0,0,0.02);
+}
+.sort-toggle--dark{
+  background: rgba(255,255,255,0.06);
+}
+
+/* hover “bubble” */
+.sort-toggle:hover{
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+}
+
+/* petit ripple quand on clique */
+.sort-toggle:active{
+  transform: translateY(0) scale(0.96);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+
+/* icône double flèche */
+.sort-toggle__icon{
+  position: relative;
+  width: 14px;
+  height: 14px;
+}
+
+/* flèche haut */
+.sort-toggle__icon::before,
+.sort-toggle__icon::after{
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  transform: translateX(-50%);
+  transition:
+    border-color 160ms ease,
+    opacity 160ms ease,
+    transform 160ms ease;
+}
+
+/* up */
+.sort-toggle__icon::before{
+  top: 1px;
+  border-bottom-width: 6px;
+  border-bottom-style: solid;
+}
+
+/* down */
+.sort-toggle__icon::after{
+  bottom: 1px;
+  border-top-width: 6px;
+  border-top-style: solid;
+}
+
+/* couleurs par défaut (neutre) */
+.sort-toggle--light .sort-toggle__icon::before,
+.sort-toggle--light .sort-toggle__icon::after{
+  border-bottom-color: rgba(0,0,0,0.35);
+  border-top-color:    rgba(0,0,0,0.35);
+}
+.sort-toggle--dark .sort-toggle__icon::before,
+.sort-toggle--dark .sort-toggle__icon::after{
+  border-bottom-color: rgba(255,255,255,0.65);
+  border-top-color:    rgba(255,255,255,0.65);
+}
+
+/* ===== état ASC : flèche haut bleue, bas atténuée ===== */
+.sort-toggle--asc .sort-toggle__icon::before{
+  border-bottom-color: #00aaff;          /* flèche active */
+  transform: translateX(-50%) translateY(-1px);
+}
+.sort-toggle--asc .sort-toggle__icon::after{
+  opacity: 0.45;
+  transform: translateX(-50%) translateY(1px);
+}
+
+/* ===== état DESC : flèche bas bleue, haut atténuée ===== */
+.sort-toggle--desc .sort-toggle__icon::after{
+  border-top-color: #00aaff;
+  transform: translateX(-50%) translateY(1px);
+}
+.sort-toggle--desc .sort-toggle__icon::before{
+  opacity: 0.45;
+  transform: translateX(-50%) translateY(-1px);
+}
+
+/* petit glow aqua quand actif */
+.sort-toggle--asc,
+.sort-toggle--desc{
+  box-shadow: 0 0 0 1px rgba(0,170,255,0.25);
+}
+.dark .sort-toggle--asc,
+.dark .sort-toggle--desc,
+.sort-toggle--dark.sort-toggle--asc,
+.sort-toggle--dark.sort-toggle--desc{
+  box-shadow: 0 0 0 1px rgba(0,170,255,0.5);
 }
 
 .custom-table {
-  border-collapse: collapse;
-  width: 100vw;
+  width: 100%;
   table-layout: auto;
+  border-collapse: collapse;
   background-color: var(--lightGrey);
 }
 
-.custom-table thead td {
+.custom-table thead th {
   position: sticky;
   top: 60px;
-  z-index: 50;
+  z-index: 10;
   background-color: var(--lightGrey);
   box-shadow: 0 2px 0 rgba(0,0,0,0.06);
 }
-
-.custom-table thead td { top: 60px; }
 
 .table_header {
   color: black;
   font-weight: bold;
   text-transform: uppercase;
-  box-shadow: inset 0 -1px 0 0 white;
-  text-align:center;
+  /*box-shadow: inset 0 -1px 0 0 white;*/
+  text-align: center;
+  background-color:transparent;
+  border:solid 2px white;
+  padding: 10px 0;
 }
 .table_header.dark { color: white; }
+
+
+.edit_photo_button {
+  background-color: white;
+  color: black;
+  border: none;
+  padding: 5px 10px;
+  font-size: 15px;
+  cursor: pointer;
+  margin:2px 5px 5px 0;
+  border-radius:5px;
+}
+
+.birthday-error{
+  margin-top: 6px;
+  color: #ff4d4f;
+  font-size: 13px;
+  font-weight: 600;
+}
 
 td {
   border: 2px solid white;
@@ -833,6 +1278,10 @@ td.column_photo,
 td.column_name,
 td.column_age {
   vertical-align: middle;
+}
+
+td.column_photo {
+  text-align:center;
 }
 
 .edit_member_box { cursor: pointer; }
@@ -888,13 +1337,23 @@ td.column_age {
   border-right: 18px solid transparent;
 }
 
-/* Homme = bleu */
+.photo-cell--male img {
+  border: 1px solid var(--blue);
+  border-radius: 6px;
+  box-shadow: 0 0 6px var(--blue);
+}
+
 .photo-cell--male::before{
   border-top: 18px solid var(--blue);
   border-right: 18px solid transparent;
 }
 
-/* Femme = rose */
+.photo-cell--female img {
+  border: 1px solid var(--pink);
+  border-radius: 6px;
+  box-shadow: 0 0 6px var(--pink);
+}
+
 .photo-cell--female::before{
   border-top: 18px solid var(--pink);
   border-right: 18px solid transparent;
@@ -943,8 +1402,8 @@ td.column_age {
 .married-checkbox { text-align: left; color: red; font-weight: bold; }
 .married-checkbox input[type="checkbox"] { accent-color: red; }
 
-.siblings_checkbox { text-align: left; color: var(--orange); font-weight: bold; }
-.siblings_checkbox input[type="checkbox"] { accent-color: var(--orange); }
+.siblings-checkbox { text-align: left; color: var(--orange); font-weight: bold; }
+.siblings-checkbox input[type="checkbox"] { accent-color: var(--orange); }
 
 .rel-text { margin-left: 8px; }
 .rel-item { margin-left: 8px; display: inline-block; }
@@ -1115,10 +1574,29 @@ td.column_age {
   box-shadow: inset 0 0 0 2px rgba(0, 170, 255, 0.35);
 }
 
+.editable-cell--male.editable-cell--hover{
+  background: rgba(0, 170, 255, 0.08);
+  box-shadow: inset 0 0 0 2px rgba(0, 170, 255, 0.35);
+}
+.editable-cell--female.editable-cell--hover{
+  background: rgba(255, 105, 180, 0.10); /* rose clair */
+  box-shadow: inset 0 0 0 2px rgba(255, 105, 180, 0.45);
+}
+
+.dark .editable-cell--male.editable-cell--hover{
+  background: rgba(0, 170, 255, 0.14);
+  box-shadow: inset 0 0 0 2px rgba(0, 170, 255, 0.55);
+}
+
+.dark .editable-cell--female.editable-cell--hover{
+  background: rgba(255, 105, 180, 0.18);
+  box-shadow: inset 0 0 0 2px rgba(255, 105, 180, 0.6);
+}
+
 /* Dark mode : un peu plus lumineux */
 .table_header.dark ~ tbody .editable-cell--hover,
 .dark .editable-cell--hover{
-  background: rgba(0, 170, 255, 0.12);
+  /*background: rgba(0, 170, 255, 0.12);*/
   box-shadow: inset 0 0 0 2px rgba(0, 170, 255, 0.45);
 }
 
@@ -1167,5 +1645,471 @@ td.column_age {
   box-shadow: 0 10px 22px rgba(0,0,0,0.55);
 }
 
+/* ===== ROW DELETE HIGHLIGHT ===== */
+
+/* base commune */
+.row-delete-male td,
+.row-delete-female td{
+  position: relative;
+  background-image: linear-gradient(
+    to right,
+    rgba(0,0,0,0.01),
+    rgba(0,0,0,0.01)
+  );
+  transition: background-color 160ms ease;
+}
+
+/* contour + glow bleu */
+.row-delete-male td{
+  box-shadow:
+    inset 0 0 0 2px rgba(0,170,255,0.85),
+    0 0 16px rgba(0,170,255,0.45);
+  animation: rowPulseMale 0.5s ease-out;
+}
+
+/* contour + glow rose */
+.row-delete-female td{
+  box-shadow:
+    inset 0 0 0 2px rgba(255,105,180,0.9),
+    0 0 16px rgba(255,105,180,0.55);
+  animation: rowPulseFemale 0.5s ease-out;
+}
+
+/* petites pulsations “danger” */
+@keyframes rowPulseMale{
+  0%   { box-shadow: inset 0 0 0 0 rgba(0,170,255,0.0), 0 0 0 rgba(0,170,255,0.0); }
+  40%  { box-shadow: inset 0 0 0 3px rgba(0,170,255,0.9), 0 0 20px rgba(0,170,255,0.6); }
+  100% { box-shadow: inset 0 0 0 2px rgba(0,170,255,0.85), 0 0 16px rgba(0,170,255,0.45); }
+}
+
+@keyframes rowPulseFemale{
+  0%   { box-shadow: inset 0 0 0 0 rgba(255,105,180,0.0), 0 0 0 rgba(255,105,180,0.0); }
+  40%  { box-shadow: inset 0 0 0 3px rgba(255,105,180,1), 0 0 22px rgba(255,105,180,0.7); }
+  100% { box-shadow: inset 0 0 0 2px rgba(255,105,180,0.9), 0 0 16px rgba(255,105,180,0.55); }
+}
+
+/* mettre la poubelle encore plus en avant dans cet état */
+.row-delete-male .shake_bin,
+.row-delete-female .shake_bin{
+  animation: shake_bin 0.5s infinite;
+}
+
+/* Default (desktop) member photo sizing */
+.member-photo{
+  width: 96px;
+  height: 96px;
+  object-fit: cover;
+  display: block;
+}
+
+/* ===== Mobile responsive adjustments ===== */
+.birth-short{ display: none; }
+
+/* hidden on desktop */
+.row-delete-x{ display: none; }
+
+@media (max-width: 480px){
+  /* switch to the 2-column mobile table */
+  .desktop-table{ display: none; }
+  .mobile-table{ display: table; }
+
+  table{ font-size: 12px; }
+  /* tighter spacing between members */
+  td, th{ padding: 4px 5px; }
+
+  /* Full-width rows + room for the mobile delete cross */
+  tr.list-item{ position: relative; }
+
+  /* Place the delete cross in the WHO cell (not on top of the photo) */
+  .who-col{ position: relative; }
+  .who-photo-wrap{ position: static; }
+  .who-cell{ padding-top: 18px; }
+
+  /* Reduce member photo size */
+  .member-photo{
+    width: 52px !important;
+    height: 52px !important;
+  }
+
+  .mobile-table td{ vertical-align: top; }
+  .who-cell{ gap: 8px; }
+
+  /* Smaller selected member names + smaller checkboxes */
+  .rel-text,
+  .rel-item{
+    font-size: 11px;
+    margin-left: 4px;
+  }
+
+  .married-checkbox,
+  .siblings_checkbox,
+  .children-checkbox{
+    font-size: 11px;
+  }
+
+  .married-checkbox input[type="checkbox"],
+  .siblings-checkbox input[type="checkbox"],
+  .children-checkbox input[type="checkbox"]{
+    transform: scale(0.85);
+    transform-origin: left center;
+  }
+
+  /* Remove the last (trash) column on the desktop table (mobile viewport) */
+  .desktop-table thead th:last-child,
+  .desktop-table tbody td:last-child{
+    display: none;
+  }
+
+  /* Alternative mobile delete control */
+  .row-delete-x{
+    display: inline-flex;
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    right: auto;
+    width: 26px;
+    height: 26px;
+    border-radius: 999px;
+    border: none;
+    background: rgba(0,0,0,0.12);
+    font-size: 18px;
+    line-height: 1;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 5;
+  }
+
+  body.dark .row-delete-x{
+    background: rgba(255,255,255,0.18);
+    color: white;
+  }
+
+  .age-suffix{ display: none; }
+
+  .birth-long{ display: none; }
+  .birth-short{ display: inline; }
+
+  .relationship-actions{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: stretch;
+  }
+  .relationship-actions .rel-btn{ width: 100%; }
+
+  .rel-btn{
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .married-checkbox,
+  .siblings_checkbox,
+  .children-checkbox{
+    display: block;
+    margin-bottom: 4px;
+  }
+}
+
+
+
+.custom-table.mobile-table .rel-item{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+}
+.custom-table.mobile-table .rel-item input[type="checkbox"]{
+  margin:0 4px 0 0;
+}
+
+
+.custom-table.mobile-table .married-checkbox,
+.custom-table.mobile-table .siblings-checkbox,
+.custom-table.mobile-table .children-checkbox{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.custom-table.mobile-table .married-checkbox .rel-icon,
+.custom-table.mobile-table .siblings-checkbox .rel-icon,
+.custom-table.mobile-table .children-checkbox .rel-icon{
+  margin-right:0 !important; /* gap handles spacing */
+  flex:0 0 auto;
+}
+
+.custom-table.mobile-table .married-checkbox .rel-item:first-of-type,
+.custom-table.mobile-table .siblings-checkbox .rel-item:first-of-type,
+.custom-table.mobile-table .children-checkbox .rel-item:first-of-type{
+  margin-left:0 !important;
+}
+
+
+
+.custom-table.mobile-table td.rel-col .married-checkbox,
+.custom-table.mobile-table td.rel-col .siblings-checkbox,
+.custom-table.mobile-table td.rel-col .children-checkbox{
+  display:flex !important;
+  align-items:center !important;
+  flex-wrap:wrap;
+  column-gap:4px; /* icon -> first checkbox spacing */
+  row-gap:4px;
+}
+
+.custom-table.mobile-table td.rel-col .married-checkbox .rel-icon,
+.custom-table.mobile-table td.rel-col .siblings-checkbox .rel-icon,
+.custom-table.mobile-table td.rel-col .children-checkbox .rel-icon{
+  margin-right:0 !important; /* override inline styles */
+}
+
+.custom-table.mobile-table td.rel-col .rel-item{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:4px; /* checkbox -> name spacing */
+  margin:0 !important;
+}
+
+.custom-table.mobile-table td.rel-col .rel-item input[type="checkbox"]{
+  margin:0 !important;
+}
+
+
+
+
+/* Mobile: identical spacing for Married / Siblings / Children relationship lines */
+.custom-table.mobile-table td.rel-col .married-checkbox,
+.custom-table.mobile-table td.rel-col .siblings-checkbox,
+.custom-table.mobile-table td.rel-col .children-checkbox{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:6px;           /* icon <-> first item */
+}
+
+.custom-table.mobile-table td.rel-col .rel-icon{
+  margin:0 !important; /* neutralize any inline margins */
+}
+
+.custom-table.mobile-table td.rel-col .rel-item{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;           /* checkbox <-> name */
+  margin:0;
+  white-space:nowrap;
+}
+
+.custom-table.mobile-table td.rel-col .rel-item input[type="checkbox"]{
+  margin:0 !important;
+}
+
+
+/* Ensure siblings labels and checkboxes are orange on mobile */
+.custom-table.mobile-table td.rel-col .siblings-checkbox,
+.custom-table.mobile-table td.rel-col .siblings-checkbox .rel-item{
+  color: var(--orange);
+  font-weight: bold;
+}
+.custom-table.mobile-table td.rel-col .siblings-checkbox input[type="checkbox"]{
+  accent-color: var(--orange);
+}
+
+
+/* Desktop: normalize spacing for Married / Siblings / Children relationship lines */
+.custom-table.desktop-table td .married-checkbox,
+.custom-table.desktop-table td .siblings-checkbox,
+.custom-table.desktop-table td .children-checkbox{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:6px;            /* icon <-> first item */
+}
+
+.custom-table.desktop-table td .married-checkbox .rel-icon,
+.custom-table.desktop-table td .siblings-checkbox .rel-icon,
+.custom-table.desktop-table td .children-checkbox .rel-icon{
+  margin-right:0 !important;
+}
+
+.custom-table.desktop-table td .rel-item{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;            /* checkbox <-> name */
+  margin-left:0 !important;  /* overrides old rel-item/rel-text margins */
+  white-space:nowrap;
+}
+
+.custom-table.desktop-table td .rel-item input[type="checkbox"]{
+  margin:0 !important;
+}
+
+</style>
+
+<style scoped>
+.member-actions-delete{
+ position:absolute;
+ top:8px;
+ right:8px;
+}
+.member-photo{cursor:pointer;}
+.member-photo-options{
+ position:absolute;
+ top:0;left:0;right:0;bottom:0;
+ background:rgba(0,0,0,0.6);
+ display:flex;
+ flex-direction:column;
+ justify-content:center;
+ align-items:center;
+}
+
+.row-delete-x--mobile-rel{
+  position:absolute;
+  top:6px;
+  right:6px;
+  left:auto !important;
+  z-index:10;
+}
+.custom-table.mobile-table td.rel-col{
+  position:relative;
+}
+.mobile-photo-edit{
+  margin-top:8px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+.mobile-photo-edit .edit_photo_button{
+  font-size:12px;
+  padding:6px 10px;
+}
+
+
+.custom-table.mobile-table .rel-item{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+}
+.custom-table.mobile-table .rel-item input[type="checkbox"]{
+  margin:0 4px 0 0;
+}
+
+
+.custom-table.mobile-table .married-checkbox,
+.custom-table.mobile-table .siblings-checkbox,
+.custom-table.mobile-table .children-checkbox{
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+
+.custom-table.mobile-table .married-checkbox .rel-icon,
+.custom-table.mobile-table .siblings-checkbox .rel-icon,
+.custom-table.mobile-table .children-checkbox .rel-icon{
+  margin-right:0 !important; /* gap handles spacing */
+  flex:0 0 auto;
+}
+
+.custom-table.mobile-table .married-checkbox .rel-item:first-of-type,
+.custom-table.mobile-table .siblings-checkbox .rel-item:first-of-type,
+.custom-table.mobile-table .children-checkbox .rel-item:first-of-type{
+  margin-left:0 !important;
+}
+
+
+
+.custom-table.mobile-table td.rel-col .married-checkbox,
+.custom-table.mobile-table td.rel-col .siblings-checkbox,
+.custom-table.mobile-table td.rel-col .children-checkbox{
+  display:flex !important;
+  align-items:center !important;
+  flex-wrap:wrap;
+  column-gap:4px; /* icon -> first checkbox spacing */
+  row-gap:4px;
+}
+
+.custom-table.mobile-table td.rel-col .married-checkbox .rel-icon,
+.custom-table.mobile-table td.rel-col .siblings-checkbox .rel-icon,
+.custom-table.mobile-table td.rel-col .children-checkbox .rel-icon{
+  margin-right:0 !important; /* override inline styles */
+}
+
+.custom-table.mobile-table td.rel-col .rel-item{
+  display:inline-flex !important;
+  align-items:center !important;
+  gap:4px; /* checkbox -> name spacing */
+  margin:0 !important;
+}
+
+.custom-table.mobile-table td.rel-col .rel-item input[type="checkbox"]{
+  margin:0 !important;
+}
+
+
+
+
+/* Mobile: identical spacing for Married / Siblings / Children relationship lines */
+.custom-table.mobile-table td.rel-col .married-checkbox,
+.custom-table.mobile-table td.rel-col .siblings-checkbox,
+.custom-table.mobile-table td.rel-col .children-checkbox{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:6px;           /* icon <-> first item */
+}
+
+.custom-table.mobile-table td.rel-col .rel-icon{
+  margin:0 !important; /* neutralize any inline margins */
+}
+
+.custom-table.mobile-table td.rel-col .rel-item{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;           /* checkbox <-> name */
+  margin:0;
+  white-space:nowrap;
+}
+
+.custom-table.mobile-table td.rel-col .rel-item input[type="checkbox"]{
+  margin:0 !important;
+}
+
+
+/* Ensure siblings labels and checkboxes are orange on mobile */
+.custom-table.mobile-table td.rel-col .siblings-checkbox,
+.custom-table.mobile-table td.rel-col .siblings-checkbox .rel-item{
+  color: var(--orange);
+  font-weight: bold;
+}
+.custom-table.mobile-table td.rel-col .siblings-checkbox input[type="checkbox"]{
+  accent-color: var(--orange);
+}
+
+
+/* Desktop: normalize spacing for Married / Siblings / Children relationship lines */
+.custom-table.desktop-table td .married-checkbox,
+.custom-table.desktop-table td .siblings-checkbox,
+.custom-table.desktop-table td .children-checkbox{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:6px;            /* icon <-> first item */
+}
+
+.custom-table.desktop-table td .married-checkbox .rel-icon,
+.custom-table.desktop-table td .siblings-checkbox .rel-icon,
+.custom-table.desktop-table td .children-checkbox .rel-icon{
+  margin-right:0 !important;
+}
+
+.custom-table.desktop-table td .rel-item{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;            /* checkbox <-> name */
+  margin-left:0 !important;  /* overrides old rel-item/rel-text margins */
+  white-space:nowrap;
+}
+
+.custom-table.desktop-table td .rel-item input[type="checkbox"]{
+  margin:0 !important;
+}
 
 </style>

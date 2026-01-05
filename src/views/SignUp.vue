@@ -451,9 +451,49 @@ export default {
 }
 
 @media (max-width: 980px){
-  .content{ grid-template-columns: 1fr; }
-  .side{ display: none; }
-  .form-card{ max-width: 520px; margin: 0 auto; }
+  
+  .form-card{
+    width: 100%;
+    max-width: 360px;
+    box-sizing: border-box;
+    padding-left: 16px;
+    padding-right: 16px;
+    animation: none !important;
+  }
+  .form-card *{
+    box-sizing: border-box;
+  }
+  .form-card input{
+    max-width: 100%;
+  }
+/* Mobile: show only the Sign Up form (avoid off-screen/hidden panels). */
+  .content{
+    display: flex;
+    flex-direction: column;
+    /* No vertical centering on mobile: keep the form fully visible */
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0;
+    padding: 18px 12px 24px;
+    min-height: auto;
+  }
+
+  .side{ display: none !important; }
+
+  .form-card{
+    width: 100%;
+    max-width: 360px;
+    margin: 0 auto;
+    animation: none !important;
+    transform: none !important;
+    opacity: 1 !important;
+  }
+
+  /* Disable all animations/transitions in responsive (form must appear immediately) */
+  .content *{
+    animation: none !important;
+    transition: none !important;
+  }
 }
 
 .couple-demo{
