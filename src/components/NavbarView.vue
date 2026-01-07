@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="navbar" :class="{ dark: darkMode }">
+        <div class="navbar" :class="{ dark: darkMode, 'no-user': !user }">
             <!-- overlay animation -->
             <div
                 class="lightswitch-overlay"
@@ -13,10 +13,10 @@
                 <!-- NAVBAR / LEFT ITEMS -->
                 <template v-if="user">
                     <div @click="changeTab('Home')" class="navbar-items">
-                        <img v-if="activeTab === 'Home' && darkMode" src="../assets/home_fill_dark.png" />
-                        <img v-else-if="activeTab === 'Home' && !darkMode" src="../assets/home_fill.png" />
-                        <img v-else-if="activeTab !== 'Home' && darkMode" src="../assets/home_dark.png" />
-                        <img v-else src="../assets/home.png" />
+                        <img v-if="activeTab === 'Home' && darkMode" src="../assets/google_icons_home_fill_dark.png" />
+                        <img v-else-if="activeTab === 'Home' && !darkMode" src="../assets/google_icons_home_fill.png" />
+                        <img v-else-if="activeTab !== 'Home' && darkMode" src="../assets/google_icons_home_dark.png" />
+                        <img v-else src="../assets/google_icons_home.png" />
                     </div>
                     <div @click="changeTab('Add-Member')" :class="{ active: activeTab === 'Accueil', dark: darkMode }" class="navbar-items">Add a member</div>
                     <div @click="changeTab('Tree')" :class="{ active: activeTab === 'Tree', dark: darkMode }" class="navbar-items">Tree</div>
@@ -40,53 +40,75 @@
                 </svg>
             </button>
 
+            <img class="navbar-logo" style="width:100px; height:30px; margin:0 auto" :src="require('../assets/app_logo.png')" alt="Relatly logo" />
+
             <!-- NAVBAR / RIGHT ITEMS -->
             <div class="navbar-right">
                 <div @click="toggleDarkMode" class="navbar-items sun">
-                    <img v-if="darkMode" src="../assets/moon.png" title="DARK MODE" />
-                    <img v-else src="../assets/sun.png" title="LIGHT MODE" />
+                  <img v-if="darkMode" src="../assets/moon.png" title="DARK MODE" />
+                  <img v-else src="../assets/sun.png" title="LIGHT MODE" />
                 </div>
                 
                 <template v-if="user">
-                    <div @click="changeTab('Profile')" class="logout-container">
-                        <img v-if="activeTab === 'Profile' && darkMode" src="../assets/account_fill_dark.png" class="profile-icon" />
-                        <img v-else-if="activeTab === 'Profile' && !darkMode" src="../assets/account_fill.png" class="profile-icon" />
-                        <img v-else-if="darkMode" src="../assets/account_dark.png" class="profile-icon" />
-                        <img v-else src="../assets/account.png" class="profile-icon" />
-                        <span class="logout-text" v-if="!darkMode">My Profile</span>
-                        <span class="logout-text" style="color:white" v-if="darkMode">My Profile</span>
-                    </div>
-                    <div @click="logout" class="navbar-items logout-container">
-                        <img :src="darkMode ? require('../assets/logout_dark.png') : require('../assets/logout.png')" alt="Logout Icon" class="logout-icon" />
-                        <span class="logout-text" v-if="!darkMode">Logout</span>
-                        <span class="logout-text" style="color:white" v-if="darkMode">Logout</span>
-                    </div>
+                  <div @click="changeTab('Profile')" class="logout-container">
+                    <img v-if="activeTab === 'Profile' && darkMode" src="../assets/google_icons_account_fill_dark.png" class="profile-icon" />
+                    <img v-else-if="activeTab === 'Profile' && !darkMode" src="../assets/google_icons_account_fill.png" class="profile-icon" />
+                    <img v-else-if="darkMode" src="../assets/google_icons_account_dark.png" class="profile-icon" />
+                    <img v-else src="../assets/google_icons_account.png" class="profile-icon" />
+                    <span class="logout-text" v-if="!darkMode">My Profile</span>
+                    <span class="logout-text" style="color:white" v-if="darkMode">My Profile</span>
+                  </div>
+                  <div @click="logout" class="navbar-items logout-container">
+                    <img :src="darkMode ? require('../assets/google_icons_logout_dark.png') : require('../assets/google_icons_logout.png')" alt="Logout Icon" class="logout-icon" />
+                    <span class="logout-text" v-if="!darkMode">Logout</span>
+                    <span class="logout-text" style="color:white" v-if="darkMode">Logout</span>
+                  </div>
                 </template>
             </div>
         </div>
 
         <!-- MOBILE MENU DROPDOWN -->
         <div
-            v-if="user && mobileMenuOpen"
-            class="mobile-menu"
-            :class="{ dark: darkMode }"
+          v-if="user && mobileMenuOpen"
+          class="mobile-menu"
+          :class="{ dark: darkMode }"
         >
-            <div class="mobile-menu-inner">
-                <div @click="mobileNav('Home')" class="mobile-item">Home</div>
-                <div @click="mobileNav('Add-Member')" class="mobile-item">Add a member</div>
-                <div @click="mobileNav('Tree')" class="mobile-item">Tree</div>
-                <div @click="mobileNav('Members')" class="mobile-item">Members</div>
-                <div
-                    v-if="user && (user.role === 'admin' || user.role === 'superadmin')"
-                    @click="mobileNav('Admin')"
-                    class="mobile-item"
-                >
-                    Admin
-                </div>
-                <div class="mobile-sep" />
-                <div @click="mobileNav('Profile')" class="mobile-item">My Profile</div>
-                <div @click="mobileLogout" class="mobile-item">Logout</div>
+          <div class="mobile-menu-inner">
+            <div @click="mobileNav('Home')" class="mobile-item">
+              <img :src="darkMode ? require('../assets/google_icons_home_dark.png') : require('../assets/google_icons_home.png')" alt="Logout Icon" class="logout-icon" />
+              Home
             </div>
+            <div @click="mobileNav('Add-Member')" class="mobile-item">
+              <img :src="darkMode ? require('../assets/google_icons_add_a_member_dark.png') : require('../assets/google_icons_add_a_member.png')" alt="Logout Icon" class="logout-icon" />
+              Add a member
+            </div>
+            <div @click="mobileNav('Tree')" class="mobile-item">
+              <img :src="darkMode ? require('../assets/google_icons_tree_dark.png') : require('../assets/google_icons_tree.png')" alt="Logout Icon" class="logout-icon" />
+              Tree
+            </div>
+            <div @click="mobileNav('Members')" class="mobile-item">
+              <img :src="darkMode ? require('../assets/google_icons_members_dark.png') : require('../assets/google_icons_members.png')" alt="Logout Icon" class="logout-icon" />
+              Members
+            </div>
+            <div
+              v-if="user && (user.role === 'admin' || user.role === 'superadmin')"
+              @click="mobileNav('Admin')"
+              class="mobile-item"
+            >
+            <img :src="darkMode ? require('../assets/google_icons_key_dark.png') : require('../assets/google_icons_key.png')" alt="Logout Icon" class="logout-icon" />
+              Admin
+            </div>
+            <div class="mobile-sep" />
+            <div @click="mobileNav('Profile')" class="mobile-item">
+              <img :src="darkMode ? require('../assets/google_icons_account_dark.png') : require('../assets/google_icons_account.png')" alt="Logout Icon" class="logout-icon" />
+              My Profile
+            </div>
+            <div @click="mobileLogout" class="mobile-item">
+              <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_logout_dark.png')" alt="" />
+              <img v-else class="btn-icon" :src="require('@/assets/google_icons_logout.png')" alt="" />
+              Logout
+            </div>
+        </div>
         </div>
     </div>
 </template>
@@ -170,6 +192,30 @@ export default {
 </script>
 
 <style>
+.mobile-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.navbar-logo {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 100px;
+  height: 30px;
+  object-fit: contain;
+  pointer-events: none;
+}
+
 .lightswitch-overlay {
   position: absolute;
   inset: 0;
@@ -282,6 +328,18 @@ export default {
 }
 
 @media (max-width: 780px) {
+
+/* Mobile: hamburger left, theme icon right (also works on SignIn/SignUp where user is null) */
+.navbar{
+  justify-content: flex-start;
+}
+.navbar-right{
+  margin-left: auto;
+}
+.hamburger{
+  order: -1;
+}
+
   /* reduce navbar content for mobile */
   .navbar-left {
     display: none;

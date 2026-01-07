@@ -79,7 +79,7 @@
     </fieldset>
 
     <!-- RELATIONSHIP -->
-    <fieldset class="filter-group">
+    <fieldset class="filter-group" v-if="relationshipAvailable">
       <legend class="filter-group__legend">Relationship</legend>
       <div class="filter-options">
         <label
@@ -135,10 +135,8 @@
 <script>
 export default {
   props: {
-    isFiltersPanelVisible: {
-      type: Boolean,
-      required: true,
-    },
+    isFiltersPanelVisible: { type: Boolean, required: true },
+    relationshipAvailable: { type: Boolean, default: true },
   },
   data() {
     return {
@@ -152,6 +150,12 @@ export default {
     }
   },
   watch: {
+    relationshipAvailable(val) {
+      if (!val && this.selectedRelationship !== '') {
+        this.selectedRelationship = ''
+        this.$emit('relationship-filter-changed', '')
+      }
+    },
     selectedGender(newGender) {
       this.$emit('gender-filter-changed', newGender);
       if (newGender !== '' && this.selectedRelationship === 'married') {

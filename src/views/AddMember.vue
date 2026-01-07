@@ -3,10 +3,10 @@
     <p class="title">Add a member</p>
 
     <form
-  class="form"
-  :class="{ 'form--behind-celebrate': showCelebrate }"
-  @submit.prevent="createMember"
->
+      class="form"
+      :class="{ 'form--behind-celebrate': showCelebrate }"
+      @submit.prevent="createMember"
+    >
       <!-- NAME -->
       <div class="form_input_container">
         <p class="form_text" :class="{ dark: darkMode }">* Name</p>
@@ -70,7 +70,11 @@
       <div class="form_input_container">
         <p class="form_text" :class="{ dark: darkMode }">Photo</p>
         <div class="form_input photo-line">
-          <label for="image" class="button">Choose a file</label>
+          <label for="image" class="edit_photo_button" :class="{ dark:darkMode }">
+            <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_create_dark.png')" alt="" />
+            <img v-else class="btn-icon" :src="require('@/assets/google_icons_create.png')" alt="" />
+              Choose a file
+            </label>
           <input type="file" name="image" id="image" @change="handleImageUpload" style="display:none;" />
 
           <!-- preview -->
@@ -103,8 +107,8 @@
     </form>
 
     <transition name="celebrate">
-      <div v-if="showCelebrate" class="celebrate-overlay" @click="closeCelebrate">
-        <div class="celebrate-card" @click.stop>
+      <div v-if="showCelebrate" class="celebrate-overlay" :class="{ dark:darkMode }" @click="closeCelebrate">
+        <div class="celebrate-card" :class="{ dark:darkMode }" @click.stop>
           <div class="sparkles" aria-hidden="true">
             <span v-for="n in 10" :key="n" class="spark"></span>
           </div>
@@ -113,17 +117,17 @@
             <span v-for="n in 18" :key="n" class="confetti-piece"></span>
           </div>
 
-          <div class="celebrate-header">
+          <div class="celebrate-header" :class="{ dark:darkMode }">
             <div class="badge">NEW MEMBER</div>
             <h2>Welcome {{ createdMember?.name }}!</h2>
             <p class="sub">Added to your family</p>
           </div>
 
-          <div class="member-card">
+          <div class="member-card" :class="{ dark:darkMode }">
             <div class="avatar" ref="celebrateAvatar">
               <img :src="createdMember?.image" alt="avatar" />
             </div>
-            <div class="info">
+            <div class="info" :class="{ dark:darkMode }">
               <div class="line"><strong>Name:</strong> {{ createdMember?.name }}</div>
               <div class="line"><strong>Age:</strong> {{ createdMember?.age }}</div>
               <div class="line"><strong>Gender:</strong> {{ createdMember?.gender }}</div>
@@ -412,16 +416,11 @@ export default {
   height: fit-content;
 }
 
-.form_input {
-  height: 30px;
-  display: flex;
-  align-items: center;
-}
-
 input.form_input {
   width: 150px;
   border: 1px solid var(--input-border-color);
   border-radius: 8px;
+  height: 30px;
 }
 
 input.form_input.dark {
@@ -436,7 +435,6 @@ input.form_input.dark {
 .gender-box {
   padding: 2px 0px;
   border-radius: 10px;
-  margin-left:-10px;
 }
 .invalidBox {
   outline: 2px solid red;
@@ -549,6 +547,10 @@ input.form_input.dark {
   animation: popCard 420ms cubic-bezier(.2,.9,.2,1.1);
 }
 
+.dark.celebrate-card {
+  background-color: black;
+}
+
 @keyframes popCard {
   0% { transform: scale(.90) translateY(10px); opacity: 0; }
   70% { transform: scale(1.03) translateY(0); opacity: 1; }
@@ -558,6 +560,10 @@ input.form_input.dark {
 .celebrate-header {
   text-align: center;
   padding: 6px 0 10px 0;
+}
+
+.dark.celebrate-header {
+  background-color:black;
 }
 
 .badge {
@@ -593,6 +599,11 @@ input.form_input.dark {
   border: 1px solid rgba(0,0,0,.05);
 }
 
+.dark.member-card {
+  background-color: black;
+  border:1px solid rgba(255,255,255,.5);
+}
+
 .avatar {
   width: 92px;
   height: 92px;
@@ -608,6 +619,10 @@ input.form_input.dark {
 }
 
 .info .line { margin: 4px 0; }
+
+.dark.info {
+  background-color: black;
+}
 
 .celebrate-actions {
   margin-top: 12px;

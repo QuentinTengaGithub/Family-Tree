@@ -249,4 +249,20 @@ grid-template-columns: 1fr;
   }
 }
 
+
+
+.auth-logo{
+  display: block;
+  margin: 8px auto 14px auto;
+  width: 150px;
+  max-width: 60vw;
+  height: auto;
+}
+@media (max-width: 780px){
+  .auth-logo{
+    width: 120px;
+    margin: 6px auto 12px auto;
+  }
+}
+
 </style>

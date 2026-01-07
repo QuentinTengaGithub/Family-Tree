@@ -6,6 +6,9 @@
       The members
     </p>
     <!-- Desktop table -->
+    <p class="desktop-edit-hint" v-if="members.length !== 0"><svg class="hint-icon" width="1em" height="1em" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
+  <path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/>
+</svg><span class="hint-text">Click on a member's row to edit their information</span></p>
     <table class="custom-table desktop-table" v-if="members.length > 0">
       <thead>
         <tr>
@@ -24,6 +27,7 @@
               type="button"
               aria-label="Sort by name"
               @click="sortMembersByName"
+              v-if="members.length > 1"
             >
               <span class="sort-toggle__icon"></span>
             </button>
@@ -40,6 +44,7 @@
               type="button"
               aria-label="Sort by age"
               @click="sortMembersByAge"
+              v-if="members.length > 1"
             >
               <span class="sort-toggle__icon"></span>
             </button>
@@ -54,8 +59,6 @@
           <th class="table_header" :class="{ dark: darkMode }"></th>
         </tr>
       </thead>
-
-
 
       <transition-group name="row" tag="tbody">
         <tr
@@ -101,34 +104,50 @@
               <img :src="darkMode ? require('@/assets/edit_dark.png') : require('@/assets/edit.png')" />
             </button>
 
-
-            <div v-if="editingMember === member.name && editingField === 'image'">
+            <div v-if="editingMember === member.name && editingField === 'image'" class="photo-action-bar">
               <button
                 class="edit_photo_button"
+                :class="{ dark: darkMode}"
                 v-if="member.image && !member.image.includes('avatar_male') && !member.image.includes('avatar_female')"
                 @click="triggerFileInput(member)"
               >
-                Change
+                <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_change_dark.png')" alt="" />
+                <img v-else class="btn-icon" :src="require('@/assets/google_icons_change.png')" alt="" />
+                <span>Change</span>
               </button>
-              <button class="edit_photo_button" v-else @click="triggerFileInput(member)">Upload</button>
+              <button class="edit_photo_button" :class="{ dark: darkMode}" v-else @click="triggerFileInput(member)">
+                <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_upload_dark.png')" alt="" />
+                <img v-else class="btn-icon" :src="require('@/assets/google_icons_upload.png')" alt="" />
+                Upload
+              </button>
 
               <button
                 class="edit_photo_button"
+                :class="{ dark: darkMode}"
                 v-if="member.image && !member.image.includes('avatar_male') && !member.image.includes('avatar_female')"
                 @click="openCropper(member)"
               >
-                Crop
+                <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_crop_dark.png')" alt="" />
+                <img v-else class="btn-icon" :src="require('@/assets/google_icons_crop.png')" alt="" />
+                <span>Crop</span>
               </button>
 
               <button
                 class="edit_photo_button"
+                :class="{ dark: darkMode}"
                 v-if="member.image && !member.image.includes('avatar_male') && !member.image.includes('avatar_female')"
                 @click="deleteMemberImage(member)"
               >
-                Delete
+                <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_delete_dark.png')" alt="" />
+                <img v-else class="btn-icon" :src="require('@/assets/google_icons_delete.png')" alt="" />
+                <span>Delete</span>
               </button>
 
-              <button class="edit_photo_button" @click="cancelEdit()">Cancel</button>
+              <button class="edit_photo_button" :class="{ dark: darkMode}" @click="cancelEdit()">
+                <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_cancel_dark.png')" alt="" />
+                <img v-else class="btn-icon" :src="require('@/assets/google_icons_cancel.png')" alt="" />
+                <span>Cancel</span>
+              </button>
             </div>
 
             <input
@@ -150,12 +169,30 @@
             @mouseleave="hoveredCell = ''"
           >
             <span v-if="editingMember !== member.name || editingField !== 'name'">{{ member.name }}</span>
+            <div v-if="editingMember === member.name && editingField === 'name'" class="desktop-inline-edit">
+              <input
+                type="text"
+                class="member_birthday_input desktop-inline-edit__input"
+                :class="{ dark: darkMode }"
+                v-model="editingName"
+                @keyup.enter="saveMemberName()"
+              />
 
-            <div v-if="editingMember === member.name && editingField === 'name'">
-              <input type="text" style="padding: 8px 5px" v-model="editingName" @keyup.enter="saveMemberName()" />
-              <button class="edit_photo_button" @click="saveMemberName()">Save</button>
-              <button class="edit_photo_button" @click="cancelEdit()">Cancel</button>
+              <div class="desktop-inline-edit__actions">
+                <button class="edit_photo_button" :class="{ dark:darkMode }" @click="saveMemberName()">
+                  <img v-if="darkMode" :src="require('@/assets/google_icons_save_dark.png')" alt="" />
+                  <img v-else class="btn-icon" :src="require('@/assets/google_icons_save.png')" alt="" />
+                  Save
+                </button>
+
+                <button class="edit_photo_button" :class="{ dark:darkMode }" @click="cancelEdit()">
+                  <img v-if="darkMode" :src="require('@/assets/google_icons_cancel_dark.png')" alt="" />
+                  <img v-else class="btn-icon" :src="require('@/assets/google_icons_cancel.png')" alt="" />
+                  <span>Cancel</span>
+                </button>
+              </div>
             </div>
+
             <div v-else>
               <button
                 v-if="hoveredCell === member.name + '-name' && (editingMember !== member.name || editingField !== 'name')"
@@ -171,8 +208,8 @@
 
           <!-- AGE -->
           <td>
-            <span v-if="getAge(member) !== null">
-              {{ getAge(member) }} <span class="age-suffix">years old</span>
+            <span v-if="getAge(member) !== null"  class="member-age" :class="{ dark: darkMode }">
+              {{ getAge(member) }} <span class="age-suffix" :class="{ dark: darkMode }">years old</span>
             </span>
             <span v-else>??</span>
           </td>
@@ -181,6 +218,7 @@
           <td
             class="editable-cell"
             :class="[
+              { dark:darkMode },
               { 'editable-cell--hover': hoveredCell === member.name + '-birthday' },
               member.gender === 'female' ? 'editable-cell--female' : 'editable-cell--male'
             ]"
@@ -188,10 +226,27 @@
             @mouseleave="hoveredCell = ''"
           >
             <div v-if="editingMember === member.name && editingField === 'birthday'">
-              <input type="date" style="padding: 8px 5px;" v-model="member.birthday" /><br><br>
-              <button class="edit_photo_button" @click="updateMemberBirthday(member)">Save</button><br>
-              <button class="edit_photo_button" @click="clearBirthday(member)">Clear</button><br>
-              <button class="edit_photo_button" @click="cancelEdit()">Cancel</button>
+              <input type="date"
+                class="member_birthday_input desktop-inline-edit__input" 
+                :class="{ dark:darkMode }" 
+                v-model="member.birthday" />
+              <div class="desktop-inline-edit__actions">
+              <button class="edit_photo_button" :class="{ dark:darkMode }" @click="updateMemberBirthday(member)">
+                <img v-if="darkMode" :class="{ dark:darkMode }" :src="require('@/assets/google_icons_save_dark.png')" alt="" />
+                <img v-else class="btn-icon" :src="require('@/assets/google_icons_save.png')" alt="" />
+                Save
+              </button>
+              <button class="edit_photo_button" :class="{ dark:darkMode }" @click="clearBirthday(member)">
+                <img v-if="darkMode" :class="{ dark:darkMode }" :src="require('@/assets/google_icons_clear_dark.png')" alt="" />
+                <img v-else class="btn-icon" :src="require('@/assets/google_icons_clear.png')" alt="" />
+                Clear
+              </button>
+              <button class="edit_photo_button" :class="{ dark:darkMode }" @click="cancelEdit()">
+                <img v-if="darkMode" :class="{ dark:darkMode }" :src="require('@/assets/google_icons_cancel_dark.png')" alt="" />
+                <img v-else class="btn-icon" :src="require('@/assets/google_icons_cancel.png')" alt="" />
+                <span>Cancel</span>
+              </button>
+            </div>
 
               <p v-if="birthdayError" class="birthday-error">
                 {{ birthdayError }}
@@ -215,7 +270,7 @@
           </td>
 
           <!-- RELATIONSHIPS -->
-          <td>
+          <td class="column_relationship">
             <div v-if="members.length > 1">
               <div class="married-checkbox">
                 <img
@@ -256,17 +311,31 @@
               <div v-if="relationshipMessageByName[member.name]" class="relationship-message">
                 {{ relationshipMessageByName[member.name] }}
               </div>
+              <div class="rel-col-inner"></div>
 
-              <div v-if="!getRelationshipMode(member.name)" class="relationship-actions">
-                <button class="rel-btn rel-btn--married" :class="{ 'rel-btn--disabled': isDisabled(member, 'married') }" @click="startRelationship(member, 'married')">Married</button>
-                <button class="rel-btn rel-btn--siblings" :class="{ 'rel-btn--disabled': isDisabled(member, 'siblings') }" @click="startRelationship(member, 'siblings')">Siblings</button>
-                <button class="rel-btn rel-btn--children" :class="{ 'rel-btn--disabled': isDisabled(member, 'children') }" @click="startRelationship(member, 'children')">Children</button>
+              <!-- Normal mode -->
+              <div v-if="!getRelationshipMode(member.name)" class="relationship-actions-wrap">
+                <div class="relationship-actions-label">Select:</div>
+                <div class="relationship-actions">
+                  <button class="rel-btn rel-btn--married"
+                    :class="{ 'rel-btn--disabled': isDisabled(member, 'married') }"
+                    @click="startRelationship(member, 'married')">Married</button>
+
+                  <button class="rel-btn rel-btn--siblings"
+                    :class="{ 'rel-btn--disabled': isDisabled(member, 'siblings') }"
+                    @click="startRelationship(member, 'siblings')">Siblings</button>
+
+                  <button class="rel-btn rel-btn--children"
+                    :class="{ 'rel-btn--disabled': isDisabled(member, 'children') }"
+                    @click="startRelationship(member, 'children')">Children</button>
+                </div>
               </div>
+
 
               <div v-else style="margin-top: 10px">
                 <hr/>
                 <p class="rel-choose-title" :class="'rel-choose-title--' + getRelationshipMode(member.name)">
-                  {{ relationshipChoiceLabel(getRelationshipMode(member.name)) }}
+                  {{ relationshipChoiceLabel(getRelationshipMode(member.name), member) }}
                 </p>
                 <button
                   v-for="m in candidatesFor(member)"
@@ -283,13 +352,21 @@
                   No member for this relationship
                 </p>
 
-                <button class="cancel_relationship button" @click="cancelRelationshipChoice(member)">Cancel</button>
+                <button class="edit_photo_button" :class="{ dark:darkMode }" @click="cancelRelationshipChoice(member)">
+                <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_cancel_dark.png')" alt="" />
+                <img v-else class="btn-icon" :src="require('@/assets/google_icons_cancel.png')" alt="" />
+                <span>Cancel</span>
+              </button>
               </div>
             </div>
 
             <div v-else>
-              <p style="font-style: italic;">1 member created. No relationship possible.</p>
-              <button @click="goToHome" class="button">Create member</button>
+              <p style="font-style: italic; color:#6A6A6A; font-size:12px">Only 1 member created. No relationship possible.</p>
+              <button @click="goToHome" class="edit_photo_button" :class="{ dark:darkMode }">
+                <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_create_dark.png')" alt="" />
+                <img v-else class="btn-icon" :src="require('@/assets/google_icons_create.png')" alt="" />
+                Create member
+              </button>
             </div>
           </td>
 
@@ -312,7 +389,23 @@
       </transition-group>
     </table>
 
+    <!-- Mobile sort controls (shown only in responsive view) -->
+    <div class="mobile-sortbar" v-if="members.length > 1">
+      <div class="mobile-sortbar__inner" :class="{ dark: darkMode }">
+        <span class="mobile-sortbar__label">Sort by</span>
+        <select class="mobile-sortbar__select" v-model="mobileSort" @change="applyMobileSort">
+          <option value="name_az">Name (A → Z)</option>
+          <option value="name_za">Name (Z → A)</option>
+          <option value="age_young_old">Age (young → old)</option>
+          <option value="age_old_young">Age (old → young)</option>
+        </select>
+      </div>
+    </div>
+
     <!-- Mobile table (2 columns: WHO / RELATIONSHIP) -->
+    <p class="mobile-edit-hint"><svg class="hint-icon" width="1em" height="1em" fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" aria-hidden="true">
+  <path d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/>
+</svg><span class="hint-text">Tap on the member&#x27;s datas to edit them</span></p>
     <table class="custom-table mobile-table" v-if="members.length > 0">
       <thead>
         <tr>
@@ -335,43 +428,131 @@
                 <img class="member-photo" v-if="member.image" :src="member.image" @click.stop="editMemberPhoto(member)" />
                 <img class="member-photo" v-else-if="member.gender === 'male'" src="@/assets/avatar_male.png" @click.stop="editMemberPhoto(member)" />
                 <img class="member-photo" v-else src="@/assets/avatar_female.png" @click.stop="editMemberPhoto(member)" />
-</div>
+              </div>
 
               <div class="mobile-photo-edit" v-if="editingMember === member.name && editingField === 'image'">
                 <button
                   class="edit_photo_button"
+                  :class="{ dark: darkMode }"
                   v-if="member.image && !member.image.includes('avatar_male') && !member.image.includes('avatar_female')"
                   @click="triggerFileInput(member)"
                 >
-                  Change
+                <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_change_dark.png')" alt="" />
+                <img v-else class="btn-icon" :src="require('@/assets/google_icons_change.png')" alt="" />
+                <span>Change</span>
+              </button>
+                <button class="edit_photo_button" :class="{ dark:darkMode }" v-else @click="triggerFileInput(member)">
+                  <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_upload_dark.png')" alt="" />
+                  <img v-else class="btn-icon" :src="require('@/assets/google_icons_upload.png')" alt="" />
+                  Upload
                 </button>
-                <button class="edit_photo_button" v-else @click="triggerFileInput(member)">Upload</button>
-
                 <button
                   class="edit_photo_button"
+                  :class="{ dark:darkMode }"
                   v-if="member.image && !member.image.includes('avatar_male') && !member.image.includes('avatar_female')"
                   @click="openCropper(member)"
                 >
+                  <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_crop_dark.png')" alt="" />
+                  <img v-else class="btn-icon" :src="require('@/assets/google_icons_crop.png')" alt="" />
                   Crop
-                </button>
+              </button>
 
                 <button
                   class="edit_photo_button"
+                  :class="{ dark:darkMode }"
                   v-if="member.image && !member.image.includes('avatar_male') && !member.image.includes('avatar_female')"
                   @click="deleteMemberImage(member)"
                 >
+                  <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_delete_dark.png')" alt="" />
+                  <img v-else class="btn-icon" :src="require('@/assets/google_icons_delete.png')" alt="" />
                   Delete
-                </button>
+              </button>
 
-                <button class="edit_photo_button" @click="cancelEdit()">Cancel</button>
+                <button class="edit_photo_button" :class="{ dark:darkMode }" @click="cancelEdit()">
+                  <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_cancel_dark.png')" alt="" />
+                  <img v-else class="btn-icon" :src="require('@/assets/google_icons_cancel.png')" alt="" />
+                  Cancel
+              </button>
               </div>
 
               <div class="who-meta">
-                <div class="who-name">{{ member.name }}</div>
+                <!-- Name (click to edit in mobile) -->
+                <template v-if="editingMember === member.name && editingField === 'name'">
+                  <input
+                    type="text"
+                    class="mobile-inline-input"
+                    :class="{dark:darkMode}"
+                    v-model="editingName"
+                    @keyup.enter="saveMemberName()"
+                  />
+                  <div class="mobile-inline-actions">
+                    <button class="edit_photo_button" :class="{dark:darkMode}" @click="saveMemberName()">
+                      <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_save_dark.png')" alt="" />
+                      <img v-else class="btn-icon" :src="require('@/assets/google_icons_save.png')" alt="" />
+                      Save
+                    </button>
+                    <button class="edit_photo_button" :class="{dark:darkMode}" @click="cancelEdit()">
+                      <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_cancel_dark.png')" alt="" />
+                      <img v-else class="btn-icon" :src="require('@/assets/google_icons_cancel.png')" alt="" />
+                      <span>Cancel</span>
+                    </button>
+                  </div>
+                </template>
+                <div
+                  v-else
+                  class="who-name who-editable"
+                  role="button"
+                  tabindex="0"
+                  @click.stop="editMemberName(member)"
+                  @keyup.enter.stop="editMemberName(member)"
+                >
+                  {{ member.name }}
+                </div>
+
+                <!-- Age -->
                 <div class="who-age" v-if="getAge(member) !== null">{{ getAge(member) }} years</div>
                 <div class="who-age" v-else>??</div>
-                <div class="who-bday" v-if="formatBirthdayShort(member.birthday)">({{ formatBirthdayShort(member.birthday) }})</div>
-                <div class="who-bday" v-else>(--/--/----)</div>
+
+                <!-- Birthday (click to edit in mobile) -->
+                <template v-if="editingMember === member.name && editingField === 'birthday'">
+                  <input
+                    type="date"
+                    class="mobile-inline-input"
+                    :class="{ dark:darkMode }"
+                    v-model="member.birthday"
+                  />
+                  <div class="mobile-inline-actions">
+                    <button class="edit_photo_button" :class="{ dark:darkMode }" @click="updateMemberBirthday(member)">
+                      <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_save_dark.png')" alt="" />
+                      <img v-else class="btn-icon" :src="require('@/assets/google_icons_save.png')" alt="" />
+                      Save
+                    </button>
+                    <button class="edit_photo_button" :class="{ dark:darkMode }" @click="clearBirthday(member)">
+                      <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_clear_dark.png')" alt="" />
+                      <img v-else class="btn-icon" :src="require('@/assets/google_icons_clear.png')" alt="" />
+                      Clear
+                    </button>
+                    <button class="edit_photo_button" :class="{ dark:darkMode }" @click="cancelEdit()">
+                      <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_cancel_dark.png')" alt="" />
+                      <img v-else class="btn-icon" :src="require('@/assets/google_icons_cancel.png')" alt="" />
+                      Cancel
+                    </button>
+                  </div>
+                  <p v-if="birthdayError" class="birthday-error">
+                    {{ birthdayError }}
+                  </p>
+                </template>
+                <div
+                  v-else
+                  class="who-bday who-editable"
+                  role="button"
+                  tabindex="0"
+                  @click.stop="editMemberBirthday(member)"
+                  @keyup.enter.stop="editMemberBirthday(member)"
+                >
+                  <span v-if="formatBirthdayShort(member.birthday)">({{ formatBirthdayShort(member.birthday) }})</span>
+                  <span v-else>(--/--/----)</span>
+                </div>
               </div>
             </div>
           </td>
@@ -427,8 +608,11 @@
               <div v-if="relationshipMessageByName[member.name]" class="relationship-message">
                 {{ relationshipMessageByName[member.name] }}
               </div>
-
-              <div v-if="!getRelationshipMode(member.name)" class="relationship-actions">
+              
+              <!-- Responsive mode -->
+              <div class="relationship-bottom">
+              <div v-if="!getRelationshipMode(member.name)" class="relationship-actions-wrap">
+                <div class="relationship-actions-label">Select:</div>
                 <button class="rel-btn rel-btn--married" :class="{ 'rel-btn--disabled': isDisabled(member, 'married') }" @click="startRelationship(member, 'married')">Married</button>
                 <button class="rel-btn rel-btn--siblings" :class="{ 'rel-btn--disabled': isDisabled(member, 'siblings') }" @click="startRelationship(member, 'siblings')">Siblings</button>
                 <button class="rel-btn rel-btn--children" :class="{ 'rel-btn--disabled': isDisabled(member, 'children') }" @click="startRelationship(member, 'children')">Children</button>
@@ -437,8 +621,9 @@
               <div v-else style="margin-top: 10px">
                 <hr/>
                 <p class="rel-choose-title" :class="'rel-choose-title--' + getRelationshipMode(member.name)">
-                  {{ relationshipChoiceLabel(getRelationshipMode(member.name)) }}
+                  {{ relationshipChoiceLabel(getRelationshipMode(member.name), member) }}
                 </p>
+
                 <button
                   v-for="m in candidatesFor(member)"
                   :key="m.name + '-mobile'"
@@ -454,13 +639,21 @@
                   No member for this relationship
                 </p>
 
-                <button class="cancel_relationship button" @click="cancelRelationshipChoice(member)">Cancel</button>
+                <button class="edit_photo_button" :class="{ dark:darkMode }" @click="cancelRelationshipChoice(member)">
+                  <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_cancel_dark.png')" alt="" />
+                <img v-else class="btn-icon" :src="require('@/assets/google_icons_cancel.png')" alt="" />
+                <span>Cancel</span>
+              </button>
               </div>
-            </div>
+            </div></div>
 
             <div v-else>
-              <p style="font-style: italic;">1 member created. No relationship possible.</p>
-              <button @click="goToHome" class="button">Create member</button>
+              <p style="font-style: italic; color:#6A6A6A; font-size:12px">Only 1 member created. No relationship possible.</p>
+              <button @click="goToHome" class="edit_photo_button" :class="{ dark:darkMode }">
+                <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_create_dark.png')" alt="" />
+                <img v-else class="btn-icon" :src="require('@/assets/google_icons_create.png')" alt="" />
+                Create member
+              </button>
             </div>
           </td>
         </tr>
@@ -472,8 +665,6 @@
       <div class="empty-state-divider"></div>
       <button @click="goToHome" class="button">Create a member</button>
     </div>
-
-    
 
     <!-- ✅ CONFIRM DELETE MODAL -->
     <div v-if="deleteModalVisible" class="confirm-backdrop" @click.self="closeDeleteModal">
@@ -489,15 +680,21 @@
         </div>
 
         <div class="confirm-actions">
-          <button class="button confirm-btn ghost" @click="closeDeleteModal">Cancel</button>
-          <button class="button confirm-btn danger" @click="confirmDelete">Delete</button>
+          <button class="button confirm-btn ghost" @click="closeDeleteModal">
+                <img class="btn-icon" :src="require('@/assets/google_icons_cancel.png')" alt="" />
+                <span>Cancel</span>
+              </button>
+          <button class="button confirm-btn danger" @click="confirmDelete">
+                <img class="btn-icon" :src="require('@/assets/google_icons_delete.png')" alt="" />
+                <span>Delete</span>
+              </button>
         </div>
       </div>
     </div>
 
     <!-- MODAL CROPPER -->
     <div v-if="cropperVisible" class="modal-backdrop">
-      <div class="modal">
+      <div class="modal" :class="{ dark: darkMode }">
         <vue-cropper
           ref="cropper"
           :src="currentImage"
@@ -505,8 +702,15 @@
           class="cropper"
         />
         <div class="modal-actions">
-          <button class="edit_photo_button" @click="applyCrop">Save</button>
-          <button class="edit_photo_button" @click="cancelCrop">Cancel</button>
+          <button class="edit_photo_button" :class="{ dark:darkMode }" @click="applyCrop">
+            <img class="btn-icon" :src="require('@/assets/google_icons_cancel_dark.png')" alt="" />
+            Save
+          </button>
+          <button class="edit_photo_button" :class="{ dark:darkMode }" @click="cancelCrop">
+            <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_cancel_dark.png')" alt="" />
+            <img v-else class="btn-icon" :src="require('@/assets/google_icons_cancel.png')" alt="" />
+            <span>Cancel</span>
+          </button>
         </div>
       </div>
     </div>
@@ -532,6 +736,9 @@ export default {
   data() {
     return {
       showAddMember: false,
+
+      // Mobile sort dropdown (responsive view)
+      mobileSort: 'name_az',
 
       ageSortOrder: 'asc',
       nameSortOrder: 'asc',
@@ -597,10 +804,14 @@ export default {
     },
   },
   methods: {
-    relationshipChoiceLabel(type) {
+    relationshipChoiceLabel(type, member) {
       if (type === 'married') return 'Married to :'
       if (type === 'siblings') return 'Siblings with :'
-      if (type === 'children') return 'Children of :'
+      if (type === 'children') {
+        if (member?.gender === 'male') return 'Father of :'
+        if (member?.gender === 'female') return 'Mother of :'
+        return 'Parent of :'
+      }
       return ''
     },
     openDeleteModal(member) {
@@ -871,6 +1082,41 @@ export default {
         this.nameSortOrder = 'asc'
       }
     },
+
+    // Explicit sort for mobile dropdown (does not rely on toggle buttons)
+    applyMobileSort() {
+      const option = this.mobileSort
+
+      if (option === 'name_az') {
+        this.members.sort((a, b) => (a.name || '').localeCompare(b.name || ''))
+        // keep desktop toggle state coherent: next click would sort Z→A
+        this.nameSortOrder = 'desc'
+        return
+      }
+
+      if (option === 'name_za') {
+        this.members.sort((a, b) => (b.name || '').localeCompare(a.name || ''))
+        this.nameSortOrder = 'asc'
+        return
+      }
+
+      const ageVal = (m) => {
+        const v = this.getAge(m)
+        // Put unknown ages at the end
+        return typeof v === 'number' ? v : Number.POSITIVE_INFINITY
+      }
+
+      if (option === 'age_young_old') {
+        this.members.sort((a, b) => ageVal(a) - ageVal(b))
+        this.ageSortOrder = 'desc'
+        return
+      }
+
+      if (option === 'age_old_young') {
+        this.members.sort((a, b) => ageVal(b) - ageVal(a))
+        this.ageSortOrder = 'asc'
+      }
+    },
     calculateAgeFromBirthday(birthday) {
     if (!birthday) return null
     const birth = new Date(birthday)
@@ -1016,8 +1262,77 @@ export default {
 </script>
 
 <style>
+
+.desktop-edit-hint{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-style: italic;
+  text-align: left;
+  margin: 8px 0 12px 0;
+  color: #6A6A6A;
+  padding-left: 0;
+  align-self: flex-start;
+  white-space: nowrap;
+}
+
+.member_birthday_input {
+  margin-right:10px !important;
+  border:none;
+  padding: 8px 8px;
+  font-weight:bold;
+  margin: auto 0;
+}
+
+.dark.member_birthday_input {
+  background-color:black;
+  color:white;
+}
+
+.mobile-edit-hint{ display: none; }
+
+/* Mobile sort bar (responsive only) */
+.mobile-sortbar{ display: none; }
+.mobile-sortbar__inner{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.72);
+  border: 1px solid rgba(0,0,0,0.08);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  margin: 10px 0 8px 0;
+}
+.mobile-sortbar__inner.dark{
+  background: rgba(32,32,32,0.72);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.mobile-sortbar__label{
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.mobile-sortbar__select{
+  width: 100%;
+  max-width: 220px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0,0,0,0.14);
+  background: rgba(255,255,255,0.9);
+  font-weight: 600;
+}
+.mobile-sortbar__inner.dark .mobile-sortbar__select{
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(20,20,20,0.9);
+  color: white;
+}
+
 .members-page {
-  padding: 0 20px;
+  padding: 20px;
 }
 
 /* table variants */
@@ -1054,11 +1369,60 @@ export default {
   overflow-wrap: anywhere;
 }
 
+/* Make name & birthday tappable in mobile view */
+.who-editable{
+  cursor: pointer;
+}
+
+.who-editable .dark {
+  color:white !important;
+}
+.who-editable:focus{
+  outline: 2px solid rgba(0,0,0,0.15);
+  outline-offset: 2px;
+}
+
+.mobile-inline-input{
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px 10px;
+  margin: 2px 0;
+  border:none;
+}
+
+.dark.mobile-inline-input {
+  background-color:black;
+  color:white;
+}
+
+.mobile-inline-actions{
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 2px;
+  justify-content: flex-start;
+  margin-top: 4px;
+}
+
+.mobile-inline-actions button{
+  flex: 0 1 auto;
+  padding: 4px 6px;
+  font-size: 11px;
+  border-radius: 4px;
+  margin: 0;
+  min-width: unset;
+  white-space: nowrap;
+}
+
 .who-age,
 .who-bday{
   font-size: 12px;
   line-height: 1.1;
 }
+
+.dark .who-age {
+  color:white !important;
+}
+
 .rel-choose-title{
   font-weight: 900;
   margin: 6px 0 10px;
@@ -1141,6 +1505,40 @@ export default {
   position: relative;
   width: 14px;
   height: 14px;
+}
+
+.relationship-actions-label{
+  font-weight: 800;
+  font-size: 12px;
+  margin: 0 0 6px 0;
+  text-align: left;
+  opacity: 0.9;
+}
+
+.relationship-actions{
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* ou center si tu préfères */
+  gap: 6px;
+  flex-wrap: nowrap;             /* ✅ reste sur 1 ligne */
+}
+
+.relationship-actions .rel-btn{
+  flex: 1 1 0;                   /* ✅ 3 boutons de même largeur */
+  min-width: 0;                  /* ✅ évite overflow */
+  padding: 6px 8px;              /* ✅ plus petit */
+  font-size: 12px;               /* ✅ plus petit */
+  border-radius: 8px;
+  margin-right: 0;               /* ✅ tu avais margin-right:6px */
+  white-space: nowrap;           /* ✅ pas de retour à la ligne dans le bouton */
+}
+
+/* Mobile: encore plus compact si besoin */
+@media (max-width: 480px){
+  .relationship-actions .rel-btn{
+    padding: 6px 6px;
+    font-size: 11px;
+  }
 }
 
 /* flèche haut */
@@ -1249,12 +1647,22 @@ export default {
 .edit_photo_button {
   background-color: white;
   color: black;
-  border: none;
-  padding: 5px 10px;
   font-size: 15px;
   cursor: pointer;
-  margin:2px 5px 5px 0;
   border-radius:5px;
+}
+
+.edit_photo_button:hover {
+  background-color: #f2f2f2;
+}
+
+.dark.edit_photo_button {
+  background-color:black;
+  color:white;
+}
+
+.dark.edit_photo_button:hover {
+  background-color:#3D3D3D;
 }
 
 .birthday-error{
@@ -1468,6 +1876,8 @@ td.column_photo {
   justify-content: center;
   z-index: 2000;
 }
+
+.dark .modal { background-color: black }
 .modal { background: white; padding: 20px; border-radius: 8px; }
 .cropper { width: 300px; height: 300px; }
 .modal-actions { margin-top: 10px; display: flex; gap: 10px; }
@@ -1562,6 +1972,10 @@ td.column_photo {
   font-style: italic;
 }
 
+.dark .editable-cell {
+  color:white;
+}
+
 /* Cellules éditables : base */
 .editable-cell{
   position: relative;
@@ -1586,6 +2000,7 @@ td.column_photo {
 .dark .editable-cell--male.editable-cell--hover{
   background: rgba(0, 170, 255, 0.14);
   box-shadow: inset 0 0 0 2px rgba(0, 170, 255, 0.55);
+  color:white !important;
 }
 
 .dark .editable-cell--female.editable-cell--hover{
@@ -1709,6 +2124,63 @@ td.column_photo {
 .row-delete-x{ display: none; }
 
 @media (max-width: 480px){
+
+  .mobile-sortbar{ display: flex; justify-content: flex-start; }
+
+  .mobile-sortbar__inner{
+    width: fit-content;
+    max-width: 92vw;
+    padding: 6px 10px;
+    gap: 8px;
+    margin: 10px 0 8px 0;
+  }
+
+  .mobile-sortbar__label{
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .mobile-sortbar__select{
+    max-width: 190px;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .mobile-edit-hint{
+    font-size: 12px;
+    text-align: center;
+    margin: 6px 0 10px 0;
+    color: #6A6A6A;
+  }
+
+  .relationship-actions{
+    flex-direction: row;   /* ✅ reste en ligne */
+    align-items: center;
+  }
+  .relationship-actions .rel-btn{
+    width: auto;           /* ✅ laisse flex gérer */
+  }
+
+.desktop-edit-hint{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-style: italic;
+  text-align: left;
+  margin: 8px 0 12px 0;
+  color: #6A6A6A;
+  padding-left: 0;
+  align-self: flex-start;
+  white-space: nowrap;
+}
+
+  .mobile-edit-hint{
+    font-size: 12px;
+    text-align: center;
+    margin: 6px 0 10px 0;
+    color: #6A6A6A;
+  }
   /* switch to the 2-column mobile table */
   .desktop-table{ display: none; }
   .mobile-table{ display: table; }
@@ -1785,6 +2257,10 @@ td.column_photo {
     color: white;
   }
 
+  body.dark {
+    color:white !important;
+  }
+
   .age-suffix{ display: none; }
 
   .birth-long{ display: none; }
@@ -1811,17 +2287,15 @@ td.column_photo {
   }
 }
 
-
-
 .custom-table.mobile-table .rel-item{
   display:inline-flex;
   align-items:center;
   gap:4px;
 }
+
 .custom-table.mobile-table .rel-item input[type="checkbox"]{
   margin:0 4px 0 0;
 }
-
 
 .custom-table.mobile-table .married-checkbox,
 .custom-table.mobile-table .siblings-checkbox,
@@ -1843,8 +2317,6 @@ td.column_photo {
 .custom-table.mobile-table .children-checkbox .rel-item:first-of-type{
   margin-left:0 !important;
 }
-
-
 
 .custom-table.mobile-table td.rel-col .married-checkbox,
 .custom-table.mobile-table td.rel-col .siblings-checkbox,
@@ -1873,9 +2345,6 @@ td.column_photo {
   margin:0 !important;
 }
 
-
-
-
 /* Mobile: identical spacing for Married / Siblings / Children relationship lines */
 .custom-table.mobile-table td.rel-col .married-checkbox,
 .custom-table.mobile-table td.rel-col .siblings-checkbox,
@@ -1902,7 +2371,6 @@ td.column_photo {
   margin:0 !important;
 }
 
-
 /* Ensure siblings labels and checkboxes are orange on mobile */
 .custom-table.mobile-table td.rel-col .siblings-checkbox,
 .custom-table.mobile-table td.rel-col .siblings-checkbox .rel-item{
@@ -1912,7 +2380,6 @@ td.column_photo {
 .custom-table.mobile-table td.rel-col .siblings-checkbox input[type="checkbox"]{
   accent-color: var(--orange);
 }
-
 
 /* Desktop: normalize spacing for Married / Siblings / Children relationship lines */
 .custom-table.desktop-table td .married-checkbox,
@@ -1942,13 +2409,193 @@ td.column_photo {
   margin:0 !important;
 }
 
+
+.edit_photo_button{display:inline-block;margin-right:8px;}
+
+
+@media (max-width: 768px) {
+  /* Mobile sort bar: compact, aligned left */
+  .mobile-sortbar{ display:flex; justify-content:flex-start; }
+  .mobile-sortbar__inner{
+    width: fit-content;
+    padding: 6px 10px;
+    gap: 8px;
+    margin: 10px 0 8px 0;
+  }
+  .mobile-sortbar__label{
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .mobile-sortbar__select{
+    max-width: 190px;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  /* Legacy sort-container (kept for compatibility) */
+  .sort-container {
+    max-width: 220px;
+    margin-left: 0;
+    margin-right: auto;
+    padding: 6px 8px;
+  }
+
+  .sort-container label {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .sort-container select {
+    font-size: 12px;
+    padding: 4px 6px;
+  }
+  
+}
+
+@media (max-width: 768px) {
+  .mobile-sortbar{
+    display: flex;
+    justify-content: flex-start;
+  }
+  .mobile-sortbar__inner{
+    width: fit-content;
+    padding: 6px 10px;
+    gap: 8px;
+    margin: 8px 0 8px 0;
+  }
+  .mobile-sortbar__label{
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .mobile-sortbar__select{
+    max-width: 190px;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}
+
+
+/* --- Mobile layout overrides (final) --- */
+@media (max-width: 768px){
+  /* Ensure the sort bar aligns to the left even if the page layout centers items */
+  .mobile-sortbar{
+    width: 100% !important;
+    justify-content: flex-start !important;
+    align-self: flex-start !important;
+  }
+  .mobile-sortbar__inner{
+    margin-left: 0 !important;
+  }
+  /* Bring the hint closer to the sort bar on mobile */
+  .desktop-edit-hint{
+    margin-bottom: 6px !important;
+  }
+  .mobile-sortbar__inner{
+    margin-top: 6px !important;
+  }
+}
+
+
+
+/* --- Mobile spacing adjustment (final) --- */
+@media (max-width: 768px){
+  /* Push the hint text closer to the sort bar */
+  .desktop-edit-hint{
+    margin-bottom: 2px !important;
+  }
+  .mobile-sortbar{
+    margin-top: 4px !important;
+  }
+
+  
+}
+
+
+
+/* Photo edit actions: compact toolbar (mobile-friendly) */
+.photo-action-bar{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.edit_photo_button{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 10px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.edit_photo_button .btn-icon{
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+}
+
+@media (max-width: 768px){
+  .photo-action-bar{
+    gap: 5px;
+  }
+  .edit_photo_button{
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+}
+
+
+
+/* --- Photo action buttons: tighter on responsive --- */
+@media (max-width: 768px){
+  .photo-action-bar{
+    gap: 4px !important;
+    margin-top: 4px !important;
+  }
+  .edit_photo_button{
+    padding: 4px 6px !important;
+    font-size: 11px !important;
+    border-radius: 9px !important;
+    min-height: 28px;
+  }
+  .edit_photo_button .btn-icon{
+    width: 14px !important;
+    height: 14px !important;
+    flex: 0 0 14px !important;
+  }
+}
+@media (max-width: 480px){
+  .photo-action-bar{
+    gap: 3px !important;
+  }
+  .edit_photo_button{
+    padding: 3px 6px !important;
+    font-size: 10px !important;
+    border-radius: 8px !important;
+    min-height: 26px;
+  }
+  .edit_photo_button .btn-icon{
+    width: 13px !important;
+    height: 13px !important;
+    flex: 0 0 13px !important;
+  }
+}
+
 </style>
+
 
 <style scoped>
 .member-actions-delete{
  position:absolute;
  top:8px;
  right:8px;
+}
+
+.dark.member-age {
+  color:white;
 }
 .member-photo{cursor:pointer;}
 .member-photo-options{
@@ -2043,9 +2690,6 @@ td.column_photo {
   margin:0 !important;
 }
 
-
-
-
 /* Mobile: identical spacing for Married / Siblings / Children relationship lines */
 .custom-table.mobile-table td.rel-col .married-checkbox,
 .custom-table.mobile-table td.rel-col .siblings-checkbox,
@@ -2053,7 +2697,7 @@ td.column_photo {
   display:flex;
   align-items:center;
   flex-wrap:wrap;
-  gap:6px;           /* icon <-> first item */
+         /* icon <-> first item */
 }
 
 .custom-table.mobile-table td.rel-col .rel-icon{
@@ -2110,6 +2754,256 @@ td.column_photo {
 
 .custom-table.desktop-table td .rel-item input[type="checkbox"]{
   margin:0 !important;
+}
+
+
+.edit_photo_button{display:inline-block;margin-right:8px;}
+
+.hint-icon{
+  width: 1em !important;
+  height: 1em !important;
+  display: inline-block;
+  flex: 0 0 auto;
+  fill: currentColor !important;
+}
+
+.hint-text{
+  white-space: nowrap;
+  color:#6A6A6A;
+  font-style:italic;
+}
+
+@media (max-width: 768px) {
+  /* Mobile sort bar: compact, aligned left */
+  .mobile-sortbar{ display:flex; justify-content:flex-start; }
+  .mobile-sortbar__inner{
+    width: fit-content;
+    padding: 6px 10px;
+    gap: 8px;
+    margin: 10px 0 8px 0;
+  }
+  .mobile-sortbar__label{
+    font-size: 12px;
+    white-space: nowrap;
+  }
+  .mobile-sortbar__select{
+    max-width: 190px;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  /* Legacy sort-container (kept for compatibility) */
+  .sort-container {
+    max-width: 220px;
+    margin-left: 0;
+    margin-right: auto;
+    padding: 6px 8px;
+  }
+
+  .sort-container label {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .sort-container select {
+    font-size: 12px;
+    padding: 4px 6px;
+  }
+}
+
+
+/* --- Mobile layout overrides (final) --- */
+@media (max-width: 768px){
+  /* Ensure the sort bar aligns to the left even if the page layout centers items */
+  .mobile-sortbar{
+    width: 100% !important;
+    justify-content: flex-start !important;
+    align-self: flex-start !important;
+  }
+  .mobile-sortbar__inner{
+    margin-left: 0 !important;
+  }
+  /* Bring the hint closer to the sort bar on mobile */
+  .desktop-edit-hint{
+    margin-bottom: 6px !important;
+  }
+  .mobile-sortbar__inner{
+    margin-top: 6px !important;
+  }
+}
+
+
+
+/* --- Mobile spacing adjustment (final) --- */
+@media (max-width: 768px){
+  /* Push the hint text closer to the sort bar */
+  .desktop-edit-hint{
+    margin-bottom: 2px !important;
+  }
+  .mobile-sortbar{
+    margin-top: 4px !important;
+  }
+}
+
+
+
+/* Photo edit actions: compact toolbar (mobile-friendly) */
+.photo-action-bar{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.edit_photo_button{
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 10px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.edit_photo_button .btn-icon{
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+}
+
+@media (max-width: 768px){
+  .photo-action-bar{
+    gap: 5px;
+  }
+  .edit_photo_button{
+    padding: 6px 8px;
+    font-size: 12px;
+  }
+}
+
+
+
+/* --- Photo action buttons: tighter on responsive --- */
+@media (max-width: 768px){
+  .photo-action-bar{
+    gap: 4px !important;
+    margin-top: 4px !important;
+  }
+  .edit_photo_button{
+    padding: 4px 6px !important;
+    font-size: 11px !important;
+    border-radius: 9px !important;
+    min-height: 28px;
+  }
+  .edit_photo_button .btn-icon{
+    width: 14px !important;
+    height: 14px !important;
+    flex: 0 0 14px !important;
+  }
+}
+@media (max-width: 480px){
+  .photo-action-bar{
+    gap: 3px !important;
+  }
+  .edit_photo_button{
+    padding: 3px 6px !important;
+    font-size: 10px !important;
+    border-radius: 8px !important;
+    min-height: 26px;
+  }
+  .edit_photo_button .btn-icon{
+    width: 13px !important;
+    height: 13px !important;
+    flex: 0 0 13px !important;
+  }
+}
+
+.desktop-inline-edit__input{
+  display: block;
+  box-sizing: border-box;
+  margin-right: 0 !important;
+}
+
+.desktop-inline-edit__actions{
+  display: flex;
+  gap: 0px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* Force 3 buttons inline on mobile (override legacy column rule) */
+@media (max-width: 480px){
+  .custom-table.mobile-table td.rel-col .relationship-actions{
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 6px !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    margin: 10px 0 0 0 !important; /* évite ton margin auto centré */
+  }
+
+  .custom-table.mobile-table td.rel-col .relationship-actions .rel-btn{
+    flex: 1 1 0 !important;
+    width: auto !important;
+    min-width: 0 !important;
+    margin-right: 0 !important;
+    white-space: nowrap !important;
+    padding: 6px 6px !important;
+    font-size: 11px !important;
+    border-radius: 8px !important;
+  }
+}
+
+/* ===== Relationship: "Select:" + 3 buttons on the same line (desktop + mobile) ===== */
+.relationship-actions-wrap{
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-wrap: nowrap !important;
+}
+
+/* the label must not take a whole line */
+.relationship-actions-label{
+  margin: 0 !important;
+  white-space: nowrap !important;
+  flex: 0 0 auto !important;
+}
+
+.relationship-actions-wrap .relationship-actions{
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 6px !important;
+  margin: 0 !important;
+  flex: 1 1 auto !important;
+  flex-wrap: nowrap !important;
+}
+
+.relationship-actions-wrap > .rel-btn,
+.relationship-actions-wrap .relationship-actions .rel-btn{
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  margin-right: 0 !important;
+  white-space: nowrap !important;
+}
+
+@media (max-width: 480px){
+  .relationship-actions-wrap{ gap: 6px !important; }
+  .relationship-actions-wrap > .rel-btn,
+  .relationship-actions-wrap .relationship-actions .rel-btn{
+    padding: 6px 6px !important;
+    font-size: 11px !important;
+    border-radius: 8px !important;
+  }
+}
+
+@media (max-width: 768px){
+  .custom-table.mobile-table td.rel-col .relationship-bottom{
+    margin-top: auto;            /* <- pushes BOTH states to bottom */
+  }
 }
 
 </style>

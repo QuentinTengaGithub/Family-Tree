@@ -160,7 +160,7 @@ body.dark {
 /* ===== Mobile responsive ===== */
 @media (max-width: 780px) {
   .content {
-    margin: 0;          /* full width */
+    margin: 9px 0 0 0;          /* full width */
     border-radius: 0;  /* avoids side gaps */
   }
 }

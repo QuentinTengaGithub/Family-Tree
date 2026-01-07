@@ -32,7 +32,6 @@
         </div>
       </div>
     </div>
-
     <div class="form-card intro intro-form" :class="{ dark: darkMode }">
       <p class="title">Sign Up</p>
       <form @submit.prevent="createAccount">
@@ -834,4 +833,20 @@ export default {
 .form_input.dark::-ms-input-placeholder {
   color: white;
 }
+
+
+.auth-logo{
+  display: block;
+  margin: 8px auto 14px auto;
+  width: 150px;
+  max-width: 60vw;
+  height: auto;
+}
+@media (max-width: 780px){
+  .auth-logo{
+    width: 120px;
+    margin: 6px auto 12px auto;
+  }
+}
+
 </style>

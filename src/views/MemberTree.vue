@@ -104,13 +104,13 @@
             <div class="modal-content">
                 <h3>Screenshot Options</h3>
                 <p>What would you like to do with the screenshot?</p>
-                <button @click="downloadScreenshot" class="button">Download</button>
-                <button @click="showEmailInput = true" class="button">Send by Email</button>
-                <button @click="showScreenshotOptions = false" class="button">Cancel</button>
+                <button @click="downloadScreenshot" class="edit_photo_button">Download</button>
+                <button @click="showEmailInput = true" class="edit_photo_button">Send by Email</button>
+                <button @click="showScreenshotOptions = false" class="edit_photo_button">Cancel</button>
 
                 <div v-if="showEmailInput" class="email-input-container">
                     <input type="email" v-model="email" placeholder="Enter your email">
-                    <button @click="sendEmail">Send</button>
+                    <button @click="sendEmail" class="button">Send</button>
                 </div>
             </div>
         </div>
@@ -124,7 +124,12 @@
             <button @click="zoomIn">+</button>
             <button @click="zoomOut">-</button>
         </div>
-        <FiltersSidePanel :isFiltersPanelVisible="isFiltersPanelVisible" @close-panel="closeFiltersPanel" @gender-filter-changed="applyGenderFilter" @relationship-filter-changed="applyRelationshipFilter" />
+        <FiltersSidePanel 
+          :isFiltersPanelVisible="isFiltersPanelVisible"
+          :relationshipAvailable="hasAnyRelationship"
+          @close-panel="closeFiltersPanel" 
+          @gender-filter-changed="applyGenderFilter" 
+          @relationship-filter-changed="applyRelationshipFilter" />
         <TutorialHints
           pageKey="tree"
           :hints="[
@@ -159,40 +164,49 @@ export default {
       treePosition: { x: 0, y: 0 },
     };
   },
-          computed: {
-              members() {
-                  return this.$store.state.members;
-              },
-              filteredMembers() {
-                  if (!this.selectedGender) {
-                      return this.members;
-                  }
-                  return this.members.filter(member => member.gender === this.selectedGender);
-              },
-              darkMode() {
-                  return this.$store.state.darkMode;
-              },
-              displayGenerations() {
-                  if (!this.selectedRelationship) {
-                      return this.processedGenerations;
-                  }
-      
-                  const filteredGenerations = [];
-                  for (const generation of this.processedGenerations) {
-                      const filteredGroups = generation.filter(group => {
-                          if (this.selectedRelationship === 'married') {
-                              return group.type === 'couple';
-                          }
-                          return true;
-                      });
-                      if (filteredGroups.length > 0) {
-                          filteredGenerations.push(filteredGroups);
-                      }
-                  }
-                  return filteredGenerations;
-              }
-          },  components: {
-    FiltersSidePanel, TutorialHints,
+  computed: {
+    members() {
+      return this.$store.state.members;
+    },
+    filteredMembers() {
+      if (!this.selectedGender) {
+          return this.members;
+      }
+      return this.members.filter(member => member.gender === this.selectedGender);
+    },
+    darkMode() {
+      return this.$store.state.darkMode;
+    },
+    displayGenerations() {
+      if (!this.selectedRelationship) {
+          return this.processedGenerations;
+      }
+
+      const filteredGenerations = [];
+      for (const generation of this.processedGenerations) {
+        const filteredGroups = generation.filter(group => {
+          if (this.selectedRelationship === 'married') {
+              return group.type === 'couple';
+          }
+          return true;
+        });
+        if (filteredGroups.length > 0) {
+          filteredGenerations.push(filteredGroups);
+        }
+      }
+      return filteredGenerations;
+    },
+    hasAnyRelationship() {
+      return this.members.some(m =>
+        (m.married && String(m.married).trim() !== '') ||
+        ((m.siblings || []).length > 0) ||
+        ((m.children || []).length > 0)
+      )
+    },
+  },  
+  components: {
+    FiltersSidePanel, 
+    TutorialHints,
   },
   watch: {
     members: {
@@ -204,6 +218,12 @@ export default {
       setTimeout(() => {
         this.drawRelationships();
       }, 300);
+    },
+    hasAnyRelationship(val) {
+      if (!val && this.selectedRelationship !== '') {
+        this.selectedRelationship = ''
+        this.renderTree()
+      }
     }
   },
   mounted() {
@@ -972,4 +992,14 @@ span.birthday {
   }
 }
 
+.edit_photo_button {
+  border: solid 1px grey;
+}
+
+</style>
+
+<style scoped>
+.edit_photo_button {
+  border: solid 1px red;
+}
 </style>

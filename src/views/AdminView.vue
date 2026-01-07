@@ -6,10 +6,14 @@
     <h2>All Users</h2>
     <div v-if="users.length">
       <ul>
-        <li v-for="user in users" :key="user.uid">
-          <button class="button" @click="selectUser(user)">View Tree</button>
+        <div v-for="user in users" :key="user.uid">
+          <button class="edit_photo_button" :class="{ dark:darkMode }" @click="selectUser(user)">
+            <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_eye_dark.png')" alt="" />
+            <img v-else class="btn-icon" :src="require('@/assets/google_icons_eye.png')" alt="" />
+            View Tree
+          </button>
           {{ user.name }} ({{ user.email }}) - Role: {{ user.role }}
-        </li>
+        </div>
       </ul>
     </div>
     <p v-else>No users found.</p>
@@ -41,6 +45,15 @@ export default {
       this.selectedUser = user;
       this.$router.push({ path: '/members', query: { viewAs: user.uid, viewAsName: user.name } });
     }
-  }
+  },
+  computed: {
+    darkMode() {
+      return this.$store.state.darkMode;
+    }
+  },
 }
 </script>
+
+<style>
+
+</style>

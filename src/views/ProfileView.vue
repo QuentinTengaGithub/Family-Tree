@@ -4,12 +4,14 @@
 
     <!-- Name Section -->
     <div class="profile-section">
-      <div class="profile-item-row" data-field="Name">
+      <div class="profile-item-row" data-field="Name" :class="{ 'is-editing': editMode.name }">
         <h2 class="profile-label">Name</h2>
         <p v-if="errors.name" class="form-error">{{ errors.name }}</p>
         <div v-if="!editMode.name" class="profile-value-display">
           <p>{{ name }}</p>
-          <button class="button btn-edit" @click="startEdit('name')">
+          <button class="edit_photo_button" :class="{ dark:darkMode }" @click="startEdit('name')">
+            <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_edit_dark.png')" alt="" />
+            <img v-else class="btn-icon" :src="require('@/assets/google_icons_edit.png')" alt="" />
             <span class="btn-long">Edit Name</span>
             <span class="btn-short">Edit</span>
           </button>
@@ -18,20 +20,28 @@
           <div class="form_input_container">
             <input type="text" v-model="form.name" class="form_input" />
           </div>
-          <button class="button" @click="updateName">Save</button>
-          <button class="button-secondary" @click="cancelEdit('name')">Cancel</button>
+          <button class="edit_photo_button" :class="{ dark:darkMode }" @click="updateName">
+            <img :src="darkMode ? require('../assets/google_icons_save_dark.png') : require('../assets/google_icons_save.png')" alt="Logout Icon" class="logout-icon" />
+            Save
+          </button>
+          <button class="edit_photo_button" :class="{ dark:darkMode }" @click="cancelEdit('name')">
+            <img :src="darkMode ? require('../assets/google_icons_cancel_dark.png') : require('../assets/google_icons_cancel.png')" alt="Logout Icon" class="logout-icon" />
+            Cancel
+          </button>
         </div>
       </div>
     </div>
 
     <!-- Email Section -->
     <div class="profile-section">
-      <div class="profile-item-row" data-field="Email">
+      <div class="profile-item-row" data-field="Email" :class="{ 'is-editing': editMode.email }">
         <h2 class="profile-label">Email</h2>
         <p v-if="errors.email" class="form-error">{{ errors.email }}</p>
         <div v-if="!editMode.email" class="profile-value-display">
           <p>{{ email }}</p>
-          <button class="button btn-edit" @click="startEdit('email')">
+          <button class="edit_photo_button" :class="{ dark:darkMode }" @click="startEdit('email')">
+            <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_edit_dark.png')" alt="" />
+            <img v-else class="btn-icon" :src="require('@/assets/google_icons_edit.png')" alt="" />
             <span class="btn-long">Edit Email</span>
             <span class="btn-short">Edit</span>
           </button>
@@ -40,20 +50,28 @@
           <div class="form_input_container">
             <input type="email" v-model="form.email" class="form_input" />
           </div>
-          <button class="button" @click="updateUserEmail">Save</button>
-          <button class="button-secondary" @click="cancelEdit('email')">Cancel</button>
+          <button class="edit_photo_button" :class="{ dark:darkMode }" @click="updateUserEmail">
+            <img :src="darkMode ? require('../assets/google_icons_save_dark.png') : require('../assets/google_icons_save.png')" alt="Logout Icon" class="logout-icon" />
+            Save
+          </button>
+          <button class="edit_photo_button" :class="{ dark:darkMode }" @click="cancelEdit('email')">
+            <img :src="darkMode ? require('../assets/google_icons_cancel_dark.png') : require('../assets/google_icons_cancel.png')" alt="Logout Icon" class="logout-icon" />
+            Cancel
+          </button>
         </div>
       </div>
     </div>
 
     <!-- Password Section -->
     <div class="profile-section">
-      <div class="profile-item-row" data-field="Password">
+      <div class="profile-item-row" data-field="Password" :class="{ 'is-editing': editMode.password }">
         <h2 class="profile-label">Password</h2>
         <div class="profile-value-wrapper">
         <div v-if="!editMode.password" class="profile-value-display">
           <p>********</p>
-          <button class="button btn-edit" @click="startEdit('password')">
+          <button class="edit_photo_button" :class="{ dark:darkMode }" @click="startEdit('password')">
+            <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_edit_dark.png')" alt="" />
+            <img v-else class="btn-icon" :src="require('@/assets/google_icons_edit.png')" alt="" />
             <span class="btn-long">Change Password</span>
             <span class="btn-short">Change</span>
           </button>
@@ -87,12 +105,16 @@
             </p>
           </transition>
 
-          <button class="button" @click="updateUserPassword">
-            Save New Password
-          </button>
-          <button class="button-secondary" @click="cancelEdit('password')">
-            Cancel
-          </button>
+          <div class="password-actions">
+            <button class="edit_photo_button" :class="{ dark:darkMode }" @click="updateUserPassword">
+              <img :src="darkMode ? require('../assets/google_icons_save_dark.png') : require('../assets/google_icons_save.png')" alt="Logout Icon" class="logout-icon" />
+              Save New Password
+            </button>
+            <button class="edit_photo_button" :class="{ dark:darkMode }" @click="cancelEdit('password')">
+              <img :src="darkMode ? require('../assets/google_icons_cancel_dark.png') : require('../assets/google_icons_cancel.png')" alt="Logout Icon" class="logout-icon" />
+              Cancel
+            </button>
+            </div>
         </div></div>
       </div>
       <!--<hr>
@@ -363,6 +385,11 @@ export default {
   gap: 6px;
 }
 
+input.form_input {
+  margin-left: 20px;
+  width:100%;
+}
+
 .form_input_container {
   margin-bottom: 15px;
 }
@@ -620,7 +647,7 @@ export default {
 .btn-short{ display: none; }
 
 @media (max-width: 480px){
-  .content{ padding: 16px; }
+  .content{ padding: 16px; border-radius:0 }
 
   /* Mobile: exactly 3 compact rows
      [Edit] Name | value
@@ -696,6 +723,143 @@ export default {
 
   .btn-long{ display: none; }
   .btn-short{ display: inline; }
+
+  .profile-item-row.is-editing{
+    /* label à gauche + champ + Save + Cancel sur la même ligne (Name/Email) */
+    grid-template-columns: auto 1fr auto auto;
+  }
+
+  /* Le "X |" passe en colonne 1 (à gauche) uniquement en édition */
+  .profile-item-row.is-editing::before{
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+  }
+
+  /* On “déplie” les enfants pour les placer dans la grille */
+  .profile-item-row.is-editing .profile-value-edit{
+    display: contents;
+  }
+
+  /* Input container en colonne 2 */
+  .profile-item-row.is-editing .profile-value-edit .form_input_container{
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+  }
+
+  /* Input full width + pas de margin-left en mobile edit */
+  .profile-item-row.is-editing .profile-value-edit .form_input{
+    margin-left: 0 !important;
+    width: 100%;
+  }
+
+  /* Save / Cancel en colonnes 3 et 4 */
+  .profile-item-row.is-editing .profile-value-edit > button:nth-of-type(1){
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: start;
+    white-space: nowrap;
+  }
+  .profile-item-row.is-editing .profile-value-edit > button:nth-of-type(2){
+    grid-column: 4;
+    grid-row: 1;
+    justify-self: start;
+    white-space: nowrap;
+  }
+
+  /* ===== Password edit mode: label à gauche + contenu en dessous (plus lisible) ===== */
+  .profile-item-row.is-editing[data-field="Password"]{
+    grid-template-columns: 1fr;
+  }
+  .profile-item-row.is-editing[data-field="Password"]::before{
+    grid-column: 1;
+    grid-row: 1;
+    margin-bottom: 8px;
+  }
+  .profile-item-row.is-editing[data-field="Password"] .password-edit-mode{
+    grid-column: 1;
+    grid-row: 2;
+    width: 100%;
+    align-items: stretch;
+  }
+  .profile-item-row.is-editing[data-field="Password"] .password-edit-mode .form_input_container{
+    width: 100%;
+    max-width: none;
+  }
+
+  .profile-item-row.is-editing[data-field="Password"] .profile-value-wrapper{
+    display: block !important;
+    width: 100%;
+  }
+
+  .profile-item-row.is-editing[data-field="Password"] .profile-value-edit{
+    display: flex !important;          /* <- au lieu de contents */
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px;
+    width: 100%;
+  }
+
+  /* 2) Chaque input container prend toute la largeur + empile le label et l'input */
+  .profile-item-row.is-editing[data-field="Password"] .password-edit-mode .form_input_container{
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+  }
+
+  .profile-item-row.is-editing[data-field="Password"] .password-edit-mode .form_text{
+    margin: 0 0 6px 0 !important;
+    line-height: 1.2;
+    text-align: left;
+  }
+
+  .profile-item-row.is-editing[data-field="Password"] .password-edit-mode .form_input{
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  /* 3) Boutons Password en pleine largeur (optionnel mais propre en mobile) */
+  .profile-item-row.is-editing[data-field="Password"] .password-edit-mode > button{
+    width: 100%;
+    justify-content: center;
+    white-space: nowrap;
+  }
+
+  .profile-item-row.is-editing[data-field="Password"]{
+    overflow-x: hidden;
+  }
+
+  /* Réduit la largeur effective des champs Password */
+  .profile-item-row.is-editing[data-field="Password"] .password-edit-mode .form_input{
+    box-sizing: border-box;
+    width: 92% !important;     /* ajuste si tu veux (90-95%) */
+    max-width: 92% !important;
+    margin-left: 0 !important;
+    margin-right: auto;        /* aligne à gauche */
+  }
+
+  /* S'assure que les containers ne forcent pas plus large */
+  .profile-item-row.is-editing[data-field="Password"] .password-edit-mode .form_input_container{
+    box-sizing: border-box;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .password-actions{
+  display:flex;
+  gap:10px;
+  justify-content:center; /* ou flex-start */
+}
+.password-actions > button{
+  width:auto !important;
+  white-space:nowrap;
+}
 }
 
 </style>
