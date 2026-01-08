@@ -681,13 +681,15 @@
 
         <div class="confirm-actions">
           <button class="button confirm-btn ghost" @click="closeDeleteModal">
-                <img class="btn-icon" :src="require('@/assets/google_icons_cancel.png')" alt="" />
-                <span>Cancel</span>
-              </button>
+            <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_cancel_dark.png')" alt="" />
+            <img v-else class="btn-icon" :src="require('@/assets/google_icons_cancel.png')" alt="" />
+            <span>Cancel</span>
+          </button>
           <button class="button confirm-btn danger" @click="confirmDelete">
-                <img class="btn-icon" :src="require('@/assets/google_icons_delete.png')" alt="" />
-                <span>Delete</span>
-              </button>
+            <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_delete_dark.png')" alt="" />
+            <img v-else class="btn-icon" :src="require('@/assets/google_icons_delete.png')" alt="" />
+            <span>Delete</span>
+          </button>
         </div>
       </div>
     </div>
@@ -703,7 +705,8 @@
         />
         <div class="modal-actions">
           <button class="edit_photo_button" :class="{ dark:darkMode }" @click="applyCrop">
-            <img class="btn-icon" :src="require('@/assets/google_icons_cancel_dark.png')" alt="" />
+            <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_save_dark.png')" alt="" />
+            <img v-else class="btn-icon" :src="require('@/assets/google_icons_save.png')" alt="" />
             Save
           </button>
           <button class="edit_photo_button" :class="{ dark:darkMode }" @click="cancelCrop">
@@ -1922,6 +1925,60 @@ td.column_photo {
 .confirm-title { margin: 0; font-weight: 900; font-size: 16px; }
 .confirm-subtitle { margin: 3px 0 0; opacity: 0.8; font-size: 13px; }
 .confirm-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+
+/* Modal actions layout */
+.confirm-actions{
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* Buttons: icon + text inline, vertically centered */
+.confirm-actions .confirm-btn{
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+
+  min-height: 44px;
+  padding: 10px 14px;
+  border-radius: 12px;
+
+  line-height: 1;          /* évite le décalage vertical */
+  
+}
+
+/* Icon sizing + baseline fix */
+.confirm-actions .confirm-btn .btn-icon{
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  display: block;
+}
+
+/* Text baseline fix */
+.confirm-actions .confirm-btn span{
+  display: inline-block;
+  line-height: 1;
+}
+
+/* Ghost button: keep border + transparent bg */
+.confirm-actions .confirm-btn.ghost{
+  background: transparent !important;
+}
+
+/* Danger button: keep your red */
+.confirm-actions .confirm-btn.danger{
+  background: #ff3b3b !important;
+}
+
+/* Optional: consistent focus */
+.confirm-actions .confirm-btn:focus-visible{
+  outline: 2px solid rgba(0,170,255,0.6);
+  outline-offset: 2px;
+}
+
+
 .confirm-btn { min-width: 110px; }
 .confirm-btn.ghost { background: transparent !important; border: 1px solid rgba(0,0,0,0.18) !important; color: inherit; }
 .confirm-card.dark .confirm-btn.ghost { border: 1px solid rgba(255,255,255,0.18) !important; }
@@ -3005,5 +3062,16 @@ td.column_photo {
     margin-top: auto;            /* <- pushes BOTH states to bottom */
   }
 }
+
+/* Light mode: texte noir sur le bouton danger */
+.confirm-card:not(.dark) .confirm-actions .confirm-btn.danger{
+  color: #000 !important;
+}
+
+/* Dark mode: texte blanc sur le bouton danger */
+.confirm-card.dark .confirm-actions .confirm-btn.danger{
+  color: #fff !important;
+}
+
 
 </style>
