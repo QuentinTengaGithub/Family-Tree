@@ -1359,6 +1359,7 @@ export default {
 </script>
 
 <style scoped>
+
 /* ====== Layout ====== */
 .members-page { padding: 20px; }
 .desktop-table { display: table; }
@@ -1999,5 +2000,23 @@ td.column_relationship { width: 50%; }
 .children-checkbox{
   gap: 3px;            /* avant: 6px (ou 4px en mobile) */
 }
+
+/* ✅ Alignement icône + texte (modal confirm) */
+.confirm-actions .confirm-btn{
+  display: inline-flex;        /* ou flex */
+  align-items: center;         /* centre verticalement */
+  justify-content: center;     /* centre horizontalement */
+  gap: 8px;                    /* espace entre icône et texte */
+  line-height: 1;              /* évite le décalage vertical */
+}
+
+/* évite que l'image se comporte comme un bloc et casse la ligne */
+.confirm-actions .confirm-btn img{
+  display: block;
+  width: 16px;                 /* ajuste si besoin */
+  height: 16px;
+  flex: 0 0 16px;
+}
+
 
 </style>
