@@ -391,6 +391,10 @@ export default {
   margin-top: 0;
 }
 
+.logout-icon {
+  margin-right: -5px;
+}
+
 .profile-value-wrapper {
   display: flex;
   flex-direction: column;
