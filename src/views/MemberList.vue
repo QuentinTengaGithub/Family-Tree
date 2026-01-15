@@ -84,8 +84,10 @@
           :key="member.name"
           class="list-item"
           :class="rowDeleteClass(member)"
+          :data-name="member.name"
           :ref="el => { if (el) rowRefs[member.name] = el }"
         >
+
           <!-- PHOTO -->
           <td
             class="column_photo editable-cell"
@@ -101,7 +103,6 @@
               <img class="member-photo" v-else-if="member.gender === 'male'" src="@/assets/avatar_male.png" @click.stop="editMemberPhoto(member)" />
               <img class="member-photo" v-else src="@/assets/avatar_female.png" />
             </div>
-
             <!-- Mobile delete (keeps confirmation modal) -->
             <button
               class="row-delete-x"
@@ -187,6 +188,7 @@
             @mouseenter="hoveredCell = member.name + '-name'"
             @mouseleave="hoveredCell = ''"
           >
+          <div class="cell-content">
             <span v-if="editingMember !== member.name || editingField !== 'name'">{{ member.name }}</span>
 
             <div v-if="editingMember === member.name && editingField === 'name'" class="desktop-inline-edit">
@@ -224,14 +226,16 @@
                 <img :src="darkMode ? require('@/assets/edit_dark.png') : require('@/assets/edit.png')" />
               </button>
             </div>
+          </div>
           </td>
 
           <!-- AGE -->
           <td>
+            <div class="cell-content">
             <span v-if="getAge(member) !== null" class="member-age" :class="{ dark: darkMode }">
               {{ getAge(member) }} <span class="age-suffix" :class="{ dark: darkMode }">{{ $t("members.years") }}</span>
             </span>
-            <span v-else>??</span>
+            <span v-else>??</span></div>
           </td>
 
           <!-- BIRTHDAY -->
@@ -244,7 +248,7 @@
             ]"
             @mouseenter="hoveredCell = member.name + '-birthday'"
             @mouseleave="hoveredCell = ''"
-          >
+          ><div class="cell-content">
             <div v-if="editingMember === member.name && editingField === 'birthday'">
               <input
                 type="date"
@@ -291,11 +295,11 @@
               aria-label="Edit birth date"
             >
               <img :src="darkMode ? require('@/assets/edit_dark.png') : require('@/assets/edit.png')" />
-            </button>
+            </button></div>
           </td>
 
           <!-- RELATIONSHIPS (DESKTOP) -->
-          <td class="column_relationship">
+          <td class="column_relationship"><div class="cell-content">
             <div v-if="members.length > 1" class="relationship-cell">
               <!-- TOP: current links -->
               <div class="relationship-top">
@@ -423,23 +427,23 @@
                 <img v-else class="btn-icon" :src="require('@/assets/google_icons_create.png')" alt="" />
                 {{ $t("members.create") }}
               </button>
-            </div>
+            </div></div>
           </td>
 
           <!-- DELETE -->
           <td style="border: solid 2px white; text-align:center">
-            <div class="delete_member">
+            <div class="delete_member"><div class="cell-content">
               <button
                 style="background-color:transparent; border: none; margin: auto 0"
                 @click="openDeleteModal(member)"
                 @mouseenter="onDeleteHover(member)"
                 @mouseleave="onDeleteHover(null)"
-                class="button"
+                class="button delete-btn"
               >
                 <img v-if="darkMode === false" src="../assets/bin.png" class="shake_bin" />
                 <img v-if="darkMode === true" src="../assets/bin_dark.png" class="shake_bin" />
               </button>
-            </div>
+            </div></div>
           </td>
         </tr>
       </transition-group>
@@ -1458,10 +1462,24 @@ td.column_relationship { width: 50%; }
 
 /* ====== Inline edit overlay button ====== */
 .editable-cell{ position: relative; transition: background-color 140ms ease, box-shadow 140ms ease; }
+/* Hover par défaut (si jamais) */
 .editable-cell--hover{
   background: rgba(0, 170, 255, 0.08);
   box-shadow: inset 0 0 0 2px rgba(0, 170, 255, 0.35);
 }
+
+/* ✅ Homme = bleu */
+.editable-cell--male.editable-cell--hover{
+  background: rgba(0, 170, 255, 0.08);
+  box-shadow: inset 0 0 0 2px rgba(0, 170, 255, 0.35);
+}
+
+/* ✅ Femme = rose */
+.editable-cell--female.editable-cell--hover{
+  background: rgba(255, 105, 180, 0.10);      /* ajuste si besoin */
+  box-shadow: inset 0 0 0 2px rgba(255, 105, 180, 0.45);
+}
+
 .edit-overlay-btn{
   position: absolute;
   top: 8px;
@@ -2017,6 +2035,147 @@ td.column_relationship { width: 50%; }
   height: 16px;
   flex: 0 0 16px;
 }
+
+/* ====== Hover delete -> highlight toute la ligne (DESKTOP) ====== */
+@media (min-width: 481px){
+
+/* Fond léger sur toutes les cellules */
+tr.row-delete-male td{
+  background: rgba(0, 170, 255, 0.06);
+}
+tr.row-delete-female td{
+  background: rgba(255, 105, 180, 0.08);
+}
+
+/* ✅ Top + bottom via inset shadow (ne se fait pas écraser) */
+tr.row-delete-male td{
+    box-shadow:
+      inset 0 2px 0 rgba(0, 170, 255, 0.45),   /* top */
+      inset 0 -2px 0 rgba(0, 170, 255, 0.45);  /* bottom */
+    border-left: 2px solid transparent;        /* on garde ta grille */
+    border-right: 2px solid transparent;
+    border-top: 2px solid transparent;
+    border-bottom: 2px solid transparent;
+  }
+
+  tr.row-delete-female td{
+    box-shadow:
+      inset 0 2px 0 rgba(255, 105, 180, 0.55),
+      inset 0 -2px 0 rgba(255, 105, 180, 0.55);
+    border-left: 2px solid transparent;
+    border-right: 2px solid transparent;
+    border-top: 2px solid transparent;
+    border-bottom: 2px solid transparent;
+  }
+
+  /* Côtés gauche/droite (ici on peut garder des borders réels) */
+  tr.row-delete-male td:first-child{ border-left-color: rgba(0, 170, 255, 0.45); }
+  tr.row-delete-male td:last-child{ border-right-color: rgba(0, 170, 255, 0.45); }
+
+  tr.row-delete-female td:first-child{ border-left-color: rgba(255, 105, 180, 0.55); }
+  tr.row-delete-female td:last-child{ border-right-color: rgba(255, 105, 180, 0.55); }
+
+/* Contour global : gauche sur 1ère cellule, droite sur dernière */
+tr.row-delete-male td:first-child{
+  border-left: 2px solid rgba(0, 170, 255, 0.45) !important;
+}
+tr.row-delete-male td:last-child{
+  border-right: 2px solid rgba(0, 170, 255, 0.45) !important;
+}
+
+tr.row-delete-female td:first-child{
+  border-left: 2px solid rgba(255, 105, 180, 0.55) !important;
+}
+tr.row-delete-female td:last-child{
+  border-right: 2px solid rgba(255, 105, 180, 0.55) !important;
+}
+
+/* Optionnel : léger "glow" comme sur ta capture */
+tr.row-delete-male{
+  box-shadow: 0 0 0 2px rgba(0, 170, 255, 0.18);
+}
+tr.row-delete-female{
+  box-shadow: 0 0 0 2px rgba(255, 105, 180, 0.18);
+}
+
+/* Tremblement de la poubelle uniquement sur la ligne survolée */
+tr.row-delete-male .shake_bin,
+tr.row-delete-female .shake_bin{
+  animation: binShake 380ms ease-in-out infinite;
+}
+
+/* (Optionnel) bouton delete un peu plus “cliquable” */
+.delete-btn{ cursor: pointer; }
+}
+
+/* Anim tremblement */
+@keyframes binShake{
+0%   { transform: rotate(0deg) translateX(0); }
+20%  { transform: rotate(-7deg) translateX(-1px); }
+40%  { transform: rotate(7deg) translateX(1px); }
+60%  { transform: rotate(-6deg) translateX(-1px); }
+80%  { transform: rotate(6deg) translateX(1px); }
+100% { transform: rotate(0deg) translateX(0); }
+}
+
+@media (max-width: 480px){
+  /* Boutons d’édition (Nom + Anniversaire) l’un au-dessus de l’autre */
+  .mobile-inline-actions{
+    flex-direction: column;
+    align-items: stretch;   /* boutons pleine largeur */
+    gap: 8px;
+    width:fit-content;
+  }
+
+  .mobile-inline-actions .edit_photo_button{
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px){
+
+/* Empilement vertical mais compact (ne pousse pas la colonne) */
+.mobile-inline-actions{
+  display: inline-flex;      /* au lieu de flex */
+  flex-direction: column;
+  align-items: flex-start;   /* pas full width */
+  gap: 6px;
+  width: auto;               /* important */
+  margin-top: 4px;
+}
+
+.mobile-inline-actions .edit_photo_button{
+  width: auto;               /* important */
+  justify-content: flex-start;
+  padding: 4px 8px;          /* plus petit */
+  font-size: 10.5px;         /* plus petit */
+  border-radius: 10px;
+  gap: 6px;
+}
+
+.mobile-inline-actions .edit_photo_button .btn-icon{
+  width: 14px;
+  height: 14px;
+  flex: 0 0 14px;
+}
+}
+
+@media (max-width: 480px){
+  /* Date d’anniversaire (mobile) : plus étroit */
+  .who-meta input[type="date"].mobile-inline-input{
+    width: 105px;          /* ajuste (130–160) */
+    max-width: 100%;
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+
+  /* optionnel: l'icône calendrier un peu plus petite (selon navigateur) */
+  .who-meta input[type="date"].mobile-inline-input::-webkit-calendar-picker-indicator{
+    transform: scale(0.9);
+  }
+}
+
 
 
 </style>
