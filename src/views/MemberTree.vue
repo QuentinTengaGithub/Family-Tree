@@ -1,5 +1,5 @@
 <template>
-    <div class="content">
+    <div class="content tree-content">
         <p class="title">{{ $t("tree.family_tree") }}</p>
         <div 
             class="tree-wrapper" 
@@ -57,10 +57,19 @@
                       </div>
 
                       <!-- Sibling Group -->
-                      <div v-else-if="group.type === 'siblings'" class="sibling-box">
-                          <div v-for="member in group.members" :key="member.name" class="member_box"
-                              :class="{ 'male-border': member.gender === 'male', 'female-border': member.gender === 'female', dark: darkMode }"
-                              :ref="el => { if (el) allMemberBoxes[member.name] = el }">
+                      <div
+                        v-else-if="group.type === 'siblings'"
+                        class="sibling-box"
+                        :class="{ 'siblings-orange': !group.hasMarriedMember }"
+                        :ref="el => { if (el) allGroupBoxes[group.id] = el }"
+                      >
+                        <div
+                          v-for="member in group.members"
+                          :key="member.name"
+                          class="member_box"
+                          :class="{ 'male-border': member.gender === 'male', 'female-border': member.gender === 'female', dark: darkMode }"
+                          :ref="el => { if (el) allMemberBoxes[member.name] = el }"
+                        >
                               <img style="width:70px" v-if="member.gender === 'male' && member.image === null" src="../assets/avatar_male.png">
                               <img style="width:70px" v-if="member.gender === 'female' && member.image === null" src="../assets/avatar_female.png">
                               <img style="width:70px" v-if="member.image !== null" :src="member.image"><br>
@@ -92,9 +101,10 @@
               </div>
             </div>
             <!-- SVG Overlay for all relationships -->
-            <svg class="relationship-overlay" ref="svgContainer"></svg>
+        <svg class="relationship-overlay" ref="svgContainer"></svg>
             </div>
         </div>
+        
         <div v-else>
           <p style="font-style: italic;">{{ $t("members.no") }}</p>
           <div class="empty-state-divider"></div>
@@ -160,6 +170,7 @@ export default {
     return {
       processedGenerations: [],
       allMemberBoxes: {},
+      allGroupBoxes: {},
       zoomLevel: 1,
       showScreenshotOptions: false,
       showEmailInput: false,
@@ -244,6 +255,7 @@ export default {
     window.removeEventListener('resize', this.renderTree);
   },
   methods: {
+    
     memberAge(m) {
     if (m && m.birthday) {
       const birth = new Date(m.birthday)
@@ -362,6 +374,7 @@ export default {
     renderTree() {
         console.log('Rendering tree. Members from store:', this.members);
         this.allMemberBoxes = {};
+        this.allGroupBoxes = {};
         this.processMembers();
         console.log('Processed Generations:', this.processedGenerations);
         this.optimizeCoupleOrder();
@@ -374,6 +387,12 @@ export default {
       interact('.draggable-group').draggable({
         inertia: true,
         autoScroll: true,
+        modifiers: [
+          interact.modifiers.restrictRect({
+            restriction: this.$refs.treeWrapper,
+            endOnly: true,
+          }),
+        ],
         listeners: {
           move: this.dragMoveListener,
           end: this.dragEndListener
@@ -492,76 +511,121 @@ export default {
         const sortedGenerationKeys = [...generations.keys()].sort((a, b) => a - b);
 
         sortedGenerationKeys.forEach(genKey => {
-            const generationMembers = [...generations.get(genKey)].map(name => memberMap.get(name));
-            const finalProcessed = [];
-            const processedNames = new Set();
+  const generationMembers = [...generations.get(genKey)].map(name => memberMap.get(name));
+  const finalProcessed = [];
+  const processedNames = new Set();
 
-            const processGroup = (id, type, members) => {
-                const pos = this.loadGroupPosition(id);
-                finalProcessed.push({ id, type, members, ...pos });
-                members.forEach(m => processedNames.add(m.name));
-            };
+  const processGroup = (id, type, members, extra = {}) => {
+    const pos = this.loadGroupPosition(id);
+    finalProcessed.push({ id, type, members, ...extra, ...pos });
+    members.forEach(m => processedNames.add(m.name));
+  };
 
-            if (this.selectedRelationship === 'siblings') {
-                generationMembers.forEach(member => {
-                    if (processedNames.has(member.name)) return;
+  // 1) Build sibling clusters (connected components) within this generation
+  const genSet = new Set(generationMembers.map(m => m.name));
 
-                    if (member.siblings && member.siblings.length > 0) {
-                        const siblingGroupMembers = [member, ...member.siblings.map(name => generationMembers.find(m => m.name === name)).filter(Boolean)];
+  const adj = new Map();
+  generationMembers.forEach(m => adj.set(m.name, new Set()));
+  generationMembers.forEach(m => {
+    (m.siblings || []).forEach(sibName => {
+      if (genSet.has(sibName)) {
+        adj.get(m.name).add(sibName);
+        adj.get(sibName).add(m.name);
+      }
+    });
+  });
 
-                        if (siblingGroupMembers.length > 1) {
-                            // Check if any member of this potential group has already been processed.
-                            const alreadyProcessed = siblingGroupMembers.some(m => processedNames.has(m.name));
-                            if (!alreadyProcessed) {
-                                const groupId = siblingGroupMembers.map(m => m.name).sort().join('-');
-                                processGroup(groupId, 'siblings', siblingGroupMembers);
-                            }
-                        }
-                    }
-                });
-            } else {
-                // Existing logic
-                generationMembers.forEach(member => {
-                    if (processedNames.has(member.name)) return;
-                    if (member.married) {
-                        const partner = generationMembers.find(m => m.name === member.married);
-                        if (partner && !processedNames.has(partner.name)) {
-                          const coupleMembers = [member, partner].sort(
-                            (a, b) => (this.memberAge(b) ?? 0) - (this.memberAge(a) ?? 0)
-                          )
-                            processGroup(`${member.name}-${partner.name}`, 'couple', coupleMembers);
-                        }
-                    }
-                });
+  const seen = new Set();
+  const clusters = [];
 
-                generationMembers.forEach(member => {
-                    if (processedNames.has(member.name)) return;
-                    if (member.siblings && member.siblings.length > 0) {
-                        const siblingGroup = [member, ...member.siblings.map(name => generationMembers.find(m => m.name === name)).filter(Boolean)];
-                        if (siblingGroup.length > 1 && siblingGroup.every(m => !processedNames.has(m.name))) {
-                            // Instead of grouping siblings, treat them as singles for individual dragging
-                            siblingGroup.forEach(sibling => {
-                                if (!processedNames.has(sibling.name)) {
-                                    processGroup(sibling.name, 'single', [sibling]);
-                                }
-                            });
-                        }
-                    }
-                });
+  for (const m of generationMembers) {
+    if (seen.has(m.name)) continue;
 
-                generationMembers.forEach(member => {
-                    if (!processedNames.has(member.name)) {
-                        processGroup(member.name, 'single', [member]);
-                    }
-                });
-            }
-            finalGenerations.push(finalProcessed);
-        });
+    const stack = [m.name];
+    const clusterNames = [];
+    seen.add(m.name);
+
+    while (stack.length) {
+      const cur = stack.pop();
+      clusterNames.push(cur);
+      for (const nxt of adj.get(cur) || []) {
+        if (!seen.has(nxt)) {
+          seen.add(nxt);
+          stack.push(nxt);
+        }
+      }
+    }
+
+    if (clusterNames.length > 1) {
+      const clusterMembers = clusterNames
+        .map(n => generationMembers.find(x => x.name === n))
+        .filter(Boolean);
+      clusters.push(clusterMembers);
+    }
+  }
+
+  // 2) Create sibling groups ONLY if no one in the cluster is married
+  clusters.forEach(cluster => {
+    const hasMarriedMember = cluster.some(m => (m.married && String(m.married).trim() !== ''));
+    if (!hasMarriedMember) {
+      const groupId = cluster.map(m => m.name).sort().join('-');
+      if (!cluster.some(m => processedNames.has(m.name))) {
+        processGroup(groupId, 'siblings', cluster, { hasMarriedMember: false });
+      }
+    }
+  });
+
+  // If filter is strictly "siblings", show only sibling groups
+  if (this.selectedRelationship === 'siblings') {
+    finalGenerations.push(finalProcessed);
+    return;
+  }
+
+  // 3) Couples (skip people already in sibling groups)
+  generationMembers.forEach(member => {
+    if (processedNames.has(member.name)) return;
+    if (member.married) {
+      const partner = generationMembers.find(m => m.name === member.married);
+      if (partner && !processedNames.has(partner.name)) {
+        const coupleMembers = [member, partner].sort(
+          (a, b) => (this.memberAge(b) ?? 0) - (this.memberAge(a) ?? 0)
+        );
+        processGroup(`${member.name}-${partner.name}`, 'couple', coupleMembers);
+      }
+    }
+  });
+
+  // 4) Singles for the rest
+  generationMembers.forEach(member => {
+    if (!processedNames.has(member.name)) {
+      processGroup(member.name, 'single', [member]);
+    }
+  });
+
+  finalGenerations.push(finalProcessed);
+});
 
         this.processedGenerations = finalGenerations;
     },
 
+    buildSiblingGroupIndex() {
+  const map = new Map();
+
+  this.processedGenerations.forEach(generation => {
+    generation.forEach(group => {
+      if (group.type === 'siblings' && !group.hasMarriedMember) {
+        group.members.forEach(m => {
+          map.set(m.name, group.id);
+        });
+      }
+    });
+  });
+
+  return map;
+},
+
     drawRelationships() {
+      const siblingGroupIndex = this.buildSiblingGroupIndex();
         const svg = this.$refs.svgContainer;
         const wrapper = this.$refs.transformContainer;
         if (!svg || !wrapper) return;
@@ -587,32 +651,52 @@ export default {
                     this.drawHeart(wrapper, wrapperRect, memberBox, partnerBox);
 
                     if (relationship === '') {
-                        const commonChildren = this.getCommonChildren(member, partner);
+                      const commonChildren = this.getCommonChildren(member, partner);
+                      const heartMidpoint = this.getHeartMidpoint(wrapperRect, memberBox, partnerBox);
+
+                      // 1) If children are displayed as one siblings group, connect once to the group box
+                      const siblingsGroupEl = this.findSiblingsGroupElementForChildren(commonChildren);
+                      if (siblingsGroupEl) {
+                        this.drawPathFromPoint(svg, wrapperRect, heartMidpoint, siblingsGroupEl, 'green');
+                        commonChildren.forEach(c => drawnChildren.add(c));
+                      } else {
+                        // 2) fallback: connect to each child individually
                         commonChildren.forEach(childName => {
-                            const childBox = this.allMemberBoxes[childName];
-                            if (childBox) {
-                                const heartMidpoint = this.getHeartMidpoint(wrapperRect, memberBox, partnerBox);
-                                this.drawPathFromPoint(svg, wrapperRect, heartMidpoint, childBox, 'green');
-                                drawnChildren.add(childName);
-                            }
+                          const childBox = this.allMemberBoxes[childName];
+                          if (childBox) {
+                            this.drawPathFromPoint(svg, wrapperRect, heartMidpoint, childBox, 'green');
+                            drawnChildren.add(childName);
+                          }
                         });
+                      }
+
                     }
                 }
             });
         }
 
         if (relationship === '') {
-            this.filteredMembers.forEach(member => {
-                if (member.siblings) {
-                    member.siblings.forEach(siblingName => {
-                        if (member.name < siblingName) {
-                            const siblingBox = this.allMemberBoxes[siblingName];
-                            if (siblingBox) this.drawPath(svg, wrapperRect, this.allMemberBoxes[member.name], siblingBox, 'var(--orange)');
-                        }
-                    });
-                }
+          this.filteredMembers.forEach(member => {
+            if (!member.siblings) return;
+
+            member.siblings.forEach(siblingName => {
+              if (member.name >= siblingName) return;
+
+              const g1 = siblingGroupIndex.get(member.name);
+              const g2 = siblingGroupIndex.get(siblingName);
+
+              // ❌ SAME non-married sibling group → DO NOT draw
+              if (g1 && g1 === g2) return;
+
+              const box1 = this.allMemberBoxes[member.name];
+              const box2 = this.allMemberBoxes[siblingName];
+              if (box1 && box2) {
+                this.drawPath(svg, wrapperRect, box1, box2, 'var(--orange)');
+              }
             });
+          });
         }
+
 
         if (relationship === '') {
             this.filteredMembers.forEach(member => {
@@ -660,10 +744,10 @@ export default {
         svg.appendChild(path);
     },
 
-    drawPathFromPoint(svg, wrapperRect, startPoint, endBox, color) {
-        const endPoint = this.getBoxCenter(wrapperRect, endBox);
-        this.drawALine(svg, startPoint, endPoint, color);
-    },
+    drawPathFromPoint(svg, wrapperRect, startPoint, endElement, color) {
+  const endPoint = this.getBoxCenter(wrapperRect, endElement);
+  this.drawALine(svg, startPoint, endPoint, color);
+},
 
     drawPath(svg, wrapperRect, box1, box2, color) {
         const startPoint = this.getBoxCenter(wrapperRect, box1);
@@ -712,7 +796,31 @@ export default {
 
     zoomOut() {
       this.zoomLevel = Math.max(this.zoomLevel - 0.2, 0.2);
+    },
+    sameSet(a, b) {
+  if (a.size !== b.size) return false;
+  for (const v of a) if (!b.has(v)) return false;
+  return true;
+},
+
+findSiblingsGroupElementForChildren(childNames) {
+  if (!childNames || childNames.length === 0) return null;
+
+  const target = new Set(childNames);
+
+  for (const generation of this.processedGenerations) {
+    for (const group of generation) {
+      if (group.type !== 'siblings') continue;
+
+      const groupSet = new Set((group.members || []).map(m => m.name));
+      if (this.sameSet(target, groupSet)) {
+        return this.allGroupBoxes[group.id] || null;
+      }
     }
+  }
+  return null;
+},
+
   }
 }
 </script>
@@ -763,14 +871,22 @@ export default {
 }
 
 .sibling-box {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-    flex-wrap: wrap;
-    border: 1px solid green;
-    background-color: rgba(144, 238, 144, 0.3);
-    padding: 15px;
-    border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: 20px;
+  justify-content: center;
+  padding: 15px;
+  border-radius: 10px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+}
+
+.sibling-box.siblings-orange {
+  border: 2px solid var(--orange);
+  background-color: rgba(255, 165, 0, 0.25);
 }
 
 .single-box {
@@ -785,14 +901,15 @@ export default {
 }
 
 .couple-box {
-    display: flex;
-    gap: 50px;
-    justify-content: center;
-    flex-wrap: wrap;
-    border: 1px solid #ccc;
-    padding: 15px;
-    border-radius: 10px;
-    background-color: rgba(230, 230, 230, 0.5);
+  display: flex;
+  flex-direction: row;      /* force horizontal */
+  flex-wrap: nowrap;        /* jamais à la ligne */
+  align-items: flex-start;
+  gap: 50px;
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 10px;
+  background-color: rgba(230, 230, 230, 0.5);
 }
 
 .relationship-overlay {
@@ -1008,7 +1125,27 @@ span.birthday {
   border: solid 1px grey;
 }
 
-</style>
+@media (max-width: 480px){
+  .couple-box{
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
 
-<style scoped>
+  .sibling-box{
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+}
+
+.tree-content {
+  overflow: hidden;
+}
+
+.tree-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  cursor: grab;
+}
+
 </style>
