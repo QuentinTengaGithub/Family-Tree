@@ -18,10 +18,10 @@
                         <img v-else-if="activeTab !== 'Home' && darkMode" src="../assets/google_icons_home_dark.png" />
                         <img v-else src="../assets/google_icons_home.png" />
                     </div>
-                    <div @click="changeTab('Add-Member')" :class="{ active: activeTab === 'Accueil', dark: darkMode }" class="navbar-items">Add a member</div>
-                    <div @click="changeTab('Tree')" :class="{ active: activeTab === 'Tree', dark: darkMode }" class="navbar-items">Tree</div>
-                    <div @click="changeTab('Members')" :class="{ active: activeTab === 'Members', dark: darkMode }" class="navbar-items">Members</div>
-                    <div v-if="user && user.role === 'admin' || user.role === 'superadmin'" @click="changeTab('Admin')" :class="{ active: activeTab === 'Admin', dark: darkMode }" class="navbar-items">Admin</div>
+                    <div @click="changeTab('Add-Member')" :class="{ active: activeTab === 'Accueil', dark: darkMode }" class="navbar-items">{{ $t("navbar.add_a_member") }}</div>
+                    <div @click="changeTab('Tree')" :class="{ active: activeTab === 'Tree', dark: darkMode }" class="navbar-items">{{ $t("navbar.tree") }}</div>
+                    <div @click="changeTab('Members')" :class="{ active: activeTab === 'Members', dark: darkMode }" class="navbar-items">{{ $t("navbar.members") }}</div>
+                    <div v-if="user && (user.role === 'admin' || user.role === 'superadmin')" @click="changeTab('Admin')" :class="{ active: activeTab === 'Admin', dark: darkMode }" class="navbar-items">{{ $t("navbar.admin") }}</div>
                 </template>
             </div>
 
@@ -44,24 +44,42 @@
 
             <!-- NAVBAR / RIGHT ITEMS -->
             <div class="navbar-right">
+                <!-- Language toggle (always visible, even when logged out) -->
+                <button
+                  class="navbar-items lang-toggle"
+                  :class="{ dark: darkMode }"
+                  type="button"
+                  :aria-label="locale === 'fr' ? 'Switch language to English' : 'Changer la langue en français'"
+                  @click="toggleLocale"
+                >
+                  <img
+                    class="lang-flag"
+                    :src="locale === 'fr'
+                      ? require('@/assets/flags/french.png')
+                      : require('@/assets/flags/english.png')"
+                    :alt="locale === 'fr' ? 'Français' : 'English'"
+                  />
+                  <span class="lang-label">{{ locale === 'fr' ? 'FR' : 'EN' }}</span>
+                </button>
+
                 <div @click="toggleDarkMode" class="navbar-items sun">
                   <img v-if="darkMode" src="../assets/moon.png" title="DARK MODE" />
                   <img v-else src="../assets/sun.png" title="LIGHT MODE" />
                 </div>
-                
+
                 <template v-if="user">
                   <div @click="changeTab('Profile')" class="logout-container">
                     <img v-if="activeTab === 'Profile' && darkMode" src="../assets/google_icons_account_fill_dark.png" class="profile-icon" />
                     <img v-else-if="activeTab === 'Profile' && !darkMode" src="../assets/google_icons_account_fill.png" class="profile-icon" />
                     <img v-else-if="darkMode" src="../assets/google_icons_account_dark.png" class="profile-icon" />
                     <img v-else src="../assets/google_icons_account.png" class="profile-icon" />
-                    <span class="logout-text" v-if="!darkMode">My Profile</span>
-                    <span class="logout-text" style="color:white" v-if="darkMode">My Profile</span>
+                    <span class="logout-text" v-if="!darkMode">{{ $t("navbar.my_profile") }}</span>
+                    <span class="logout-text" style="color:white" v-if="darkMode">{{ $t("navbar.my_profile") }}</span>
                   </div>
                   <div @click="logout" class="navbar-items logout-container">
                     <img :src="darkMode ? require('../assets/google_icons_logout_dark.png') : require('../assets/google_icons_logout.png')" alt="Logout Icon" class="logout-icon" />
-                    <span class="logout-text" v-if="!darkMode">Logout</span>
-                    <span class="logout-text" style="color:white" v-if="darkMode">Logout</span>
+                    <span class="logout-text" v-if="!darkMode">{{ $t("navbar.logout") }}</span>
+                    <span class="logout-text" style="color:white" v-if="darkMode">{{ $t("navbar.logout") }}</span>
                   </div>
                 </template>
             </div>
@@ -76,19 +94,19 @@
           <div class="mobile-menu-inner">
             <div @click="mobileNav('Home')" class="mobile-item">
               <img :src="darkMode ? require('../assets/google_icons_home_dark.png') : require('../assets/google_icons_home.png')" alt="Logout Icon" class="logout-icon" />
-              Home
+              {{ $t("navbar.home") }}
             </div>
             <div @click="mobileNav('Add-Member')" class="mobile-item">
               <img :src="darkMode ? require('../assets/google_icons_add_a_member_dark.png') : require('../assets/google_icons_add_a_member.png')" alt="Logout Icon" class="logout-icon" />
-              Add a member
+              {{ $t("navbar.add_a_member") }}
             </div>
             <div @click="mobileNav('Tree')" class="mobile-item">
               <img :src="darkMode ? require('../assets/google_icons_tree_dark.png') : require('../assets/google_icons_tree.png')" alt="Logout Icon" class="logout-icon" />
-              Tree
+              {{ $t("navbar.tree") }}
             </div>
             <div @click="mobileNav('Members')" class="mobile-item">
               <img :src="darkMode ? require('../assets/google_icons_members_dark.png') : require('../assets/google_icons_members.png')" alt="Logout Icon" class="logout-icon" />
-              Members
+              {{ $t("navbar.members") }}
             </div>
             <div
               v-if="user && (user.role === 'admin' || user.role === 'superadmin')"
@@ -96,17 +114,17 @@
               class="mobile-item"
             >
             <img :src="darkMode ? require('../assets/google_icons_key_dark.png') : require('../assets/google_icons_key.png')" alt="Logout Icon" class="logout-icon" />
-              Admin
+            {{ $t("navbar.admin") }}
             </div>
             <div class="mobile-sep" />
             <div @click="mobileNav('Profile')" class="mobile-item">
               <img :src="darkMode ? require('../assets/google_icons_account_dark.png') : require('../assets/google_icons_account.png')" alt="Logout Icon" class="logout-icon" />
-              My Profile
+              {{ $t("navbar.my_profile") }}
             </div>
             <div @click="mobileLogout" class="mobile-item">
               <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_logout_dark.png')" alt="" />
               <img v-else class="btn-icon" :src="require('@/assets/google_icons_logout.png')" alt="" />
-              Logout
+              {{ $t("navbar.logout") }}
             </div>
         </div>
         </div>
@@ -128,6 +146,9 @@ export default {
         darkMode() {
             return this.$store.state.darkMode;
         },
+        locale() {
+            return this.$store.state.locale || this.$i18n?.locale || 'en';
+        },
         user() {
             return this.$store.state.user;
         },
@@ -145,6 +166,12 @@ export default {
         }
     },
     methods: {
+        toggleLocale() {
+            const next = (this.locale === 'fr') ? 'en' : 'fr';
+            if (this.$i18n) this.$i18n.locale = next;
+            try { localStorage.setItem('locale', next); } catch (e) { /* ignore */ }
+            this.$store.commit('setLocale', next);
+        },
         toggleMobileMenu() {
             this.mobileMenuOpen = !this.mobileMenuOpen;
         },
@@ -271,7 +298,7 @@ export default {
 }
 
 .navbar-items {
-    display: flex; 
+    display: flex;
     align-items: center;
     margin-right: 10px;
     color: black;
@@ -279,6 +306,33 @@ export default {
     padding:5px 15px;
     width:fit-content;
     border-radius: 10px;
+}
+
+/* Language toggle */
+.lang-toggle {
+    border: 1px solid rgba(0,0,0,0.18);
+    background: rgba(255,255,255,0.6);
+    font-weight: 700;
+    font-size: 13px;
+    padding: 5px 10px;
+    gap: 8px;
+}
+.lang-toggle.dark {
+    border: 1px solid rgba(255,255,255,0.22);
+    background: rgba(0,0,0,0.25);
+}
+
+.lang-flag {
+    width: 22px;
+    height: 16px;
+    border-radius: 3px;
+    object-fit: cover;
+    display: block;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+}
+
+.lang-label {
+    line-height: 1;
 }
 
 .navbar-items.dark {
@@ -488,4 +542,36 @@ export default {
 .logout-container.dark .logout-text {
     color: white;
 }
+
+@media (max-width: 780px) {
+  .navbar {
+    justify-content: flex-start;
+  }
+
+  .navbar-right{
+    margin-left: auto;
+    display: flex;
+    justify-content: flex-end; /* pousse au max à droite */
+    align-items: center;
+    gap: 6px; /* espace entre langue et soleil */
+    padding-right: 6px; /* colle un peu plus au bord */
+  }
+
+  /* enlève la marge générale en mobile (sinon ça décale vers la gauche) */
+  .navbar-right .navbar-items{
+    margin-right: 0;
+  }
+
+  /* s'assure que le soleil est vraiment au bord droit */
+  .navbar-right .sun{
+    margin-right: 0 !important;
+  }
+
+  /* optionnel : compacter un peu le bouton langue en mobile */
+  .navbar-right .lang-toggle{
+    margin-right: 0;
+    padding: 4px 8px;
+  }
+}
+
 </style>

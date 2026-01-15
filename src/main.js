@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuex from 'vuex'
+import { i18n } from "./i18n"
 
 import App from './App.vue'
 
@@ -44,6 +45,7 @@ const store = new Vuex.Store({
     viewingAsName: null,
     tutorialEnabled: JSON.parse(localStorage.getItem('tutorialEnabled') ?? 'true'),
     dismissedTutorialHints: JSON.parse(localStorage.getItem('dismissedTutorialHints') ?? '{}'),
+    locale: localStorage.getItem("locale") || "en",
   },
   mutations: {
     setMembers(state, members) {
@@ -105,6 +107,10 @@ const store = new Vuex.Store({
       if (!arr.includes(hintId)) arr.push(hintId)
   
       localStorage.setItem("dismissedTutorialHints", JSON.stringify(state.dismissedTutorialHints))
+    },
+    setLocale(state, locale) {
+      state.locale = locale;
+      localStorage.setItem("locale", locale);
     },
   },
   getters: {
@@ -567,5 +573,6 @@ store.dispatch('fetchMembers')
 new Vue({
   router,
   store,
+  i18n,
   render: h => h(App),
 }).$mount('#app')

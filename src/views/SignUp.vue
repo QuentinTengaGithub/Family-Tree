@@ -20,7 +20,9 @@
           />
         </transition>
 
-        <div class="shot-badge" :class="{ dark: darkMode }">{{ currentShotLeft.badge }}</div>
+        <div class="shot-badge" :class="{ dark: darkMode }">
+          {{ $t(currentShotLeft.badgeKey) }}
+        </div>
       </div>
       <div class="couple-demo" aria-hidden="true">
         <div class="couple-stage intro intro-bl" :class="{ dark: darkMode }">
@@ -28,7 +30,7 @@
           <img class="avatar avatar-f" :src="avatarFemale" alt="" />
           <img class="avatar avatar-m" :src="avatarMale" alt="" />
           <div class="heart" aria-hidden="true">❤</div>
-          <div class="demo-overlay" :class="{ dark: darkMode }">Create a married couple</div>
+          <div class="demo-overlay" :class="{ dark: darkMode }">{{ $t('sign_up.create_a_married_couple') }}</div>
         </div>
       </div>
     </div>
@@ -36,7 +38,7 @@
       <p class="title">Sign Up</p>
       <form @submit.prevent="createAccount">
         <div class="form_input_container">
-          <p class="form_text" :class="{ dark: darkMode }">Name</p>
+          <p class="form_text" :class="{ dark: darkMode }">{{ $t('add_a_member.name') }}</p>
           <div class="form_input">
             <input
               style="padding-left:10px"
@@ -45,7 +47,7 @@
               id="name"
               v-model="name"
               class="form_input"
-              placeholder="Enter name"
+              :placeholder="$t('sign_up.enter_name')"
               :class="{ dark: darkMode }"
             >
           </div>
@@ -61,14 +63,14 @@
               id="email"
               v-model="email"
               class="form_input"
-              placeholder="Enter email address"
+              :placeholder="$t('sign_in.enter_email')"
               :class="{ dark: darkMode }"
             >
           </div>
         </div>
 
         <div class="form_input_container">
-          <p class="form_text" :class="{ dark: darkMode }">Password</p>
+          <p class="form_text" :class="{ dark: darkMode }">{{ $t('profile.password') }}</p>
           <div class="form_input">
             <input
               style="padding-left:10px"
@@ -77,14 +79,16 @@
               id="password"
               v-model="password"
               class="form_input"
-              placeholder="Enter password"
+              :placeholder="$t('sign_in.enter_password')"
               :class="{ dark: darkMode }"
             >
           </div>
         </div>
 
         <div class="form_input_container">
-          <p class="form_text" :class="{ dark: darkMode }">Confirm password</p>
+          <p class="form_text form_text--wrap" :class="{ dark: darkMode }">
+            {{ $t('sign_up.confirm_password') }}
+          </p>
           <div class="form_input">
             <input
               style="padding-left:10px"
@@ -93,18 +97,18 @@
               id="confirmPassword"
               v-model="confirmPassword"
               class="form_input"
-              placeholder="Confirm password"
+              :placeholder="$t('sign_up.confirm_password')"
               :class="{ dark: darkMode }"
             >
           </div>
         </div>
 
         <p class="button-container">
-          <input class="button cta" type="submit" value="Create Account">
+          <input class="button cta" type="submit" :value="$t('sign_up.create_account')">
         </p>
 
         <p class="redirect-text" @click="changeTab('Sign-In')">
-          Already have an account ?
+          {{ $t('sign_up.already') }}
         </p>
       </form>
     </div>
@@ -128,7 +132,9 @@
             loading="lazy"
           />
         </transition>
-        <div class="shot-badge" :class="{ dark: darkMode }">{{ currentShotRight.badge }}</div>
+        <div class="shot-badge" :class="{ dark: darkMode }">
+          {{ $t(currentShotRight.badgeKey) }}
+        </div>
       </div>
       <div class="group-demo">
         <div class="group-stage intro intro-br" :class="{ dark: darkMode }">
@@ -141,10 +147,9 @@
             <line x1="240" y1="60" x2="150" y2="60" />
           </svg>
           <div class="demo-overlay" :class="{ dark: darkMode }">
-          Create a siblings group
+            {{ $t("sign_up.create_a_siblings_group") }}
         </div>
         </div>
-        
       </div>
     </div>
   </div>
@@ -172,8 +177,8 @@ export default {
       avatarFemale,
       avatarMale,
       shots: [
-        { light: screenshot1, dark: screenshot1_dark, alt: "Application preview – screen 1", badge: "Discover the interface"},
-        { light: screenshot2, dark: screenshot2_dark, alt: "Application preview – screen 2", badge: "Key functions"},
+        { light: screenshot1, dark: screenshot1_dark, alt: "Application preview – screen 1", badgeKey: "sign_up.discover_the_interface"},
+        { light: screenshot2, dark: screenshot2_dark, alt: "Application preview – screen 2", badgeKey: "sign_up.key_functions"},
       ],
       shotIndex: 0,
       timer: null,
@@ -834,6 +839,13 @@ export default {
   color: white;
 }
 
+.form_text--wrap{
+  display: inline-block;      /* permet de respecter une largeur */
+  max-width: 140px;           /* ajuste jusqu’à obtenir 2 lignes */
+  white-space: normal;        /* autorise le wrap */
+  overflow-wrap: anywhere;    /* évite le débordement si besoin */
+  line-height: 1.15;
+}
 
 .auth-logo{
   display: block;

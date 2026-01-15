@@ -1,16 +1,16 @@
 <template>
   <div class="content">
-    <p class="title">Admin Panel</p>
-    <p>Welcome, admin!</p>
+    <p class="title">{{ $t("admin.admin_panel") }}</p>
+    <p>{{ $t("admin.welcome") }}</p>
 
-    <h2>All Users</h2>
+    <h2>{{ $t("admin.all_users") }}</h2>
     <div v-if="users.length">
       <ul>
         <div v-for="user in users" :key="user.uid">
           <button class="edit_photo_button" :class="{ dark:darkMode }" @click="selectUser(user)">
             <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_eye_dark.png')" alt="" />
             <img v-else class="btn-icon" :src="require('@/assets/google_icons_eye.png')" alt="" />
-            View Tree
+            {{ $t("admin.view") }}
           </button>
           {{ user.name }} ({{ user.email }}) - Role: {{ user.role }}
         </div>

@@ -45,9 +45,9 @@
           <div class="home-section-content">
             <div class="home-section-title-row">
               <img :src="arrowRightImage" alt="Arrow Right" class="click-indicator" />
-              <h2>Create your own family tree</h2>
+              <h2>{{ $t("home.title1") }}</h2>
             </div>
-            <p>Add new members and grow your family.</p>
+            <p>{{ $t("home.subtitle1") }}</p>
           </div>
         </section>
   
@@ -61,9 +61,9 @@
           <div class="home-section-content">
             <div class="home-section-title-row">
               <img :src="arrowRightImage" alt="Arrow Right" class="click-indicator" />
-              <h2>View your family tree</h2>
+              <h2>{{ $t("home.title2") }}</h2>
             </div>
-            <p>Explore your family's history in an interactive tree.</p>
+            <p>{{ $t("home.subtitle2") }}</p>
           </div>
         </section>
   
@@ -77,9 +77,9 @@
           <div class="home-section-content">
             <div class="home-section-title-row">
               <img :src="arrowRightImage" alt="Arrow Right" class="click-indicator" />
-              <h2>Consult the member list</h2>
+              <h2>{{ $t("home.title3") }}</h2>
             </div>
-            <p>See all the members of your family.</p>
+            <p>{{ $t("home.subtitle3") }}</p>
           </div>
         </section>
       </div>
@@ -94,7 +94,7 @@
       return {
         hoveringSection: false,
         animatedWelcomeText: '',
-        fullWelcomeText: 'Welcome to the family !!',
+        fullWelcomeText: '',
         textIndex: 0,
         typingSpeed: 100,
         arrowRightImage: require('@/assets/arrow_right.png'),
@@ -105,6 +105,7 @@
       }
     },
     mounted() {
+      this.fullWelcomeText = this.$t("home.welcome");
       this.startTyping()
     },
     methods: {

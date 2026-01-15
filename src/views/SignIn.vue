@@ -1,7 +1,7 @@
 <template>
     <div class="content">
         <div class="form-card" :class="{ dark: darkMode }">
-            <p class="title">Sign In</p>
+            <p class="title">{{ $t("sign_in.title") }}</p>
             <form @submit.prevent="login">
                 <div class="form_input_container">
                     <p class="form_text" :class="{ dark: darkMode }">Email</p>
@@ -13,13 +13,13 @@
                             id="email" 
                             v-model="email" 
                             class="form_input"
-                            placeholder="Enter email adress"
+                            :placeholder="$t('sign_in.enter_email')"
                             :class="{ dark: darkMode }"
                         >
                     </div>
                 </div>
                 <div class="form_input_container">
-                    <p class="form_text" :class="{ dark: darkMode }">Password</p>
+                    <p class="form_text" :class="{ dark: darkMode }">{{ $t('profile.password') }}</p>
                     <div class="form_input">
                         <input 
                             style="padding-left:10px" 
@@ -28,13 +28,13 @@
                             id="password" 
                             v-model="password" 
                             class="form_input"
-                            placeholder="Enter password"
+                            :placeholder="$t('sign_in.enter_password')"
                             :class="{ dark: darkMode }"
                         >
                     </div>
                 </div>
-                <p class="button-container"><input class="button" type="submit" value="Log In"></p>
-                <p class="redirect-text" @click="changeTab('Sign-Up')">Don't have an account ?</p>
+                <p class="button-container"><input class="button" type="submit" :value="$t('sign_in.log_in')"></p>
+                <p class="redirect-text" @click="changeTab('Sign-Up')">{{ $t("sign_in.dont") }}</p>
                 <div class="error-container">
                     <p :class="['error-message', { 'visible': errorMessage }]" v-if="errorMessage">{{ errorMessage }}</p>
                 </div>

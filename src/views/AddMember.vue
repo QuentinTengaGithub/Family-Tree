@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <p class="title">Add a member</p>
+    <p class="title">{{ $t("add_a_member.add_a_member") }}</p>
 
     <form
       class="form"
@@ -9,7 +9,7 @@
     >
       <!-- NAME -->
       <div class="form_input_container">
-        <p class="form_text" :class="{ dark: darkMode }">* Name</p>
+        <p class="form_text" :class="{ dark: darkMode }">* {{ $t("add_a_member.name") }}</p>
         <div class="form_input">
           <input
             ref="nameInput"
@@ -31,7 +31,7 @@
 
       <!-- BIRTHDAY -->
       <div class="form_input_container">
-        <p class="form_text" :class="{ dark: darkMode }">* Birthday</p>
+        <p class="form_text" :class="{ dark: darkMode }">* {{ $t("add_a_member.birthday") }}</p>
         <div class="form_input">
           <input
             type="date"
@@ -50,18 +50,18 @@
 
       <!-- GENDER -->
       <div class="form_input_container">
-        <p class="form_text" :class="{ dark: darkMode }">* Gender</p>
+        <p class="form_text" :class="{ dark: darkMode }">* {{ $t("add_a_member.gender") }}</p>
         <div
           class="form_input gender-box"
           :class="{ invalidBox: errors.gender, shake: errors.gender && shakeInvalid }"
         >
           <label style="margin-right:10px">
             <input type="radio" name="gender" value="male" v-model="gender" />
-            Male
+            {{ $t("add_a_member.male") }}
           </label>
           <label>
             <input type="radio" name="gender" value="female" v-model="gender" />
-            Female
+            {{ $t("add_a_member.female") }}
           </label>
         </div>
       </div>
@@ -70,12 +70,20 @@
       <div class="form_input_container">
         <p class="form_text" :class="{ dark: darkMode }">Photo</p>
         <div class="form_input photo-line">
-          <label for="image" class="edit_photo_button" :class="{ dark:darkMode }">
-            <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_create_dark.png')" alt="" />
-            <img v-else class="btn-icon" :src="require('@/assets/google_icons_create.png')" alt="" />
-              Choose a file
-            </label>
-          <input type="file" name="image" id="image" @change="handleImageUpload" style="display:none;" />
+          <!-- bouton style "pill" avec + dans un cercle -->
+          <label for="image" class="edit_photo_button" :class="{ dark: darkMode }">
+            <span class="plus-badge" :class="{ dark: darkMode }">+</span>
+            <span class="btn-text">{{ $t("add_a_member.choose_a_file") }}</span>
+          </label>
+
+          <input
+            type="file"
+            name="image"
+            id="image"
+            @change="handleImageUpload"
+            style="display:none;"
+            accept="image/*"
+          />
 
           <!-- preview -->
           <div v-if="previewImage" class="preview-wrap">
@@ -89,13 +97,13 @@
 
       <transition name="toast">
         <div v-if="showSuccessMessage" class="success-message">
-          Member created ✨
+          {{ $t("add_a_member.member_created") }} ✨
         </div>
       </transition>
 
       <p class="button-container">
         <button ref="createBtn" class="button create-btn" type="submit" :disabled="isSaving">
-          <span v-if="!isSaving">Create</span>
+          <span v-if="!isSaving">{{ $t("add_a_member.create") }}</span>
           <span v-else class="loading">
             Creating
             <span class="dots">
@@ -118,9 +126,9 @@
           </div>
 
           <div class="celebrate-header" :class="{ dark:darkMode }">
-            <div class="badge">NEW MEMBER</div>
-            <h2>Welcome {{ createdMember?.name }}!</h2>
-            <p class="sub">Added to your family</p>
+            <div class="badge">{{ $t("add_a_member.new_member") }}</div>
+            <h2>{{ $t("add_a_member.welcome") }} {{ createdMember?.name }}!</h2>
+            <p class="sub">{{ $t("add_a_member.added_to_your_family") }}</p>
           </div>
 
           <div class="member-card" :class="{ dark:darkMode }">
@@ -128,19 +136,20 @@
               <img :src="createdMember?.image" alt="avatar" />
             </div>
             <div class="info" :class="{ dark:darkMode }">
-              <div class="line"><strong>Name:</strong> {{ createdMember?.name }}</div>
-              <div class="line"><strong>Age:</strong> {{ createdMember?.age }}</div>
-              <div class="line"><strong>Gender:</strong> {{ createdMember?.gender }}</div>
-              <div class="line"><strong>Birthday:</strong> {{ formatBirthday(createdMember?.birthday) }}</div>
+              <div class="line"><strong>{{ $t("add_a_member.name") }}:</strong> {{ createdMember?.name }}</div>
+              <div class="line"><strong>{{ $t("add_a_member.age") }}:</strong> {{ createdMember?.age }}</div>
+              <div class="line"><strong>{{ $t("add_a_member.gender") }}:</strong> {{ createdMember?.gender }}</div>
+              <div class="line"><strong>{{ $t("add_a_member.birthday") }}:</strong> {{ formatBirthday(createdMember?.birthday) }}</div>
             </div>
           </div>
 
           <div class="celebrate-actions">
-            <button class="button" @click="closeCelebrate">Perfect ✨</button>
+            <button class="button" @click="closeCelebrate">{{ $t("add_a_member.perfect") }} ✨</button>
           </div>
         </div>
       </div>
     </transition>
+
     <TutorialHints
       pageKey="list"
       :hints="[
@@ -391,14 +400,25 @@ export default {
   align-items: center;
 }
 
-.form_text {
-  width: 80px;
+.form_text{
+  width: 140px;
+  flex: 0 0 140px;
   text-align: right;
+
   margin-right: 15px;
   padding-right: 15px;
   border-right: 1px solid black;
+
+  white-space: nowrap;
+  box-sizing: border-box;
 }
-.form_text.dark { border-right: 1px solid white; }
+.form_text.dark{ border-right: 1px solid white; }
+
+.form_input_container{
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+}
 
 .form--behind-celebrate {
   filter: blur(6px);
@@ -406,14 +426,6 @@ export default {
   transform: scale(0.99);
   pointer-events: none;
   user-select: none;
-}
-
-.form_input_container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  margin-bottom: 10px;
-  height: fit-content;
 }
 
 input.form_input {
@@ -478,6 +490,48 @@ input.form_input.dark {
 }
 
 .photo-line { gap: 12px; }
+
+/* ==== BOUTON "Choose a file" (pill + badge) ==== */
+.edit_photo_button{
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid #1f1f1f;
+  background-color: white;
+  cursor: pointer;
+  user-select: none;
+}
+.edit_photo_button.dark{
+  border-color: #ffffff;
+  color: #ffffff;
+  background-color:#303030;
+}
+
+.plus-badge{
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  border: 1px solid #1f1f1f;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 1;
+  line-height: 1;
+}
+.plus-badge.dark{
+  border-color: #ffffff;
+  color: #ffffff;
+  background-color:#303030;
+}
+
+.btn-text{
+  font-weight: 1;
+}
+
+/* preview */
 .preview-wrap {
   position: relative;
   width: 46px;
@@ -630,6 +684,7 @@ input.form_input.dark {
   justify-content: center;
 }
 
+/* sparkles + confetti (inchangé) */
 .sparkles { position:absolute; inset:0; pointer-events:none; }
 .spark {
   position:absolute;

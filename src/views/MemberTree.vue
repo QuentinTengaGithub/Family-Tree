@@ -1,6 +1,6 @@
 <template>
     <div class="content">
-        <p class="title">Family tree</p>
+        <p class="title">{{ $t("tree.family_tree") }}</p>
         <div 
             class="tree-wrapper" 
             ref="treeWrapper" 
@@ -96,21 +96,29 @@
             </div>
         </div>
         <div v-else>
-          <p style="font-style: italic;">No member created.</p>
+          <p style="font-style: italic;">{{ $t("members.no") }}</p>
           <div class="empty-state-divider"></div>
-          <button @click="goToHome" class="button">Create a member</button>
+          <button @click="goToHome" class="button">{{ $t("members.create") }}</button>
         </div>
         <div v-if="showScreenshotOptions" class="modal-overlay">
-            <div class="modal-content">
-                <h3>Screenshot Options</h3>
-                <p>What would you like to do with the screenshot?</p>
-                <button @click="downloadScreenshot" class="edit_photo_button">Download</button>
-                <button @click="showEmailInput = true" class="edit_photo_button">Send by Email</button>
-                <button @click="showScreenshotOptions = false" class="edit_photo_button">Cancel</button>
-
+            <div class="modal-content" :class="{ dark:darkMode}">
+                <h3 :class="{ dark:darkMode}">{{ $t("tree.screenshots") }}</h3>
+                <p>{{ $t("tree.what") }}</p>
+                <button @click="downloadScreenshot" class="edit_photo_button" :class="{ dark:darkMode}">
+                  <img :src="darkMode ? require('../assets/google_icons_download_dark.png') : require('../assets/google_icons_download.png')" alt="Logout Icon" class="logout-icon" />
+                  {{ $t("tree.download") }}
+                </button>
+                <button @click="showEmailInput = true" class="edit_photo_button" :class="{ dark:darkMode}">
+                  <img :src="darkMode ? require('../assets/google_icons_send_by_email_dark.png') : require('../assets/google_icons_send_by_email.png')" alt="Logout Icon" class="logout-icon" />
+                  {{ $t("tree.send_by_email") }}
+                </button>
+                <button @click="showScreenshotOptions = false" class="edit_photo_button" :class="{ dark:darkMode}">
+                  <img :src="darkMode ? require('../assets/google_icons_cancel_dark.png') : require('../assets/google_icons_cancel.png')" alt="Logout Icon" class="logout-icon" />
+                  {{ $t("common.cancel") }}
+                </button>
                 <div v-if="showEmailInput" class="email-input-container">
-                    <input type="email" v-model="email" placeholder="Enter your email">
-                    <button @click="sendEmail" class="button">Send</button>
+                    <input type="email" v-model="email" :placeholder="$t('tree.enter_your_email')">
+                    <button @click="sendEmail" class="button">{{ $t("tree.send") }}</button>
                 </div>
             </div>
         </div>
@@ -944,6 +952,10 @@ span.birthday {
   text-align: center;
 }
 
+.dark.modal-content {
+  background-color:black;
+}
+
 .modal-content h3 {
   margin-top: 0;
 }
@@ -999,7 +1011,4 @@ span.birthday {
 </style>
 
 <style scoped>
-.edit_photo_button {
-  border: solid 1px red;
-}
 </style>

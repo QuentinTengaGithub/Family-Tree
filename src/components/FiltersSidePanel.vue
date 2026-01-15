@@ -14,13 +14,13 @@
   >
     ✕
   </button>
-  <span class="filters-title" :class="{ dark: darkMode }">Filters</span>
+  <span class="filters-title" :class="{ dark: darkMode }">{{ $t("filters.filters") }}</span>
 </div>
 
 
     <!-- GENDER -->
     <fieldset class="filter-group">
-      <legend class="filter-group__legend">Gender</legend>
+      <legend class="filter-group__legend">{{ $t("filters.gender") }}</legend>
       <div class="filter-options">
         <label
           class="filter-option"
@@ -37,7 +37,7 @@
             v-model="selectedGender"
             :disabled="selectedRelationship === 'married'"
           />
-          <span class="filter-option__label-text">All</span>
+          <span class="filter-option__label-text">{{ $t("filters.all") }}</span>
         </label>
 
         <label
@@ -55,7 +55,7 @@
             v-model="selectedGender"
             :disabled="selectedRelationship === 'married'"
           />
-          <span class="filter-option__label-text">Male</span>
+          <span class="filter-option__label-text">{{ $t("filters.male") }}</span>
         </label>
 
         <label
@@ -73,14 +73,14 @@
             v-model="selectedGender"
             :disabled="selectedRelationship === 'married'"
           />
-          <span class="filter-option__label-text">Female</span>
+          <span class="filter-option__label-text">{{ $t("filters.female") }}</span>
         </label>
       </div>
     </fieldset>
 
     <!-- RELATIONSHIP -->
     <fieldset class="filter-group" v-if="relationshipAvailable">
-      <legend class="filter-group__legend">Relationship</legend>
+      <legend class="filter-group__legend">{{ $t("filters.relationship") }}</legend>
       <div class="filter-options">
         <label
           class="filter-option"
@@ -93,7 +93,7 @@
             value=""
             v-model="selectedRelationship"
           />
-          <span class="filter-option__label-text">All</span>
+          <span class="filter-option__label-text">{{ $t("filters.all") }}</span>
         </label>
 
         <label
@@ -111,7 +111,7 @@
             v-model="selectedRelationship"
             :disabled="selectedGender !== ''"
           />
-          <span class="filter-option__label-text">Married</span>
+          <span class="filter-option__label-text">{{ $t("filters.married") }}</span>
         </label>
 
         <label
@@ -125,7 +125,7 @@
             value="siblings"
             v-model="selectedRelationship"
           />
-          <span class="filter-option__label-text">Siblings</span>
+          <span class="filter-option__label-text">{{ $t("filters.siblings") }}</span>
         </label>
       </div>
     </fieldset>

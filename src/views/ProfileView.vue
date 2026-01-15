@@ -1,19 +1,21 @@
 <template>
   <div class="content" :class="{'dark-mode-bg': darkMode, 'light-mode-bg': !darkMode}">
-    <p class="title">My Profile</p>
+    <p class="title">{{ $t("profile.title") }}</p>
 
     <!-- Name Section -->
     <div class="profile-section">
-      <div class="profile-item-row" data-field="Name" :class="{ 'is-editing': editMode.name }">
-        <h2 class="profile-label">Name</h2>
+      <div 
+        class="profile-item-row"
+        :data-field="$t('common.name')"
+        :class="{ 'is-editing': editMode.name }"
+      >
+        <h2 class="profile-label">{{ $t("common.name") }}</h2>
         <p v-if="errors.name" class="form-error">{{ errors.name }}</p>
         <div v-if="!editMode.name" class="profile-value-display">
           <p>{{ name }}</p>
-          <button class="edit_photo_button" :class="{ dark:darkMode }" @click="startEdit('name')">
+          <button class="edit_photo_button button_no_style" :class="{ dark:darkMode }" @click="startEdit('name')">
             <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_edit_dark.png')" alt="" />
             <img v-else class="btn-icon" :src="require('@/assets/google_icons_edit.png')" alt="" />
-            <span class="btn-long">Edit Name</span>
-            <span class="btn-short">Edit</span>
           </button>
         </div>
         <div v-else class="profile-value-edit">
@@ -22,11 +24,11 @@
           </div>
           <button class="edit_photo_button" :class="{ dark:darkMode }" @click="updateName">
             <img :src="darkMode ? require('../assets/google_icons_save_dark.png') : require('../assets/google_icons_save.png')" alt="Logout Icon" class="logout-icon" />
-            Save
+            {{ $t("common.save") }}
           </button>
           <button class="edit_photo_button" :class="{ dark:darkMode }" @click="cancelEdit('name')">
             <img :src="darkMode ? require('../assets/google_icons_cancel_dark.png') : require('../assets/google_icons_cancel.png')" alt="Logout Icon" class="logout-icon" />
-            Cancel
+            {{ $t("common.cancel") }}
           </button>
         </div>
       </div>
@@ -34,16 +36,18 @@
 
     <!-- Email Section -->
     <div class="profile-section">
-      <div class="profile-item-row" data-field="Email" :class="{ 'is-editing': editMode.email }">
+      <div 
+        class="profile-item-row" 
+        data-field="Email" 
+        :class="{ 'is-editing': editMode.email }"
+      >
         <h2 class="profile-label">Email</h2>
         <p v-if="errors.email" class="form-error">{{ errors.email }}</p>
         <div v-if="!editMode.email" class="profile-value-display">
           <p>{{ email }}</p>
-          <button class="edit_photo_button" :class="{ dark:darkMode }" @click="startEdit('email')">
+          <button class="edit_photo_button button_no_style" :class="{ dark:darkMode }" @click="startEdit('email')">
             <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_edit_dark.png')" alt="" />
             <img v-else class="btn-icon" :src="require('@/assets/google_icons_edit.png')" alt="" />
-            <span class="btn-long">Edit Email</span>
-            <span class="btn-short">Edit</span>
           </button>
         </div>
         <div v-else class="profile-value-edit">
@@ -52,11 +56,11 @@
           </div>
           <button class="edit_photo_button" :class="{ dark:darkMode }" @click="updateUserEmail">
             <img :src="darkMode ? require('../assets/google_icons_save_dark.png') : require('../assets/google_icons_save.png')" alt="Logout Icon" class="logout-icon" />
-            Save
+            {{ $t("common.save") }}
           </button>
           <button class="edit_photo_button" :class="{ dark:darkMode }" @click="cancelEdit('email')">
             <img :src="darkMode ? require('../assets/google_icons_cancel_dark.png') : require('../assets/google_icons_cancel.png')" alt="Logout Icon" class="logout-icon" />
-            Cancel
+            {{ $t("common.cancel") }}
           </button>
         </div>
       </div>
@@ -64,32 +68,34 @@
 
     <!-- Password Section -->
     <div class="profile-section">
-      <div class="profile-item-row" data-field="Password" :class="{ 'is-editing': editMode.password }">
-        <h2 class="profile-label">Password</h2>
+      <div 
+        class="profile-item-row profile-item-row--password"
+        :data-field="$t('profile.password')" 
+        :class="{ 'is-editing': editMode.password }"
+      >
+        <h2 class="profile-label">{{ $t("profile.password") }}</h2>
         <div class="profile-value-wrapper">
         <div v-if="!editMode.password" class="profile-value-display">
           <p>********</p>
-          <button class="edit_photo_button" :class="{ dark:darkMode }" @click="startEdit('password')">
+          <button class="edit_photo_button button_no_style" :class="{ dark:darkMode }" @click="startEdit('password')">
             <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_edit_dark.png')" alt="" />
             <img v-else class="btn-icon" :src="require('@/assets/google_icons_edit.png')" alt="" />
-            <span class="btn-long">Change Password</span>
-            <span class="btn-short">Change</span>
           </button>
         </div>
         
         <div v-else class="profile-value-edit password-edit-mode">
           <div class="form_input_container">
-            <p class="form_text">Current Password</p>
+            <p class="form_text">{{ $t("profile.current_password") }}</p>
             <input type="password" v-model="form.currentPassword" class="form_input" />
           </div>
 
           <div class="form_input_container">
-            <p class="form_text">New Password</p>
+            <p class="form_text">{{ $t("profile.new_password") }}</p>
             <input type="password" v-model="form.password" class="form_input" />
           </div>
 
           <div class="form_input_container">
-            <p class="form_text">Confirm New Password</p>
+            <p class="form_text">{{ $t("profile.confirm_new_password") }}</p>
             <input type="password" v-model="form.confirmPassword" class="form_input" />
           </div>
 
@@ -108,14 +114,15 @@
           <div class="password-actions">
             <button class="edit_photo_button" :class="{ dark:darkMode }" @click="updateUserPassword">
               <img :src="darkMode ? require('../assets/google_icons_save_dark.png') : require('../assets/google_icons_save.png')" alt="Logout Icon" class="logout-icon" />
-              Save New Password
+              {{ $t("profile.save_new_password") }}
             </button>
             <button class="edit_photo_button" :class="{ dark:darkMode }" @click="cancelEdit('password')">
               <img :src="darkMode ? require('../assets/google_icons_cancel_dark.png') : require('../assets/google_icons_cancel.png')" alt="Logout Icon" class="logout-icon" />
-              Cancel
+              {{ $t("common.cancel") }}
             </button>
             </div>
-        </div></div>
+          </div>
+        </div>
       </div>
       <!--<hr>
       <h2>Settings</h2>
@@ -123,25 +130,31 @@
       <img class="flags" src="../assets/flags/english.png" />
       <img class="flags" src="../assets/flags/french.png" />-->
       <hr>
-      <div class="tutorial-toggle">
-        <span class="tutorial-toggle__label">Tutorial</span>
 
-        <button
-          class="toggle-switch"
-          :class="{ on: tutorialEnabled }"
-          type="button"
-          role="switch"
-          :aria-checked="tutorialEnabled"
-          @click="toggleTutorialSwitch"
-        >
-          <span class="toggle-thumb"></span>
-        </button>
-      </div>
-    </div>
+<div class="settings-row">
+  <div class="tutorial-toggle tutorial-toggle--inline">
+    <span class="tutorial-toggle__label">{{ $t("profile.tutorial") }}</span>
+
+    <button
+      class="toggle-switch"
+      :class="{ on: tutorialEnabled }"
+      type="button"
+      role="switch"
+      :aria-checked="tutorialEnabled"
+      @click="toggleTutorialSwitch"
+    >
+      <span class="toggle-thumb"></span>
+    </button>
+  </div>
+</div>
+
+<hr>
+
+</div>
     <TutorialHints
       pageKey="tree"
       :hints="[
-        { id: 'tutorials', title: 'Show or hide tutorials', text: 'You can show or hide the tutorials' },
+        { id: 'tutorials', title: this.$t('profile.show_or_hide'), text: this.$t('profile.you_can') },
       ]"
     />
   </div>
@@ -240,7 +253,7 @@ export default {
           const auth = getAuth();
 
           if (!this.form.currentPassword) {
-            this.errors.password = "Please enter your current password.";
+            this.errors.password = this.$t('profile.please_enter');
             return false;
           }
 
@@ -252,7 +265,7 @@ export default {
             await reauthenticateWithCredential(auth.currentUser, credential);
             return true;
           } catch (error) {
-            this.errors.password = "Current password is incorrect.";
+            this.errors.password = this.$t('profile.current_password_is_incorrect');
             return false;
           }
         },
@@ -298,17 +311,17 @@ export default {
           this.errors.password = '';
 
           if (!this.form.password || !this.form.confirmPassword) {
-            this.errors.password = "Please fill in both password fields.";
+            this.errors.password = this.$t('profile.please_fill');
             return;
           }
 
           if (this.form.password !== this.form.confirmPassword) {
-            this.errors.password = "New passwords do not match.";
+            this.errors.password = this.$t('profile.new_passwords_do_not_match');
             return;
           }
 
           if (this.form.password === this.form.currentPassword) {
-            this.errors.password = "New password must be different from current password.";
+            this.errors.password = this.$t('profile.new_password_must');
             return;
           }
 
@@ -354,7 +367,7 @@ export default {
                 this.errors.password = "An error occurred. Please try again.";
             }
           }
-        }
+        },
   },
   created() {
     this.fetchUserData();
@@ -385,14 +398,24 @@ export default {
   gap: 6px;
 }
 
+.button_no_style {
+  background-color: transparent;
+  border:none;
+}
+
+.button_no_style:hover {
+  background-color: rgb(256, 256, 256, 0.8);
+}
+
 input.form_input {
   margin-left: 20px;
-  width:100%;
+  width: 100%;
 }
 
 .form_input_container {
   margin-bottom: 15px;
 }
+
 .button-secondary {
   background-color: #6c757d;
   color: white;
@@ -413,13 +436,13 @@ input.form_input {
 }
 
 .content::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('~@/assets/wallpaper_night.jpg');
+  background-image: url("~@/assets/wallpaper_night.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -427,7 +450,7 @@ input.form_input {
   border-radius: inherit;
 }
 
-.form-error{
+.form-error {
   color: #ff4d4f;
   font-size: 14px;
   margin-top: 6px;
@@ -444,9 +467,9 @@ input.form_input {
 }
 
 .flags {
-  width:50px;
-  margin-right:10px;
-  cursor:pointer;
+  width: 50px;
+  margin-right: 10px;
+  cursor: pointer;
 }
 
 .profile-item-row {
@@ -479,7 +502,7 @@ input.form_input {
   justify-content: flex-end;
   gap: 10px;
   background-color: transparent;
-  margin-left:12px;
+  margin-left: 12px;
 }
 
 .profile-value-display p {
@@ -521,9 +544,11 @@ input.form_input {
   margin: 0 0 5px 0;
   width: 100%;
   text-align: left;
+  border: none;
+  flex: 0;
 }
 
-.form-success{
+.form-success {
   color: #2ecc71;
   font-size: 14px;
   margin-top: 6px;
@@ -532,32 +557,32 @@ input.form_input {
 }
 
 .msg-fade-enter-active,
-.msg-fade-leave-active{
-  transition: opacity .25s ease, transform .25s ease;
+.msg-fade-leave-active {
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
 .msg-fade-enter,
-.msg-fade-leave-to{
+.msg-fade-leave-to {
   opacity: 0;
   transform: translateY(-4px);
 }
 
-.msg-pop-enter-active{
-  transition: opacity .25s ease, transform .25s ease;
+.msg-pop-enter-active {
+  transition: opacity 0.25s ease, transform 0.25s ease;
 }
-.msg-pop-leave-active{
-  transition: opacity .35s ease, transform .35s ease;
+.msg-pop-leave-active {
+  transition: opacity 0.35s ease, transform 0.35s ease;
 }
-.msg-pop-enter{
+.msg-pop-enter {
   opacity: 0;
-  transform: scale(.96) translateY(-3px);
+  transform: scale(0.96) translateY(-3px);
 }
-.msg-pop-leave-to{
+.msg-pop-leave-to {
   opacity: 0;
-  transform: scale(.98) translateY(2px);
+  transform: scale(0.98) translateY(2px);
 }
 
 /* ===== Tutorial Toggle ===== */
-.tutorial-toggle{
+.tutorial-toggle {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -565,13 +590,13 @@ input.form_input {
   margin-top: 20px;
 }
 
-.tutorial-toggle__label{
+.tutorial-toggle__label {
   font-weight: 700;
   font-size: 15px;
 }
 
 /* ===== Water effect on toggle ===== */
-.toggle-switch{
+.toggle-switch {
   position: relative;
   width: 52px;
   height: 28px;
@@ -580,48 +605,51 @@ input.form_input {
   cursor: pointer;
   padding: 0;
   background: rgba(180, 180, 180, 0.4);
-  transition: background-color .25s ease, box-shadow .25s ease;
+  transition: background-color 0.25s ease, box-shadow 0.25s ease;
   overflow: hidden;
 }
 
-/* petite onde interne quand ON */
-.toggle-switch.on::after{
+.toggle-switch.on::after {
   content: "";
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.55), transparent 55%);
+  background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.55), transparent 55%);
   opacity: 0;
   animation: toggleRipple 550ms ease-out;
   pointer-events: none;
 }
 
-@keyframes toggleRipple{
-  0%   { opacity: 0.7; transform: scale(0.7); }
-  60%  { opacity: 0.45; transform: scale(1.1); }
-  100% { opacity: 0;   transform: scale(1.4); }
+@keyframes toggleRipple {
+  0% {
+    opacity: 0.7;
+    transform: scale(0.7);
+  }
+  60% {
+    opacity: 0.45;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.4);
+  }
 }
 
-
-/* ON */
-.toggle-switch.on{
+.toggle-switch.on {
   background: linear-gradient(
     135deg,
     rgba(120, 200, 255, 0.95),
     rgba(0, 160, 255, 0.95)
   );
-  box-shadow:
-    0 6px 18px rgba(0, 160, 255, 0.35),
-    inset 0 0 0 1px rgba(255,255,255,0.35);
+  box-shadow: 0 6px 18px rgba(0, 160, 255, 0.35),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.35);
 }
 
-/* OFF */
-.toggle-switch:not(.on){
+.toggle-switch:not(.on) {
   background: rgba(150, 150, 150, 0.35);
 }
 
-/* thumb */
-.toggle-thumb{
+.toggle-thumb {
   position: absolute;
   top: 3px;
   left: 3px;
@@ -629,32 +657,145 @@ input.form_input {
   height: 22px;
   border-radius: 50%;
   background: white;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.25);
-  transition: transform .25s ease;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  transition: transform 0.25s ease;
 }
 
-/* thumb position when ON */
-.toggle-switch.on .toggle-thumb{
+.toggle-switch.on .toggle-thumb {
   transform: translateX(24px);
 }
 
-/* dark mode tweak */
-.dark-mode-bg .toggle-switch:not(.on){
-  background: rgba(255,255,255,0.25);
+.dark-mode-bg .toggle-switch:not(.on) {
+  background: rgba(255, 255, 255, 0.25);
 }
 
-/* ===== Mobile responsive ===== */
-.btn-short{ display: none; }
+/* ===== Flag switch ===== */
+.flag-switch {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border-radius: 999px;
+  background: rgba(140, 140, 140, 0.18);
+  border: 1px solid rgba(120, 120, 120, 0.25);
+  overflow: hidden;
+}
 
-@media (max-width: 480px){
-  .content{ padding: 16px; border-radius:0 }
+.flag-indicator {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  width: calc(50% - 7px);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  transform: translateX(0);
+  transition: transform 260ms ease, background 260ms ease;
+  z-index: 0;
+}
 
-  /* Mobile: exactly 3 compact rows
-     [Edit] Name | value
-     [Edit] Email | value
-     [Change] Password | ********
-  */
-  .profile-item-row{
+.flag-indicator.is-fr {
+  transform: translateX(calc(100% + 8px));
+}
+
+.dark-mode-bg .flag-switch {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+.dark-mode-bg .flag-indicator {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.flag-btn {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 120ms ease, opacity 180ms ease;
+  opacity: 0.78;
+}
+
+.flag-btn:hover {
+  opacity: 1;
+}
+
+.flag-btn:active {
+  transform: scale(0.96);
+}
+
+.flag-btn.active {
+  opacity: 1;
+}
+
+.flag-img {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+  transition: transform 180ms ease;
+}
+
+.flag-btn.active .flag-img {
+  transform: scale(1.06);
+}
+
+.flag-code {
+  font-weight: 800;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dark.flag-code {
+  color: white;
+}
+
+.flag-btn:focus-visible {
+  outline: 2px solid rgba(0, 160, 255, 0.8);
+  outline-offset: 2px;
+}
+
+/* ===== Desktop / tablette : colonne fixe => border-right aligné ===== */
+@media (min-width: 481px) {
+  .profile-item-row {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    column-gap: 12px;
+  }
+
+  .profile-label {
+    width: 160px;
+    flex: 0 0 160px;
+    box-sizing: border-box;
+    white-space: nowrap;
+  }
+
+  .profile-value-display,
+  .profile-value-edit {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}
+
+/* ===== Mobile ===== */
+.btn-short {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 16px;
+    border-radius: 0;
+  }
+
+  .profile-item-row {
     display: grid;
     grid-template-columns: auto auto 1fr;
     align-items: center;
@@ -664,29 +805,29 @@ input.form_input {
     justify-items: start;
   }
 
-  /* In responsive, align the editable rows to the left inside the card */
-  .content{
+  .content {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .title{
+  .title {
     align-self: center;
   }
 
-  .profile-section{
+  .profile-section {
     width: 100%;
   }
 
-  /* ensure wrapper doesn't create extra layout lines */
-  .profile-value-wrapper{ display: contents; }
+  .profile-value-wrapper {
+    display: contents;
+  }
 
-  /* hide large section labels on mobile */
-  .profile-label{ display: none; }
+  .profile-label {
+    display: none;
+  }
 
-  /* field label + separator */
-  .profile-item-row::before{
+  .profile-item-row::before {
     content: attr(data-field) " |";
     grid-column: 2;
     grid-row: 1;
@@ -697,19 +838,11 @@ input.form_input {
     justify-self: start;
   }
 
-  /* Keep markup but place children as grid items */
-  .profile-value-display{ display: contents; }
-
-  .profile-value-display .btn-edit{
-    grid-column: 1;
-    grid-row: 1;
-    justify-self: start;
-    padding: 8px 10px;
-    font-size: 14px;
-    white-space: nowrap;
+  .profile-value-display {
+    display: contents;
   }
 
-  .profile-value-display p{
+  .profile-value-display p {
     grid-column: 3;
     grid-row: 1;
     justify-self: start;
@@ -721,28 +854,28 @@ input.form_input {
     word-break: break-word;
   }
 
-  .btn-long{ display: none; }
-  .btn-short{ display: inline; }
+  .btn-long {
+    display: none;
+  }
+  .btn-short {
+    display: inline;
+  }
 
-  .profile-item-row.is-editing{
-    /* label à gauche + champ + Save + Cancel sur la même ligne (Name/Email) */
+  .profile-item-row.is-editing {
     grid-template-columns: auto 1fr auto auto;
   }
 
-  /* Le "X |" passe en colonne 1 (à gauche) uniquement en édition */
-  .profile-item-row.is-editing::before{
+  .profile-item-row.is-editing::before {
     grid-column: 1;
     grid-row: 1;
     justify-self: start;
   }
 
-  /* On “déplie” les enfants pour les placer dans la grille */
-  .profile-item-row.is-editing .profile-value-edit{
+  .profile-item-row.is-editing .profile-value-edit {
     display: contents;
   }
 
-  /* Input container en colonne 2 */
-  .profile-item-row.is-editing .profile-value-edit .form_input_container{
+  .profile-item-row.is-editing .profile-value-edit .form_input_container {
     grid-column: 2;
     grid-row: 1;
     width: 100%;
@@ -750,116 +883,197 @@ input.form_input {
     margin: 0;
   }
 
-  /* Input full width + pas de margin-left en mobile edit */
-  .profile-item-row.is-editing .profile-value-edit .form_input{
+  .profile-item-row.is-editing .profile-value-edit .form_input {
     margin-left: 0 !important;
     width: 100%;
   }
 
-  /* Save / Cancel en colonnes 3 et 4 */
-  .profile-item-row.is-editing .profile-value-edit > button:nth-of-type(1){
+  .profile-item-row.is-editing .profile-value-edit > button:nth-of-type(1) {
     grid-column: 3;
     grid-row: 1;
     justify-self: start;
     white-space: nowrap;
   }
-  .profile-item-row.is-editing .profile-value-edit > button:nth-of-type(2){
+  .profile-item-row.is-editing .profile-value-edit > button:nth-of-type(2) {
     grid-column: 4;
     grid-row: 1;
     justify-self: start;
     white-space: nowrap;
   }
 
-  /* ===== Password edit mode: label à gauche + contenu en dessous (plus lisible) ===== */
-  .profile-item-row.is-editing[data-field="Password"]{
+  /* ===== Password edit mode (mobile) ===== */
+  .profile-item-row--password.is-editing {
     grid-template-columns: 1fr;
+    row-gap: 6px;
+    margin-bottom: 10px;
   }
-  .profile-item-row.is-editing[data-field="Password"]::before{
+
+  .profile-item-row--password.is-editing::before {
     grid-column: 1;
     grid-row: 1;
-    margin-bottom: 8px;
+    margin: 0 0 2px 0;
   }
-  .profile-item-row.is-editing[data-field="Password"] .password-edit-mode{
+
+  .profile-item-row--password.is-editing .profile-value-wrapper {
+    display: block !important;
     grid-column: 1;
     grid-row: 2;
     width: 100%;
-    align-items: stretch;
-  }
-  .profile-item-row.is-editing[data-field="Password"] .password-edit-mode .form_input_container{
-    width: 100%;
-    max-width: none;
   }
 
-  .profile-item-row.is-editing[data-field="Password"] .profile-value-wrapper{
-    display: block !important;
-    width: 100%;
-  }
-
-  .profile-item-row.is-editing[data-field="Password"] .profile-value-edit{
-    display: flex !important;          /* <- au lieu de contents */
-    flex-direction: column !important;
-    align-items: stretch !important;
-    gap: 10px;
-    width: 100%;
-  }
-
-  /* 2) Chaque input container prend toute la largeur + empile le label et l'input */
-  .profile-item-row.is-editing[data-field="Password"] .password-edit-mode .form_input_container{
-    display: flex;
+  .profile-item-row--password.is-editing .profile-value-edit.password-edit-mode {
+    display: flex !important;
     flex-direction: column;
     align-items: stretch;
-    width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-  }
-
-  .profile-item-row.is-editing[data-field="Password"] .password-edit-mode .form_text{
-    margin: 0 0 6px 0 !important;
-    line-height: 1.2;
-    text-align: left;
-  }
-
-  .profile-item-row.is-editing[data-field="Password"] .password-edit-mode .form_input{
-    margin-left: 0 !important;
-    width: 100% !important;
-  }
-
-  /* 3) Boutons Password en pleine largeur (optionnel mais propre en mobile) */
-  .profile-item-row.is-editing[data-field="Password"] .password-edit-mode > button{
+    gap: 8px;
     width: 100%;
-    justify-content: center;
-    white-space: nowrap;
   }
 
-  .profile-item-row.is-editing[data-field="Password"]{
-    overflow-x: hidden;
+  /* LABEL AU-DESSUS + ALIGNÉ À GAUCHE DE L’INPUT */
+  .profile-item-row--password.is-editing .password-edit-mode .form_input_container {
+    width: 86% !important;      /* ajuste: 80% / 85% / 90% */
+    margin: 0 auto !important;  /* centre le bloc */
+    max-width: none !important;
+
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px;
+    align-items: flex-start;    /* label à gauche */
   }
 
-  /* Réduit la largeur effective des champs Password */
-  .profile-item-row.is-editing[data-field="Password"] .password-edit-mode .form_input{
-    box-sizing: border-box;
-    width: 92% !important;     /* ajuste si tu veux (90-95%) */
-    max-width: 92% !important;
-    margin-left: 0 !important;
-    margin-right: auto;        /* aligne à gauche */
-  }
-
-  /* S'assure que les containers ne forcent pas plus large */
-  .profile-item-row.is-editing[data-field="Password"] .password-edit-mode .form_input_container{
-    box-sizing: border-box;
+  .profile-item-row--password.is-editing .password-edit-mode .form_text {
     width: 100% !important;
-    max-width: 100% !important;
+    margin: 0 !important;
+    text-align: left !important;
+    line-height: 1.15;
   }
 
-  .password-actions{
-  display:flex;
-  gap:10px;
-  justify-content:center; /* ou flex-start */
+  .profile-item-row--password.is-editing .password-edit-mode .form_input {
+    width: 100% !important;
+    margin-left: 0 !important;
+    height: 36px;
+    box-sizing: border-box;
+  }
+
+  .profile-item-row--password.is-editing .password-actions {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch;
+  gap: 10px;
+  width: 86% !important;            /* même largeur que les champs */
+  margin: 10px auto 0 !important;
 }
-.password-actions > button{
-  width:auto !important;
-  white-space:nowrap;
+
+/* Base : les 2 boutons restent sur une ligne et le texte s’adapte */
+.profile-item-row--password.is-editing .password-actions > button {
+  min-width: 0;
+  width: auto !important;
+  justify-content: center;
+  padding: 10px 8px;               /* un peu plus compact */
+  white-space: nowrap;              /* pas de retour à la ligne */
+  font-size: clamp(11px, 3.1vw, 13px); /* s’adapte (FR plus long) */
+  line-height: 1.1;
 }
+
+/* Donne plus de place au bouton "Save / Enregistrer..." (1er bouton) */
+.profile-item-row--password.is-editing .password-actions > button:first-child {
+  flex: 1.45 1 0;
+}
+
+/* Bouton "Cancel / Annuler" un peu plus petit */
+.profile-item-row--password.is-editing .password-actions > button:last-child {
+  flex: 1 1 0;
+}
+
+  .profile-item-row .flag-switch {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: start;
+    margin-left: 12px;
+  }
+
+  .profile-item-row--password.is-editing .password-edit-mode .form-error {
+  width: 86% !important;         /* même largeur que les inputs */
+  margin: 6px auto 0 !important; /* centré comme les inputs */
+  text-align: right !important;  /* le texte finit au même niveau que l'input */
+  box-sizing: border-box;
+}
+}
+
+/* ===== Desktop: Password edit mode -> labels au-dessus des inputs ===== */
+@media (min-width: 481px) {
+  /* on garde le layout général, mais le bloc édition mdp devient "stack" */
+  .profile-item-row--password.is-editing .profile-value-edit.password-edit-mode {
+    align-items: flex-end; /* tu peux mettre center si tu veux centrer le bloc */
+  }
+
+  .profile-item-row--password.is-editing .password-edit-mode .form_input_container {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-start !important; /* label aligné à gauche */
+    width: 360px;                       /* ajuste (320/360/420) */
+    max-width: 100%;
+    margin: 0 0 12px 0;
+  }
+
+  .profile-item-row--password.is-editing .password-edit-mode .form_text {
+    width: 100% !important;
+    margin: 0 0 6px 0 !important;
+    text-align: left !important;
+    line-height: 1.15;
+  }
+
+  .profile-item-row--password.is-editing .password-edit-mode .form_input {
+    width: 100% !important;
+    margin-left: 0 !important; /* important: sinon ça décale l’input */
+    box-sizing: border-box;
+  }
+
+  /* (optionnel) message d'erreur aligné sur la fin des inputs */
+  .profile-item-row--password.is-editing .password-edit-mode .form-error {
+    width: 360px;
+    max-width: 100%;
+    text-align: right !important;
+    box-sizing: border-box;
+    margin-top: 6px;
+  }
+}
+
+/* === Settings row: Tutorial + Language on same line (desktop) === */
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 12px;
+}
+
+/* on enlève la marge-top qui était prévue pour une ligne seule */
+.tutorial-toggle--inline {
+  margin-top: 0 !important;
+}
+
+/* Mobile: tutorial + langue sur la même ligne */
+@media (max-width: 480px) {
+  .settings-row {
+    flex-direction: row;          /* au lieu de column */
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: nowrap;            /* force sur une ligne */
+    width: 100%;
+  }
+
+  .tutorial-toggle--inline {
+    flex: 1 1 auto;               /* prend l’espace restant */
+    width: auto;
+    justify-content: flex-start;  /* label + switch collés */
+    gap: 10px;
+  }
+
+  .flag-switch {
+    flex: 0 0 auto;               /* garde sa taille */
+  }
 }
 
 </style>
