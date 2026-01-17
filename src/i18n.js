@@ -212,7 +212,7 @@ const messages = {
             no_children: "Pas d'enfant",
             no_husband: "Pas de mari",
             no_member: "Aucun membre pour cette relation.",
-            no_sibiling: "Pas de frère/soeur",
+            no_sibling: "Pas de frère/soeur",
             no_wife: "Pas d'épouse",
             old: "âgé(e)",
             only: "1 seul membre créé. Aucune relation n'est possible.",
