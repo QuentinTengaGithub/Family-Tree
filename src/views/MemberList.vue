@@ -1382,7 +1382,7 @@ export default {
   background-color: var(--lightGrey);
 }
 td { border: 2px solid white; padding: 8px; }
-td.column_photo { width: 10%; }
+td.column_photo { width: 10%; text-align:center; }
 td.column_name { width: 10%; }
 td.column_age { width: 10%; }
 td.column_relationship { width: 50%; }
