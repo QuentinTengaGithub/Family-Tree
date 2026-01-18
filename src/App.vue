@@ -99,7 +99,7 @@ html, body {
 }
 
 .title {
-  margin-top:20px;
+  margin-top:0;
   font-size: 30px;
   font-weight: bold;
   color: var(--blue);

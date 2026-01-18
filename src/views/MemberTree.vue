@@ -60,7 +60,7 @@
                       <div
                         v-else-if="group.type === 'siblings'"
                         class="sibling-box"
-                        :class="{ 'siblings-orange': !group.hasMarriedMember }"
+                        :class="{ 'siblings-orange': selectedRelationship === 'siblings' || !group.hasMarriedMember }"
                         :ref="el => { if (el) allGroupBoxes[group.id] = el }"
                       >
                         <div
@@ -567,13 +567,16 @@ export default {
   // 2) Create sibling groups ONLY if no one in the cluster is married
   clusters.forEach(cluster => {
     const hasMarriedMember = cluster.some(m => (m.married && String(m.married).trim() !== ''));
-    if (!hasMarriedMember) {
+
+    // ✅ En mode "siblings", on garde aussi les clusters avec des mariés
+    if (this.selectedRelationship === 'siblings' || !hasMarriedMember) {
       const groupId = cluster.map(m => m.name).sort().join('-');
       if (!cluster.some(m => processedNames.has(m.name))) {
-        processGroup(groupId, 'siblings', cluster, { hasMarriedMember: false });
+        processGroup(groupId, 'siblings', cluster, { hasMarriedMember });
       }
     }
   });
+
 
   // If filter is strictly "siblings", show only sibling groups
   if (this.selectedRelationship === 'siblings') {
@@ -1141,11 +1144,25 @@ span.birthday {
   overflow: hidden;
 }
 
-.tree-wrapper {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  cursor: grab;
+/* La div blanche: hauteur fixe (ou calculée) */
+.content.tree-content{
+  height: calc(100vh - 190px); /* adapte 60px à la hauteur réelle de ton header/nav */
+  /* ou: height: 100vh; si tu veux plein écran */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* important: empêche l'agrandissement visuel */
+}
+
+/* Le titre ne doit pas "pousser" la hauteur */
+.content.tree-content .title{
+  flex: 0 0 auto;
+}
+
+/* La zone arbre doit occuper le reste, sans agrandir .content */
+.tree-wrapper{
+  flex: 1 1 auto;
+  height: 100%;
+  overflow: hidden; /* tu peux mettre auto si tu veux un scroll au lieu du pan */
 }
 
 </style>
