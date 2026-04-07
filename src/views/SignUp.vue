@@ -35,7 +35,7 @@
       </div>
     </div>
     <div class="form-card intro intro-form" :class="{ dark: darkMode }">
-      <p class="title">Sign Up</p>
+      <p class="title">{{ $t('sign_up.title') }}</p>
       <form @submit.prevent="createAccount">
         <div class="form_input_container">
           <p class="form_text" :class="{ dark: darkMode }">{{ $t('add_a_member.name') }}</p>
