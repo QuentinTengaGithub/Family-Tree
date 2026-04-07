@@ -157,7 +157,7 @@
 
 <script>
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import { collection, doc, getDocs, query, setDoc, where } from "firebase/firestore";
+import { collection, doc, getDocs, query, setDoc, where, serverTimestamp } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
 import screenshot1 from "@/assets/screenshot1.png";
@@ -269,6 +269,7 @@ export default {
           email: user.email,
           name: this.name,
           role: user.email === "quentinritt94@gmail.com" ? "superadmin" : "user",
+          createdAt: serverTimestamp(),
         });
 
         this.$router.push("/sign-in");

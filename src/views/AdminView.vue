@@ -7,12 +7,16 @@
     <div v-if="users.length">
       <ul>
         <div v-for="user in users" :key="user.uid">
-          <button class="edit_photo_button" :class="{ dark:darkMode }" @click="selectUser(user)">
+          <button class="edit_photo_button" :class="{ dark: darkMode }" @click="selectUser(user)">
             <img v-if="darkMode" class="btn-icon" :src="require('@/assets/google_icons_eye_dark.png')" alt="" />
             <img v-else class="btn-icon" :src="require('@/assets/google_icons_eye.png')" alt="" />
             {{ $t("admin.view") }}
           </button>
-          {{ user.name }} ({{ user.email }}) - Role: {{ user.role }}
+
+          <span style="text-decoration: underline; margin-left:10px">{{ user.name }}</span> ({{ user.email }}) - Rôle: {{ user.role }}
+          <span v-if="user.createdAt">
+            [créé le {{ formatDate(user.createdAt) }}]
+          </span>
         </div>
       </ul>
     </div>
@@ -21,7 +25,7 @@
 </template>
 
 <script>
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
 export default {
@@ -38,9 +42,25 @@ export default {
   methods: {
     async fetchAllUsers() {
       const usersCol = collection(db, 'users');
-      const userSnapshot = await getDocs(usersCol);
+      const usersQuery = query(usersCol, orderBy('createdAt', 'desc'));
+      const userSnapshot = await getDocs(usersQuery);
       this.users = userSnapshot.docs.map(doc => ({ ...doc.data(), uid: doc.id }));
     },
+
+    formatDate(timestamp) {
+      if (!timestamp) return '';
+
+      const date = timestamp.toDate();
+
+      return date.toLocaleString('fr-FR', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    },
+
     selectUser(user) {
       this.selectedUser = user;
       this.$router.push({ path: '/members', query: { viewAs: user.uid, viewAsName: user.name } });
@@ -55,5 +75,4 @@ export default {
 </script>
 
 <style>
-
 </style>
